@@ -5,7 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import { AdditiveBlending, Vector2, type ShaderMaterial } from "three";
 import type { HeroFxController } from "../../lib/heroSceneFx";
 import type { HeroSceneState } from "../../lib/heroSceneState";
-import { getRobotEyes } from "../../lib/particles/robotShape";
+import { getHumanEyes } from "../../lib/particles/humanShape";
 import { SHIP_NOZZLES } from "../../lib/particles/spaceshipShape";
 import { morphParticlesFragment, morphParticlesVertex } from "../../lib/shaders/morphParticles";
 import { useHeroMorphData } from "../../lib/useHeroMorphData";
@@ -17,6 +17,8 @@ interface MorphingParticlesProps {
   sceneState: HeroSceneState;
   fx: HeroFxController;
   reduceMotion: boolean;
+  /** Stacked layout: the character's shoulders fade out above the text. */
+  isMobile: boolean;
 }
 
 /**
@@ -24,13 +26,13 @@ interface MorphingParticlesProps {
  * separate attributes. The vertex shader interpolates them on the GPU from a
  * single progress uniform, so a morph costs no CPU work per frame.
  */
-export default function MorphingParticles({ count, sceneState, fx, reduceMotion }: MorphingParticlesProps) {
+export default function MorphingParticles({ count, sceneState, fx, reduceMotion, isMobile }: MorphingParticlesProps) {
   const data = useHeroMorphData(count);
   const materialRef = useRef<ShaderMaterial>(null);
   const reveal = useRef(0);
 
   const uniforms = useMemo(() => {
-    const eyes = getRobotEyes();
+    const eyes = getHumanEyes();
     return {
       uTime: { value: 0 },
       uProgress: { value: 0 },
@@ -45,7 +47,9 @@ export default function MorphingParticles({ count, sceneState, fx, reduceMotion 
       uEyeGlow: { value: 1 },
       uBlink: { value: new Vector2() },
       uLidY: { value: new Vector2(eyes.left.lidY, eyes.right.lidY) },
+      uGaze: { value: new Vector2() },
       uNozzle: { value: SHIP_NOZZLES.map((n) => new Vector2(n.y, n.z)) },
+      uCutY: { value: -99 },
     };
   }, []);
 
@@ -62,8 +66,10 @@ export default function MorphingParticles({ count, sceneState, fx, reduceMotion 
     u.uRobotW.value = fx.robotWeight;
     u.uShipW.value = fx.shipWeight;
     u.uScanY.value = fx.scanY;
+    u.uCutY.value = isMobile ? -2.3 : -99;
     u.uEyeGlow.value = fx.eyeGlow;
     (u.uBlink.value as Vector2).set(fx.blinkLeft, fx.blinkRight);
+    (u.uGaze.value as Vector2).set(fx.gazeX, fx.gazeY);
   });
 
   if (!data) return null;

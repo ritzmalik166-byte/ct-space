@@ -7,7 +7,7 @@ export interface ShapePoints {
   sizes: Float32Array;
   /**
    * Two shape-specific effect tags per point, read by the vertex shader.
-   * Robot: [eye id (1 left, 2 right), circuit flow param].
+   * Robot: [eye id (1 left, 2 right; +0.25 for iris/pupil), circuit flow param].
    * Spaceship: [plume length, nozzle id for plume / 1 for engine glow].
    */
   tags: Float32Array;

@@ -9,6 +9,8 @@ export interface HeroStateContent {
   id: HeroStateId;
   eyebrow: string;
   heading: string;
+  /** Single heading word rendered in the brand gold gradient. */
+  highlight?: string;
   description: string;
   primaryCta: HeroCta;
   secondaryCta: HeroCta;
@@ -20,6 +22,7 @@ export const HERO_STATES: readonly HeroStateContent[] = [
     id: "galaxy",
     eyebrow: "Cosmic Storytelling",
     heading: "A Storytelling Universe in Orbit",
+    highlight: "Universe",
     description:
       "Transform bold ideas into extraordinary digital experiences through intelligent creativity, cinematic storytelling, and next-generation technology.",
     primaryCta: { label: "Explore Our Universe", href: "#universe" },

@@ -2,19 +2,27 @@
 
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import type { Group } from "three";
 import { gsap } from "@/lib/gsap";
 import type { HeroQuality } from "../../lib/heroDevice";
 import { HeroFxController } from "../../lib/heroSceneFx";
 import type { HeroSceneState } from "../../lib/heroSceneState";
+import type { RobotInteraction } from "../../lib/robotInteraction";
+import GalaxyDetail from "./GalaxyDetail";
+import GalaxyPlanets from "./GalaxyPlanets";
 import HeroRig from "./HeroRig";
+import HumanDetail from "./HumanDetail";
+import HumanPlanets from "./HumanPlanets";
 import MorphingParticles from "./MorphingParticles";
 import RobotEyes from "./RobotEyes";
 import StarField from "./StarField";
+import RobotLaser from "./robot/RobotLaser";
 
 interface HeroSceneProps {
   sceneState: HeroSceneState;
   quality: HeroQuality;
   reduceMotion: boolean;
+  interaction: RobotInteraction;
 }
 
 /**
@@ -41,8 +49,9 @@ function FxDriver({ fx, sceneState, reduceMotion }: { fx: HeroFxController; scen
   return null;
 }
 
-export default function HeroScene({ sceneState, quality, reduceMotion }: HeroSceneProps) {
+export default function HeroScene({ sceneState, quality, reduceMotion, interaction }: HeroSceneProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const robotAnchorRef = useRef<Group>(null);
   const activeRef = useRef(true);
   const [ready, setReady] = useState(false);
   const [fx] = useState(() => new HeroFxController());
@@ -73,10 +82,32 @@ export default function HeroScene({ sceneState, quality, reduceMotion }: HeroSce
         <TickerDriver activeRef={activeRef} />
         <FxDriver fx={fx} sceneState={sceneState} reduceMotion={reduceMotion} />
         <StarField count={quality.starCount} sceneState={sceneState} reduceMotion={reduceMotion} />
-        <HeroRig sceneState={sceneState} fx={fx} reduceMotion={reduceMotion}>
-          <MorphingParticles count={quality.particleCount} sceneState={sceneState} fx={fx} reduceMotion={reduceMotion} />
+        <HeroRig
+          sceneState={sceneState}
+          fx={fx}
+          reduceMotion={reduceMotion}
+          environment={<HumanPlanets fx={fx} reduceMotion={reduceMotion} isMobile={quality.isMobile} />}
+        >
+          <GalaxyPlanets sceneState={sceneState} reduceMotion={reduceMotion} isMobile={quality.isMobile} />
+          <GalaxyDetail count={quality.galaxyDetailCount} sceneState={sceneState} reduceMotion={reduceMotion} />
+          <MorphingParticles
+            count={quality.particleCount}
+            sceneState={sceneState}
+            fx={fx}
+            reduceMotion={reduceMotion}
+            isMobile={quality.isMobile}
+          />
+          <HumanDetail
+            count={quality.humanDetailCount}
+            sceneState={sceneState}
+            fx={fx}
+            reduceMotion={reduceMotion}
+            isMobile={quality.isMobile}
+          />
           <RobotEyes fx={fx} />
+          <group ref={robotAnchorRef} />
         </HeroRig>
+        <RobotLaser fx={fx} interaction={interaction} anchorRef={robotAnchorRef} reduceMotion={reduceMotion} />
       </Canvas>
     </div>
   );

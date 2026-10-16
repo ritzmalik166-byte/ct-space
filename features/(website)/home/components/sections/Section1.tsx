@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { gsap, useGSAP } from "@/lib/gsap";
 import HeroContent from "../ui/HeroContent";
+import RobotScanOverlay from "../ui/RobotScanOverlay";
 import { createHeroTimeline } from "../../lib/heroAnimations";
 import { createHeroSceneState } from "../../lib/heroSceneState";
+import { RobotInteraction } from "../../lib/robotInteraction";
 import {
   MOBILE_QUERY,
   REDUCED_MOTION_QUERY,
@@ -29,6 +31,8 @@ export default function Section1() {
   const contentRef = useRef<HTMLDivElement>(null);
   const glowRefs = useRef<HTMLDivElement[]>([]);
   const [sceneState] = useState(createHeroSceneState);
+  const [interaction] = useState(() => new RobotInteraction());
+  const scanOverlayRef = useRef<HTMLDivElement>(null);
 
   const isClient = useSyncExternalStore(subscribeNoop, () => true, () => false);
   const env = useMemo(() => {
@@ -40,12 +44,24 @@ export default function Section1() {
     };
   }, [isClient]);
 
+  const webgl = env?.webgl ?? false;
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!webgl || !section) return;
+    interaction.attach(section, scanOverlayRef.current);
+    return () => interaction.dispose();
+  }, [interaction, webgl]);
+
   useGSAP(
     () => {
       const section = sectionRef.current;
       const content = contentRef.current;
       if (!section || !content) return;
       const layers = Array.from(content.querySelectorAll<HTMLElement>("[data-hero-layer]"));
+      const fill = content.querySelector<HTMLElement>("[data-hero-progress-fill]");
+      const progress = fill
+        ? { fill, nodes: Array.from(content.querySelectorAll<HTMLElement>("[data-hero-progress-node]")) }
+        : null;
 
       const mm = gsap.matchMedia();
       mm.add(
@@ -56,6 +72,7 @@ export default function Section1() {
             section,
             layers,
             glows: glowRefs.current,
+            progress,
             sceneState,
             reduceMotion,
             isMobile,
@@ -87,13 +104,20 @@ export default function Section1() {
       </div>
 
       {env?.webgl ? (
-        <HeroScene sceneState={sceneState} quality={env.quality} reduceMotion={env.reduceMotion} />
+        <HeroScene
+          sceneState={sceneState}
+          quality={env.quality}
+          reduceMotion={env.reduceMotion}
+          interaction={interaction}
+        />
       ) : null}
 
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#03040b] via-[#03040b]/70 via-45% to-transparent to-70% md:bg-linear-to-r md:from-[#03040b]/85 md:via-[#03040b]/35 md:via-40% md:to-transparent md:to-60%"
       />
+
+      {env?.webgl ? <RobotScanOverlay ref={scanOverlayRef} /> : null}
 
       <div className="relative z-10 mx-auto flex h-full w-full max-w-[1440px] items-end px-6 pb-12 md:items-center md:px-12 md:pb-0 lg:px-20">
         <div className="w-full md:w-1/2">

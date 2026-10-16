@@ -29,7 +29,19 @@ function blinkCurve(t: number): number {
  */
 export class HeroFxController {
   robotWeight = 0;
+  /** Wider window than robotWeight: the character's planets fade in as the face forms. */
+  robotPresence = 0;
   shipWeight = 0;
+  /** Iris offset in robot-local units, written by the gaze controller. */
+  gazeX = 0;
+  gazeY = 0;
+  /** 0–1 laser scan intensity, written by the laser; brightens the eyes. */
+  scanLevel = 0;
+  /** True while a text scan is active: the rig turns the head towards (lookX, lookY). */
+  lookActive = false;
+  /** Smoothed centre of the scanned element, in client pixels. */
+  lookX = 0;
+  lookY = 0;
   blinkLeft = 0;
   blinkRight = 0;
   scanY = SCAN_IDLE;
@@ -44,6 +56,7 @@ export class HeroFxController {
   update(progress: number, time: number, delta: number, reduceMotion: boolean) {
     const dt = Math.min(delta, 0.1);
     this.robotWeight = 1 - smoothstep(0.02, 0.07, Math.abs(progress - 0.5));
+    this.robotPresence = 1 - smoothstep(0.03, 0.11, Math.abs(progress - 0.5));
     this.shipWeight = smoothstep(0.9, 0.995, progress);
 
     const active = this.robotWeight > 0.98 && !reduceMotion;
@@ -98,6 +111,6 @@ export class HeroFxController {
       }
     }
 
-    this.eyeGlow = 0.9 + 0.1 * Math.sin(time * 0.8) + 0.04 * Math.sin(time * 2.3);
+    this.eyeGlow = (0.9 + 0.1 * Math.sin(time * 0.8) + 0.04 * Math.sin(time * 2.3)) * (1 + 0.4 * this.scanLevel);
   }
 }

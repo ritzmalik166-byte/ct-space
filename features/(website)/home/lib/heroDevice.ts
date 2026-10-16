@@ -1,5 +1,9 @@
 export interface HeroQuality {
   particleCount: number;
+  /** Galaxy-only fine stars and dust (not part of the morph). */
+  galaxyDetailCount: number;
+  /** Character-only dense particle skin (not part of the morph). */
+  humanDetailCount: number;
   starCount: number;
   maxDpr: number;
   isMobile: boolean;
@@ -28,7 +32,21 @@ export function detectHeroQuality(): HeroQuality {
   const lowEnd = cores <= 4 || memory <= 4;
 
   if (isMobile) {
-    return { particleCount: lowEnd ? 11000 : 15000, starCount: 500, maxDpr: 1.5, isMobile };
+    return {
+      particleCount: lowEnd ? 11000 : 15000,
+      galaxyDetailCount: lowEnd ? 9000 : 18000,
+      humanDetailCount: lowEnd ? 22000 : 36000,
+      starCount: 500,
+      maxDpr: 1.5,
+      isMobile,
+    };
   }
-  return { particleCount: lowEnd ? 20000 : 34000, starCount: 1300, maxDpr: lowEnd ? 1.5 : 2, isMobile };
+  return {
+    particleCount: lowEnd ? 20000 : 34000,
+    galaxyDetailCount: lowEnd ? 28000 : 60000,
+    humanDetailCount: lowEnd ? 60000 : 110000,
+    starCount: 1300,
+    maxDpr: lowEnd ? 1.5 : 2,
+    isMobile,
+  };
 }

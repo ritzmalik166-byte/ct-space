@@ -24,3 +24,75 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes hero-scroll-cue {
+  0%,
+  100% {
+    transform: translateY(-2px);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+}
+
+/* Contenaissance metallic gold, sampled from the logo mark. */
+@layer components {
+  .brand-gold-text {
+    color: #e2bd4f;
+  }
+
+  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+    .brand-gold-text {
+      background-image: linear-gradient(
+        100deg,
+        #9a6f12 0%,
+        #c9982c 20%,
+        #f4d675 40%,
+        #fff0b3 50%,
+        #e8c45e 62%,
+        #b8860b 84%,
+        #d8b04c 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .brand-gold-fill {
+    background-image: linear-gradient(90deg, #8a650d 0%, #d4af37 45%, #f4d675 75%, #fff0b3 100%);
+  }
+
+  .brand-gold-button {
+    background-color: #d4af37;
+    background-image: linear-gradient(
+      120deg,
+      #a77b16 0%,
+      #d4af37 28%,
+      #f4d675 50%,
+      #e3bd52 68%,
+      #b8860b 100%
+    );
+    background-size: 220% 100%;
+    background-position: 0% 50%;
+    color: #1c1405;
+    box-shadow:
+      inset 0 1px 0 rgb(255 244 205 / 0.65),
+      inset 0 -1px 0 rgb(92 62 6 / 0.45),
+      0 10px 30px -14px rgb(212 175 55 / 0.6);
+    transition:
+      background-position 700ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 300ms ease;
+  }
+
+  .brand-gold-button:hover {
+    background-position: 100% 50%;
+    box-shadow:
+      inset 0 1px 0 rgb(255 248 220 / 0.8),
+      inset 0 -1px 0 rgb(92 62 6 / 0.45),
+      0 12px 34px -12px rgb(244 214 117 / 0.6);
+  }
+}

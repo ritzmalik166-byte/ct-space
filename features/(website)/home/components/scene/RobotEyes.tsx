@@ -4,16 +4,14 @@ import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { AdditiveBlending, Vector2, Vector4, type Points, type ShaderMaterial } from "three";
 import type { HeroFxController } from "../../lib/heroSceneFx";
-import { getRobotEyes } from "../../lib/particles/robotShape";
+import { getHumanEyes } from "../../lib/particles/humanShape";
 import { robotEyesFragment, robotEyesVertex } from "../../lib/shaders/morphParticles";
 
 const UPPER_LID = 96;
 const LOWER_LID = 48;
-const OUTER_RING = 40;
-const INNER_RING = 24;
 
 /**
- * Supplemental eye layer (lids, iris rings, glow) drawn in the robot's local
+ * Supplemental eye layer (blink lids, catchlight, glow) drawn in the character's local
  * space. Positions are computed in the shader from per-eye uniforms, so the
  * shared morph particles and their index correspondence are untouched.
  */
@@ -35,9 +33,7 @@ export default function RobotEyes({ fx }: { fx: HeroFxController }) {
       };
       add(0, UPPER_LID, (i) => (i / (UPPER_LID - 1)) * 2 - 1);
       add(1, LOWER_LID, (i) => (i / (LOWER_LID - 1)) * 2 - 1);
-      // Dashed rings: only the "on" halves of each dash are emitted.
-      add(2, OUTER_RING, (i) => (Math.floor(i / 2) / (OUTER_RING / 2)) * Math.PI * 2 + (i % 2) * 0.09);
-      add(3, INNER_RING, (i) => (Math.floor(i / 3) / (INNER_RING / 3)) * Math.PI * 2 + (i % 3) * 0.12);
+      add(2, 1, () => 0);
       add(4, 1, () => 0);
     }
     return {
@@ -50,7 +46,7 @@ export default function RobotEyes({ fx }: { fx: HeroFxController }) {
   const positions = useMemo(() => new Float32Array(eye.length * 3), [eye]);
 
   const uniforms = useMemo(() => {
-    const { left, right } = getRobotEyes();
+    const { left, right } = getHumanEyes();
     return {
       uTime: { value: 0 },
       uPixelRatio: { value: 1 },
@@ -63,6 +59,7 @@ export default function RobotEyes({ fx }: { fx: HeroFxController }) {
       uRyLow: { value: left.ryLow },
       uBlink: { value: new Vector2() },
       uLidY: { value: new Vector2(left.lidY, right.lidY) },
+      uGaze: { value: new Vector2() },
     };
   }, []);
 
@@ -78,6 +75,7 @@ export default function RobotEyes({ fx }: { fx: HeroFxController }) {
     u.uVisible.value = fx.robotWeight;
     u.uGlow.value = fx.eyeGlow;
     (u.uBlink.value as Vector2).set(fx.blinkLeft, fx.blinkRight);
+    (u.uGaze.value as Vector2).set(fx.gazeX, fx.gazeY);
   });
 
   return (

@@ -18,41 +18,41 @@ import {
  * faint warm particles). The scene tilts the disc; the shader rotates it.
  */
 
-const RADIUS = 3.0;
-const BAR = 0.5;
+export const RADIUS = 3.0;
+export const BAR = 0.5;
 /** 1 / tan(pitch angle) — ~21° pitch. */
 const WIND = 2.6;
 
-interface Arm {
+export interface Arm {
   offset: number;
   strength: number;
   seed: number;
 }
 
-const ARMS: Arm[] = [
+export const ARMS: Arm[] = [
   { offset: 0, strength: 1, seed: 0.3 },
   { offset: Math.PI, strength: 1, seed: 1.7 },
   { offset: Math.PI * 0.5, strength: 0.55, seed: 2.9 },
   { offset: Math.PI * 1.5, strength: 0.5, seed: 4.1 },
 ];
 
-function armAngle(arm: Arm, r: number): number {
+export function armAngle(arm: Arm, r: number): number {
   const base = arm.offset + Math.log(Math.max(r, BAR) / BAR) * WIND;
   return base + 0.14 * Math.sin(r * 2.1 + arm.seed) + 0.05 * Math.sin(r * 5.3 + arm.seed * 2.0);
 }
 
-function armWidth(arm: Arm, t: number, r: number): number {
+export function armWidth(arm: Arm, t: number, r: number): number {
   return (0.075 + 0.16 * t) * (1 + 0.32 * Math.sin(r * 3.1 + arm.seed * 3.0)) * (arm.strength < 1 ? 1.25 : 1);
 }
 
 /** Polar point on the disc with a radial offset from the arm centre line. */
-function onArm(arm: Arm, r: number, radialOffset: number, tangentialOffset: number): [number, number] {
+export function onArm(arm: Arm, r: number, radialOffset: number, tangentialOffset: number): [number, number] {
   const a = armAngle(arm, r) + tangentialOffset / Math.max(r, 0.3);
   const rr = r + radialOffset;
   return [Math.cos(a) * rr, Math.sin(a) * rr];
 }
 
-function armColor(t: number): Rgb {
+export function armColor(t: number): Rgb {
   const inner = mixRgb(PALETTE.ice, PALETTE.cyan, clamp01(t * 2.4));
   const mid = mixRgb(inner, PALETTE.blue, clamp01((t - 0.3) * 2.2));
   return mixRgb(mid, PALETTE.violet, clamp01((t - 0.62) * 2.4));

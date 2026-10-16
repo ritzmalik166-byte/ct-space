@@ -1,6 +1,6 @@
 import { Euler, Vector3 } from "three";
 import { createGalaxyShape } from "./particles/galaxyShape";
-import { createRobotShape } from "./particles/robotShape";
+import { createHumanShape, type HumanMesh } from "./particles/humanShape";
 import { createSpaceshipShape } from "./particles/spaceshipShape";
 import { createRandom, type ShapePoints } from "./particles/shapeUtils";
 import { HERO_SCENE_KEYFRAMES, type HeroSceneState } from "./heroSceneState";
@@ -17,7 +17,7 @@ export interface HeroMorphData {
   sizes: Float32Array;
   /** seed, phase, sweep (0..1 spatial order), spaceship plume length. */
   meta: Float32Array;
-  /** galaxy bright-star flag, robot eye id, robot circuit flow, spaceship nozzle id / glow. */
+  /** galaxy bright-star flag, character eye id, (unused), spaceship nozzle id / glow. */
   fx: Float32Array;
 }
 
@@ -71,9 +71,9 @@ function reorder3(source: Float32Array, order: Uint32Array): Float32Array {
   return out;
 }
 
-export function createHeroMorphData(count: number, seed = 1977): HeroMorphData {
+export function createHeroMorphData(count: number, human: HumanMesh, seed = 1977): HeroMorphData {
   const galaxy = createGalaxyShape(count, createRandom(seed));
-  const robot = createRobotShape(count, createRandom(seed + 1));
+  const robot = createHumanShape(count, createRandom(seed + 1), human);
   const spaceship = createSpaceshipShape(count, createRandom(seed + 2));
 
   const og = coherentOrder(galaxy, keyframeProjector(HERO_SCENE_KEYFRAMES.galaxy));

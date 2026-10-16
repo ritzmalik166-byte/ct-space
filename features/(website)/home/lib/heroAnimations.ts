@@ -11,10 +11,26 @@ export const HERO_TIMING = {
 
 export const HERO_LABELS = ["galaxy", "robot", "spaceship"] as const;
 
+const HERO_TOTAL = HERO_TIMING.holdStart + 2 * HERO_TIMING.morph + HERO_TIMING.holdMid + HERO_TIMING.holdEnd;
+
+/** Where each state's label sits on the master timeline, as 0–1 progress. */
+export const HERO_STATE_STOPS = [
+  0,
+  (HERO_TIMING.holdStart + HERO_TIMING.morph + HERO_TIMING.holdMid / 2) / HERO_TOTAL,
+  1,
+] as const;
+
+export interface HeroProgressTargets {
+  fill: HTMLElement;
+  /** One per state; the first is lit from the start. */
+  nodes: HTMLElement[];
+}
+
 interface HeroTimelineOptions {
   section: HTMLElement;
   layers: HTMLElement[];
   glows: HTMLElement[];
+  progress?: HeroProgressTargets | null;
   sceneState: HeroSceneState;
   reduceMotion: boolean;
   isMobile: boolean;
@@ -32,6 +48,7 @@ export function createHeroTimeline({
   section,
   layers,
   glows,
+  progress,
   sceneState,
   reduceMotion,
   isMobile,
@@ -107,8 +124,18 @@ export function createHeroTimeline({
   });
 
   // Hold the final state before the pin releases.
-  const end = holdStart + 2 * morph + holdMid + holdEnd;
+  const end = HERO_TOTAL;
   if (tl.duration() < end) tl.to({}, { duration: end - tl.duration() });
+
+  // Scroll guidance mirrors the whole scrubbed timeline, so it reverses with it.
+  if (progress) {
+    tl.fromTo(progress.fill, { scaleX: 0 }, { scaleX: 1, duration: end, ease: "none" }, 0);
+    progress.nodes.forEach((node, i) => {
+      if (i === 0) return;
+      const at = HERO_STATE_STOPS[i] * end - 0.35;
+      tl.fromTo(node, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.25, ease: "power2.out" }, at);
+    });
+  }
 
   return tl;
 }
