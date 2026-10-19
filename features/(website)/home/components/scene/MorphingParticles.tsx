@@ -2,7 +2,7 @@
 
 import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { AdditiveBlending, Vector2, type ShaderMaterial } from "three";
+import { AdditiveBlending, Vector2, type Points, type ShaderMaterial } from "three";
 import type { HeroFxController } from "../../lib/heroSceneFx";
 import type { HeroSceneState } from "../../lib/heroSceneState";
 import { getHumanEyes } from "../../lib/particles/humanShape";
@@ -29,6 +29,7 @@ interface MorphingParticlesProps {
 export default function MorphingParticles({ count, sceneState, fx, reduceMotion, isMobile }: MorphingParticlesProps) {
   const data = useHeroMorphData(count);
   const materialRef = useRef<ShaderMaterial>(null);
+  const pointsRef = useRef<Points>(null);
   const reveal = useRef(0);
 
   const uniforms = useMemo(() => {
@@ -50,6 +51,7 @@ export default function MorphingParticles({ count, sceneState, fx, reduceMotion,
       uGaze: { value: new Vector2() },
       uNozzle: { value: SHIP_NOZZLES.map((n) => new Vector2(n.y, n.z)) },
       uCutY: { value: -99 },
+      uForm: { value: 0 },
     };
   }, []);
 
@@ -68,14 +70,16 @@ export default function MorphingParticles({ count, sceneState, fx, reduceMotion,
     u.uScanY.value = fx.scanY;
     u.uCutY.value = isMobile ? -2.3 : -99;
     u.uEyeGlow.value = fx.eyeGlow;
+    u.uForm.value = sceneState.shipForm;
     (u.uBlink.value as Vector2).set(fx.blinkLeft, fx.blinkRight);
     (u.uGaze.value as Vector2).set(fx.gazeX, fx.gazeY);
+    if (pointsRef.current) pointsRef.current.visible = sceneState.shipForm < 0.985;
   });
 
   if (!data) return null;
 
   return (
-    <points frustumCulled={false}>
+    <points ref={pointsRef} frustumCulled={false}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[data.galaxyPositions, 3]} />
         <bufferAttribute attach="attributes-aRobot" args={[data.robotPositions, 3]} />

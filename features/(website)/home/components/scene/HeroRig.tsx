@@ -7,11 +7,15 @@ import type { HeroFxController } from "../../lib/heroSceneFx";
 import type { HeroSceneState } from "../../lib/heroSceneState";
 import { getHumanEyes } from "../../lib/particles/humanShape";
 import { LOOK_PLANE_Z } from "../../lib/robotAwareness";
+import type { ShipPose } from "../../lib/voyage/shipPose";
+import type { VoyageLayout } from "../../lib/voyage/voyageLayout";
 
 interface HeroRigProps {
   sceneState: HeroSceneState;
   fx: HeroFxController;
   reduceMotion: boolean;
+  shipPose: ShipPose;
+  layout: VoyageLayout;
   /** Placed with the character but never rotated, swayed or parallaxed by it. */
   environment?: ReactNode;
   children: ReactNode;
@@ -37,6 +41,7 @@ const aimRay = new Raycaster();
 const aimNdc = new Vector2();
 const aimPivot = new Vector3();
 const aimPoint = new Vector3();
+const voyageLook = new Vector3();
 
 /** Critically damped spring (Unity-style SmoothDamp); continuous through retargeting. */
 function smoothDamp(current: number, target: number, vel: { v: number }, smoothTime: number, dt: number) {
@@ -54,7 +59,7 @@ function smoothDamp(current: number, target: number, vel: { v: number }, smoothT
  * applies the scroll-driven orientation, a damped pointer parallax and, while
  * the character scans text, a head turn towards the hovered element.
  */
-export default function HeroRig({ sceneState, fx, reduceMotion, environment, children }: HeroRigProps) {
+export default function HeroRig({ sceneState, fx, reduceMotion, shipPose, layout: voyage, environment, children }: HeroRigProps) {
   const stage = useRef<Group>(null);
   const layout = useRef<Group>(null);
   const orient = useRef<Group>(null);
@@ -72,7 +77,11 @@ export default function HeroRig({ sceneState, fx, reduceMotion, environment, chi
 
   useFrame((state, delta) => {
     const camera = state.camera as PerspectiveCamera;
-    camera.position.z = sceneState.camZ;
+    if (sceneState.launch <= 0.001) {
+      camera.position.set(0, 0, sceneState.camZ);
+      camera.quaternion.identity();
+      camera.up.set(0, 1, 0);
+    }
 
     const { width, height } = state.size;
     const visibleH = 2 * Math.tan(MathUtils.degToRad(camera.fov / 2)) * BASE_CAM_Z;
@@ -95,7 +104,8 @@ export default function HeroRig({ sceneState, fx, reduceMotion, environment, chi
     const t = state.clock.elapsedTime;
     const idle = reduceMotion ? 0 : 1;
     const robot = fx.robotWeight * idle;
-    const ship = MathUtils.smoothstep(sceneState.progress, 0.6, 1) * idle;
+    const forming = 1 - MathUtils.smoothstep(sceneState.shipForm, 0.15, 0.85);
+    const ship = MathUtils.smoothstep(sceneState.progress, 0.6, 1) * idle * forming;
 
     // Rotation offsets on top of the scroll keyframe. While text is being
     // scanned the parallax/idle goal is replaced by a turn towards the text;
@@ -154,6 +164,15 @@ export default function HeroRig({ sceneState, fx, reduceMotion, environment, chi
     if (orient.current) {
       // ZXY: rotY = heading, rotX = tilt towards camera, rotZ = on-screen roll.
       orient.current.rotation.set(sceneState.rotX + m.rx, sceneState.rotY + m.ry, sceneState.rotZ + m.rz, "ZXY");
+      shipPose.copyFrom(orient.current);
+    }
+
+    if (sceneState.launch > 0.001) {
+      const blend = MathUtils.smoothstep(sceneState.launch, 0.08, 1);
+      camera.position.set(0, 0, sceneState.camZ).lerp(voyage.cameraPosition, blend);
+      voyageLook.set(0, 0, 0).lerp(voyage.cameraTarget, blend);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(voyageLook);
     }
   });
 

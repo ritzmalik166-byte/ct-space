@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { gsap, useGSAP } from "@/lib/gsap";
+import { scrollToY } from "@/lib/smoothScroll";
 import HeroContent from "../ui/HeroContent";
+import PortfolioOverlay from "../ui/PortfolioOverlay";
 import RobotScanOverlay from "../ui/RobotScanOverlay";
-import { createHeroTimeline } from "../../lib/heroAnimations";
+import { createHeroTimeline, scrollForPartner } from "../../lib/heroAnimations";
+import { activeFloat, wrapIndex } from "../../lib/voyage/carousel";
 import { createHeroSceneState } from "../../lib/heroSceneState";
 import { RobotInteraction } from "../../lib/robotInteraction";
 import {
@@ -29,6 +32,9 @@ const GLOWS = [
 export default function Section1() {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const scrimRef = useRef<HTMLDivElement>(null);
+  const portfolioRef = useRef<HTMLElement>(null);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const glowRefs = useRef<HTMLDivElement[]>([]);
   const [sceneState] = useState(createHeroSceneState);
   const [interaction] = useState(() => new RobotInteraction());
@@ -68,7 +74,7 @@ export default function Section1() {
         { isMobile: MOBILE_QUERY, isDesktop: "(min-width: 768px)", reduceMotion: REDUCED_MOTION_QUERY },
         (ctx) => {
           const { isMobile, reduceMotion } = ctx.conditions as { isMobile: boolean; reduceMotion: boolean };
-          createHeroTimeline({
+          timelineRef.current = createHeroTimeline({
             section,
             layers,
             glows: glowRefs.current,
@@ -76,11 +82,32 @@ export default function Section1() {
             sceneState,
             reduceMotion,
             isMobile,
+            content,
+            scrim: scrimRef.current,
+            portfolio: portfolioRef.current,
           });
+          return () => {
+            timelineRef.current = null;
+          };
         },
       );
     },
     { scope: sectionRef },
+  );
+
+  const goToPartner = useCallback(
+    (index: number) => {
+      const tl = timelineRef.current;
+      if (!tl) return;
+      const y = scrollForPartner(tl, wrapIndex(index));
+      if (y !== null) scrollToY(y, { immediate: env?.reduceMotion ?? false });
+    },
+    [env?.reduceMotion],
+  );
+
+  const stepPartner = useCallback(
+    (direction: 1 | -1) => goToPartner(wrapIndex(activeFloat(sceneState.orbit)) + direction),
+    [goToPartner, sceneState],
   );
 
   return (
@@ -109,10 +136,12 @@ export default function Section1() {
           quality={env.quality}
           reduceMotion={env.reduceMotion}
           interaction={interaction}
+          labelsRoot={portfolioRef}
         />
       ) : null}
 
       <div
+        ref={scrimRef}
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#03040b] via-[#03040b]/70 via-45% to-transparent to-70% md:bg-linear-to-r md:from-[#03040b]/85 md:via-[#03040b]/35 md:via-40% md:to-transparent md:to-60%"
       />
@@ -124,6 +153,8 @@ export default function Section1() {
           <HeroContent ref={contentRef} />
         </div>
       </div>
+
+      <PortfolioOverlay ref={portfolioRef} onSelect={goToPartner} onStep={stepPartner} />
     </section>
   );
 }

@@ -23,14 +23,20 @@ const OFFSET_X = -0.06;
 const NOSE = 2.55;
 const TAIL = -2.25;
 
-interface Section {
+/** Shared with the solid hull so the mesh occupies the same silhouette as the particles. */
+export const SHIP_SCALE = SCALE;
+export const SHIP_OFFSET_X = OFFSET_X;
+export const SHIP_NOSE = NOSE;
+export const SHIP_TAIL = TAIL;
+
+export interface Section {
   w: number;
   h: number;
   yc: number;
   n: number;
 }
 
-function section(x: number): Section {
+export function section(x: number): Section {
   if (x > 1.2) {
     const s = clamp01((NOSE - x) / (NOSE - 1.2));
     return { w: 0.36 * Math.pow(s, 0.62), h: 0.25 * Math.pow(s, 0.72), yc: -0.03 * (1 - s), n: 2.3 };
@@ -48,7 +54,7 @@ function section(x: number): Section {
 }
 
 /** Superellipse point + approximate outward normal for angle a. */
-function hullPoint(x: number, a: number) {
+export function hullPoint(x: number, a: number) {
   const s = section(x);
   const c = Math.cos(a);
   const sn = Math.sin(a);
@@ -95,15 +101,15 @@ export const SHIP_NOZZLES: ShipNozzle[] = NOZZLES_LOCAL.map((n) => ({
 }));
 
 // Wing planform.
-const ROOT_Z = 0.42;
-const TIP_Z = 2.05;
-const ROOT_LE = 0.3;
-const ROOT_TE = -1.45;
-const TIP_LE = -1.2;
-const TIP_TE = -1.6;
-const wingChord = (s: number) => ({ le: ROOT_LE + (TIP_LE - ROOT_LE) * s, te: ROOT_TE + (TIP_TE - ROOT_TE) * s });
-const wingY = (s: number) => -0.07 + 0.06 * s;
-const wingThickness = (s: number, c: number) => 0.065 * (1 - 0.65 * s) * 4 * c * (1 - c);
+export const ROOT_Z = 0.42;
+export const TIP_Z = 2.05;
+export const ROOT_LE = 0.3;
+export const ROOT_TE = -1.45;
+export const TIP_LE = -1.2;
+export const TIP_TE = -1.6;
+export const wingChord = (s: number) => ({ le: ROOT_LE + (TIP_LE - ROOT_LE) * s, te: ROOT_TE + (TIP_TE - ROOT_TE) * s });
+export const wingY = (s: number) => -0.07 + 0.06 * s;
+export const wingThickness = (s: number, c: number) => 0.065 * (1 - 0.65 * s) * 4 * c * (1 - c);
 
 export function createSpaceshipShape(count: number, random: Random): ShapePoints {
   const w = new ShapeWriter(count);

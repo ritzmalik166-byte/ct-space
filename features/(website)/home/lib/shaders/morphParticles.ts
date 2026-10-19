@@ -30,6 +30,7 @@ export const morphParticlesVertex = /* glsl */ `
   uniform vec2 uGaze;
   uniform vec2 uNozzle[3];
   uniform float uCutY;
+  uniform float uForm;
 
   attribute vec3 aRobot;
   attribute vec3 aShip;
@@ -128,17 +129,21 @@ export const morphParticlesVertex = /* glsl */ `
     float twinkleAmp = mix(0.1, 0.3, aFx.x) * (1.0 - k1);
     float twinkle = 1.0 - twinkleAmp + twinkleAmp * sin(t * 2.0 + phase * 40.0);
 
+    float formed = clamp(uForm, 0.0, 1.0);
+    p = mix(p, p * 0.992, formed);
+    size *= 1.0 - formed;
+
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     gl_Position = projectionMatrix * mv;
 
     float depth = -mv.z;
-    gl_PointSize = max(size * uSize * uPixelRatio / depth, 1.15 * uPixelRatio);
+    gl_PointSize = max(size * uSize * uPixelRatio / depth, (1.15 * uPixelRatio) * (1.0 - formed));
 
     float depthFade = clamp(1.3 - (depth - 9.0) * 0.16, 0.25, 1.0);
     float plumeFade = mix(1.0, pow(1.0 - stream, 1.6) * uShipW, isPlume * k2);
     float cut = mix(1.0, smoothstep(uCutY - 0.5, uCutY + 0.4, aRobot.y), k1 * (1.0 - k2));
-    vAlpha = depthFade * twinkle * plumeFade * cut * (1.0 + flow * 0.2);
-    vColor = color;
+    vAlpha = depthFade * twinkle * plumeFade * cut * (1.0 + flow * 0.2) * (1.0 - formed);
+    vColor = mix(color, vec3(0.95, 0.82, 0.48), formed * 0.35);
   }
 `;
 

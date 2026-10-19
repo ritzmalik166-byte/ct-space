@@ -24,7 +24,7 @@ export interface HeroMorphData {
 type Projector = (x: number, y: number, z: number) => [number, number];
 
 /** Projects with the same ZXY rotation the scene applies at that keyframe. */
-function keyframeProjector(frame: HeroSceneState): Projector {
+function keyframeProjector(frame: Pick<HeroSceneState, "rotX" | "rotY" | "rotZ">): Projector {
   const euler = new Euler(frame.rotX, frame.rotY, frame.rotZ, "ZXY");
   const v = new Vector3();
   return (x, y, z) => {
