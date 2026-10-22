@@ -10,6 +10,8 @@ import { useGSAP } from "@gsap/react";
 import { Hero } from "./hero/Hero";
 import { journey } from "./lib/store";
 import { prefersReducedMotion } from "@/lib/media";
+import { registerLenis, scrollToHash } from "@/lib/scroll";
+import { IntroLoader } from "./components/IntroLoader";
 import { Archive } from "./archive/Archive";
 import { Blueprint } from "./blueprint/Blueprint";
 import { Impact } from "./impact/Impact";
@@ -40,7 +42,20 @@ export function Experience() {
         tick = (time) => lenis?.raf(time * 1000);
         gsap.ticker.add(tick);
         gsap.ticker.lagSmoothing(0);
+        registerLenis(lenis);
       }
+
+      // Same-page anchors glide through the journey instead of jumping. Capture phase runs before
+      // next/link, which skips its own navigation once the event is default-prevented.
+      const onAnchorClick = (e: MouseEvent) => {
+        if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        const link = (e.target as Element | null)?.closest?.("a[href*='#']");
+        if (!(link instanceof HTMLAnchorElement) || link.target === "_blank") return;
+        const url = new URL(link.href);
+        if (url.origin !== location.origin || url.pathname !== location.pathname || !url.hash) return;
+        if (scrollToHash(url.hash)) e.preventDefault();
+      };
+      document.addEventListener("click", onAnchorClick, true);
 
       ScrollTrigger.create({
         trigger: "#hero",
@@ -125,6 +140,8 @@ export function Experience() {
       document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
       return () => {
+        document.removeEventListener("click", onAnchorClick, true);
+        registerLenis(null);
         if (tick) gsap.ticker.remove(tick);
         lenis?.destroy();
       };
@@ -163,6 +180,7 @@ export function Experience() {
       </div>
 
       <div aria-hidden className="grain pointer-events-none fixed inset-0 z-50 hidden md:block" />
+      <IntroLoader />
     </div>
   );
 }

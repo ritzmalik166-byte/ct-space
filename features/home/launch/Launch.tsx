@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -9,8 +9,13 @@ import Link from "next/link";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const MISSION_HREF = "mailto:hello@contenaissance.com?subject=New%20mission";
+const MISSION_EMAIL = "hello@contenaissance.com";
 const PHONE = { label: "+971 4 800 2872", href: "tel:+97148002872" };
+
+const FIELD =
+  "w-full rounded-xl border border-white/10 bg-[#070b14]/90 px-4 py-3 text-base text-white placeholder:text-slate-500 transition-colors focus:border-cyan-400/60 focus:outline-none sm:text-sm";
+
+type Mode = "cta" | "form" | "sent";
 
 /** Progress where the sticky panel locks: the trigger starts when the section enters (100svh of its 300svh). */
 const STUCK_AT = 100 / 300;
@@ -18,6 +23,43 @@ const LIFT_OFF = 0.8;
 
 export function Launch() {
   const root = useRef<HTMLElement>(null);
+  const flight = useRef<HTMLSpanElement>(null);
+  const [mode, setMode] = useState<Mode>("cta");
+
+  // Each mode swap fades the new block in; the scroll timeline never touches these nodes.
+  useEffect(() => {
+    if (mode === "cta") return;
+    const block = root.current?.querySelector(`.js-ln-${mode}`);
+    if (!block) return;
+    const tween = gsap.fromTo(block, { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: prefersReducedMotion() ? 0 : 0.5, ease: "power3.out" });
+    if (mode === "form") block.querySelector<HTMLInputElement>("input")?.focus({ preventScroll: true });
+    return () => {
+      tween.kill();
+    };
+  }, [mode]);
+
+  const launch = () => {
+    const rocket = flight.current;
+    if (!rocket || prefersReducedMotion()) return;
+    const reach = Math.max(window.innerWidth, window.innerHeight) * 0.75;
+    gsap
+      .timeline()
+      .to(rocket, { x: -2, y: 2, duration: 0.05, repeat: 5, yoyo: true, ease: "none" })
+      .to(rocket, { x: reach, y: -reach, scale: 0.7, duration: 1.1, ease: "power2.in" })
+      .set(rocket, { x: 0, y: 140, scale: 1, autoAlpha: 0 }, "+=0.6")
+      .to(rocket, { y: 0, autoAlpha: 1, duration: 0.9, ease: "power3.out" });
+  };
+
+  const submit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const name = String(data.get("name") ?? "").trim();
+    const subject = encodeURIComponent(`New mission from ${name}`);
+    const body = encodeURIComponent(`${data.get("message") ?? ""}\n\n${name}\n${data.get("email") ?? ""}`);
+    launch();
+    setMode("sent");
+    window.location.href = `mailto:${MISSION_EMAIL}?subject=${subject}&body=${body}`;
+  };
 
   useGSAP(
     () => {
@@ -72,8 +114,10 @@ export function Launch() {
             <span className="absolute left-1/2 top-1/2 size-0 rotate-45">
               <span className="js-ln-trail block h-[45svh] w-[3px] origin-top -translate-x-1/2 scale-y-0 rounded-full bg-gradient-to-b from-orange-300 via-orange-500/50 to-transparent blur-[1px]" />
             </span>
-            <span className="relative block animate-hover-float text-[clamp(2.6rem,5vw,3.6rem)] leading-none drop-shadow-[0_0_24px_rgb(255_120_60/0.45)]">
-              🚀
+            <span ref={flight} className="relative block">
+              <span className="block animate-hover-float text-[clamp(2.6rem,5vw,3.6rem)] leading-none drop-shadow-[0_0_24px_rgb(255_120_60/0.45)]">
+                🚀
+              </span>
             </span>
           </div>
 
@@ -89,13 +133,67 @@ export function Launch() {
             ))}
           </h2>
 
-          <div className="mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-            <Link
-              href={MISSION_HREF}
+          {mode === "form" && (
+            <form
+              onSubmit={submit}
+              className="js-ln-form pointer-events-auto invisible mt-8 grid w-full max-w-lg gap-3 text-left sm:mt-10 sm:grid-cols-2"
+            >
+              <label className="sr-only" htmlFor="ln-name">Name</label>
+              <input id="ln-name" name="name" required autoComplete="name" placeholder="Your name" className={FIELD} />
+              <label className="sr-only" htmlFor="ln-email">Email</label>
+              <input id="ln-email" name="email" type="email" required autoComplete="email" placeholder="Email" className={FIELD} />
+              <label className="sr-only" htmlFor="ln-message">Project</label>
+              <textarea
+                id="ln-message"
+                name="message"
+                required
+                rows={3}
+                data-lenis-prevent
+                placeholder="What are we launching?"
+                className={`${FIELD} resize-none sm:col-span-2`}
+              />
+              <div className="flex items-center justify-between gap-3 sm:col-span-2">
+                <button
+                  type="button"
+                  onClick={() => setMode("cta")}
+                  className="min-h-11 px-2 text-sm text-slate-400 transition-colors hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="min-h-11 rounded-full bg-[#ff6b3d] px-7 text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-[0_10px_36px_-8px_rgb(255_107_61/0.75)] transition-[background-color,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#ff7d55] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-300"
+                >
+                  Launch mission
+                </button>
+              </div>
+            </form>
+          )}
+
+          {mode === "sent" && (
+            <div role="status" className="js-ln-sent invisible mt-8 max-w-md sm:mt-10">
+              <p className="font-mono text-[11px] uppercase tracking-[0.3em] text-cyan-300">Mission logged</p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                Your email app has opened with the details. Hit send and we&apos;ll be in touch.
+              </p>
+              <button
+                type="button"
+                onClick={() => setMode("cta")}
+                className="pointer-events-auto mt-4 min-h-11 text-sm text-white/85 underline-offset-4 transition-colors hover:text-white hover:underline"
+              >
+                Back
+              </button>
+            </div>
+          )}
+
+          <div className={`mt-8 flex flex-col items-center gap-3 sm:mt-10 sm:flex-row sm:gap-4 ${mode === "cta" ? "" : "hidden"}`}>
+            <button
+              type="button"
+              onClick={() => setMode("form")}
               className="js-ln-cta pointer-events-auto rounded-full bg-[#ff6b3d] px-8 py-3.5 text-xs font-semibold uppercase tracking-[0.14em] text-white shadow-[0_10px_36px_-8px_rgb(255_107_61/0.75)] transition-[background-color,box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:bg-[#ff7d55] hover:shadow-[0_14px_44px_-8px_rgb(255_107_61/0.9)] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-orange-300"
             >
               Start a mission
-            </Link>
+            </button>
             <Link
               href={PHONE.href}
               className="js-ln-cta pointer-events-auto rounded-full bg-[#070b14] px-7 py-3.5 text-sm text-white/85 ring-1 ring-white/15 transition-colors duration-300 hover:text-white hover:ring-white/35 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"

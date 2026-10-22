@@ -23,6 +23,12 @@
   --animate-hover-float: hover-float 3.6s ease-in-out infinite;
   --animate-flicker: flicker 0.18s steps(2) infinite alternate;
   --animate-marquee: marquee 32s linear infinite;
+  --animate-draw: draw 1.6s linear infinite;
+
+  @keyframes draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
 
   @keyframes marquee {
     from { transform: translateX(0); }

@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/lib/media";
+import { scrollToY } from "@/lib/scroll";
 import { BrandLogo } from "./BrandLogo";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -57,6 +58,24 @@ export function Footer() {
   return (
     <footer ref={root} className="relative z-10 border-t border-white/[0.06] bg-space">
       <div className="mx-auto max-w-7xl px-6 pb-8 pt-12 sm:pt-14 lg:px-10">
+        <div className="js-ft-item mb-10 flex flex-col items-center gap-6 border-b border-white/[0.06] pb-10 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
+          <p className="font-heading text-[clamp(2rem,5vw,3.6rem)] font-bold leading-[1.05] tracking-[-0.035em] text-white">
+            Let&apos;s build what&apos;s <span className="italic text-cyan-200">next</span>.
+          </p>
+          <button
+            type="button"
+            onClick={() => scrollToY(0)}
+            className="group flex min-h-11 shrink-0 items-center gap-3 rounded-full py-1 pl-4 pr-1 text-sm text-slate-300 ring-1 ring-white/10 transition-[color,box-shadow] duration-300 hover:text-white hover:ring-cyan-400/40 focus-visible:outline-none focus-visible:ring-cyan-400/70"
+          >
+            Back to top
+            <span className="grid size-9 place-items-center overflow-hidden rounded-full bg-white/[0.06] transition-colors duration-300 group-hover:bg-cyan-400/15">
+              <svg viewBox="0 0 16 16" className="size-3.5 -rotate-90 transition-transform duration-300 group-hover:-translate-y-0.5" aria-hidden>
+                <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+          </button>
+        </div>
+
         <div className="flex flex-col items-center gap-8 md:flex-row md:justify-between">
           <Link href="/" aria-label="Contenaissance home" className="js-ft-item">
             <BrandLogo />

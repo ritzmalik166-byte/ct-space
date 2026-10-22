@@ -7,6 +7,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { HandNote } from "./components/HandNote";
 import { RotatingWords } from "./components/RotatingWords";
+import { INTRO_DONE_EVENT, scene } from "../lib/store";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -22,7 +23,7 @@ export function Hero() {
 
   useGSAP(
     (_, contextSafe) => {
-      const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.25 });
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.1, paused: !scene.introDone });
       tl.fromTo(".js-badge", { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7 }, 0.4)
         .fromTo(
           ".js-word",
@@ -60,7 +61,14 @@ export function Hero() {
         yTo(e.clientY);
       });
       window.addEventListener("pointermove", onMove, { passive: true });
-      return () => window.removeEventListener("pointermove", onMove);
+
+      const start = contextSafe!(() => tl.play());
+      window.addEventListener(INTRO_DONE_EVENT, start, { once: true });
+
+      return () => {
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener(INTRO_DONE_EVENT, start);
+      };
     },
     { scope: root },
   );
@@ -126,7 +134,7 @@ export function Hero() {
                 <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-            <Link href="#work" className="inline-flex items-center rounded-full border border-transparent px-6 py-3.5 bg-black text-sm text-white/80 transition-colors border-white text-white">
+            <Link href="#archive" className="inline-flex items-center rounded-full border border-transparent px-6 py-3.5 bg-black text-sm text-white/80 transition-colors border-white text-white">
               See what we&apos;ve shipped
             </Link>
           </div>

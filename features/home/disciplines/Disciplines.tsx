@@ -8,6 +8,7 @@ import { canHover, prefersReducedMotion } from "@/lib/media";
 import { assetUrl } from "@/features/home/lib/assets";
 import { DISC_STOPS } from "@/features/home/lib/store";
 import { ExpandVideoModal, previewRatio, type ExpandVideo } from "@/features/home/components/ExpandVideoModal";
+import { TiltGlow, useTilt } from "@/features/home/lib/useTilt";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -81,6 +82,9 @@ function DisciplineCard({
 }) {
   const card = useRef<HTMLElement>(null);
   const video = useRef<HTMLVideoElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLSpanElement>(null);
+  const { onPointerMove, onPointerLeave } = useTilt(tiltRef, glowRef, { x: 6, y: 8, perspective: 1100 });
   const [playing, setPlaying] = useState(false);
 
   useEffect(() => {
@@ -102,6 +106,7 @@ function DisciplineCard({
     if (canHover() && !prefersReducedMotion()) play(video.current);
   };
   const onLeave = () => {
+    onPointerLeave();
     if (canHover()) video.current?.pause();
   };
   const open = (e: MouseEvent<HTMLButtonElement>) => {
@@ -115,90 +120,94 @@ function DisciplineCard({
     <article
       ref={card}
       onPointerEnter={onEnter}
+      onPointerMove={onPointerMove}
       onPointerLeave={onLeave}
       className="js-disc-card group relative w-[80%] shrink-0 snap-center sm:w-[46%] lg:w-auto"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -inset-px rounded-2xl bg-gradient-to-b from-cyan-400/45 via-cyan-400/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-      />
-      <div className="relative flex h-full flex-col rounded-2xl border border-white/[0.08] bg-[#0a1322]/90 p-3 transition-[translate,border-color] duration-500 ease-out group-hover:-translate-y-1.5 group-hover:border-cyan-400/25">
-        <div className="flex items-center justify-between px-1 pb-3 font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
-          <span className="text-cyan-400">Mod {number}</span>
-          <span>{item.code}</span>
-        </div>
-
-        <button
-          type="button"
-          onClick={open}
-          aria-haspopup="dialog"
-          aria-label={`Watch ${item.title} video`}
-          className="js-disc-media relative aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-xl border border-white/[0.06] bg-[#0d2233] transition-shadow duration-500 group-hover:shadow-[0_0_48px_-12px_rgb(34_211_238/0.55)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400/60"
-        >
-          <video
-            ref={video}
-            src={load ? `${item.video}#t=0.5` : undefined}
-            preload={load ? "metadata" : "none"}
-            muted
-            loop
-            playsInline
-            disablePictureInPicture
-            onPlay={() => setPlaying(true)}
-            onPause={() => setPlaying(false)}
-            className="absolute inset-0 size-full scale-[1.02] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]"
-          />
-          <span
-            aria-hidden
-            className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${playing ? "opacity-25" : "opacity-100"}`}
-          >
-            <span className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(20_70_100/0.25)_0%,rgb(8_16_30/0.55)_60%,rgb(5_9_18/0.9)_100%)]" />
-            <span className="absolute inset-0 bg-[repeating-linear-gradient(90deg,rgb(255_255_255/0.018)_0_1px,transparent_1px_7px)]" />
-          </span>
-          {CORNERS.map((pos) => (
-            <span
-              key={pos}
-              aria-hidden
-              className={`pointer-events-none absolute ${pos} font-mono text-[9px] leading-none text-cyan-400/60`}
-            >
-              +
-            </span>
-          ))}
-          <span
-            aria-hidden
-            className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 scale-90 items-center gap-2 rounded-full border border-cyan-400/30 bg-[#0a1424]/85 py-2 pl-2.5 pr-3.5 font-mono text-[9px] uppercase tracking-[0.18em] text-cyan-300 opacity-0 shadow-[0_0_30px_-6px_rgb(34_211_238/0.5)] transition-[opacity,scale] duration-300 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:opacity-100"
-          >
-            <svg viewBox="0 0 16 16" className="size-3" aria-hidden>
-              <path d="M4.5 2.8v10.4L13 8z" fill="currentColor" />
-            </svg>
-            Watch
-          </span>
-          <span className="absolute bottom-2.5 left-3 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-slate-300/80">
-            <span className={`size-1.5 rounded-full ${playing ? "animate-pulse bg-[#ff6b3d]" : "bg-cyan-400/70"}`} />
-            {playing ? "Live" : "Preview"}
-          </span>
-        </button>
-
-        <div className="js-card-fade flex flex-1 flex-col px-1 pt-4">
-          <p className="font-mono text-[10px] tracking-[0.2em] text-slate-500">
-            {number} / {String(DISCIPLINES.length).padStart(2, "0")}
-          </p>
-          <h3 className="mt-2 text-lg font-semibold tracking-tight">{item.title}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-400 [@media(max-height:760px)]:hidden">{item.body}</p>
-          <ul className="mt-auto flex flex-wrap gap-1.5 pt-4">
-            {item.tags.map((tag) => (
-              <li
-                key={tag}
-                className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] text-slate-400 transition-colors duration-500 group-hover:border-cyan-400/30 group-hover:text-cyan-200"
-              >
-                {tag}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div ref={tiltRef} className="relative h-full rounded-2xl">
         <div
           aria-hidden
-          className="js-card-flash pointer-events-none invisible absolute inset-0 rounded-2xl bg-cyan-100"
+          className="pointer-events-none absolute -inset-px rounded-2xl bg-gradient-to-b from-cyan-400/45 via-cyan-400/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         />
+        <TiltGlow glow={glowRef} />
+        <div className="relative flex h-full flex-col rounded-2xl border border-white/[0.08] bg-[#0a1322]/90 p-3 transition-[translate,border-color] duration-500 ease-out group-hover:-translate-y-1.5 group-hover:border-cyan-400/25">
+          <div className="flex items-center justify-between px-1 pb-3 font-mono text-[9px] uppercase tracking-[0.16em] text-slate-500">
+            <span className="text-cyan-400">Mod {number}</span>
+            <span>{item.code}</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={open}
+            aria-haspopup="dialog"
+            aria-label={`Watch ${item.title} video`}
+            className="js-disc-media relative aspect-[16/10] w-full cursor-pointer overflow-hidden rounded-xl border border-white/[0.06] bg-[#0d2233] transition-shadow duration-500 group-hover:shadow-[0_0_48px_-12px_rgb(34_211_238/0.55)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-cyan-400/60"
+          >
+            <video
+              ref={video}
+              src={load ? `${item.video}#t=0.5` : undefined}
+              preload={load ? "metadata" : "none"}
+              muted
+              loop
+              playsInline
+              disablePictureInPicture
+              onPlay={() => setPlaying(true)}
+              onPause={() => setPlaying(false)}
+              className="absolute inset-0 size-full scale-[1.02] object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]"
+            />
+            <span
+              aria-hidden
+              className={`pointer-events-none absolute inset-0 transition-opacity duration-500 ${playing ? "opacity-25" : "opacity-100"}`}
+            >
+              <span className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgb(20_70_100/0.25)_0%,rgb(8_16_30/0.55)_60%,rgb(5_9_18/0.9)_100%)]" />
+              <span className="absolute inset-0 bg-[repeating-linear-gradient(90deg,rgb(255_255_255/0.018)_0_1px,transparent_1px_7px)]" />
+            </span>
+            {CORNERS.map((pos) => (
+              <span
+                key={pos}
+                aria-hidden
+                className={`pointer-events-none absolute ${pos} font-mono text-[9px] leading-none text-cyan-400/60`}
+              >
+                +
+              </span>
+            ))}
+            <span
+              aria-hidden
+              className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 scale-90 items-center gap-2 rounded-full border border-cyan-400/30 bg-[#0a1424]/85 py-2 pl-2.5 pr-3.5 font-mono text-[9px] uppercase tracking-[0.18em] text-cyan-300 opacity-0 shadow-[0_0_30px_-6px_rgb(34_211_238/0.5)] transition-[opacity,scale] duration-300 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:opacity-100"
+            >
+              <svg viewBox="0 0 16 16" className="size-3" aria-hidden>
+                <path d="M4.5 2.8v10.4L13 8z" fill="currentColor" />
+              </svg>
+              Watch
+            </span>
+            <span className="absolute bottom-2.5 left-3 flex items-center gap-1.5 font-mono text-[9px] uppercase tracking-[0.16em] text-slate-300/80">
+              <span className={`size-1.5 rounded-full ${playing ? "animate-pulse bg-[#ff6b3d]" : "bg-cyan-400/70"}`} />
+              {playing ? "Live" : "Preview"}
+            </span>
+          </button>
+
+          <div className="js-card-fade flex flex-1 flex-col px-1 pt-4">
+            <p className="font-mono text-[10px] tracking-[0.2em] text-slate-500">
+              {number} / {String(DISCIPLINES.length).padStart(2, "0")}
+            </p>
+            <h3 className="mt-2 text-lg font-semibold tracking-tight">{item.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-slate-400 [@media(max-height:760px)]:hidden">{item.body}</p>
+            <ul className="mt-auto flex flex-wrap gap-1.5 pt-4">
+              {item.tags.map((tag) => (
+                <li
+                  key={tag}
+                  className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] text-slate-400 transition-colors duration-500 group-hover:border-cyan-400/30 group-hover:text-cyan-200"
+                >
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div
+            aria-hidden
+            className="js-card-flash pointer-events-none invisible absolute inset-0 rounded-2xl bg-cyan-100"
+          />
+        </div>
       </div>
     </article>
   );

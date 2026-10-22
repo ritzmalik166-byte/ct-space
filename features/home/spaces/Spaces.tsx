@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, type CSSProperties, type PointerEvent, type ReactNode } from "react";
+import { useRef, type CSSProperties, type ReactNode } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { canHover, prefersReducedMotion } from "@/lib/media";
+import { TiltGlow, useTilt } from "@/features/home/lib/useTilt";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -183,39 +183,20 @@ const DOTS = [
 ];
 
 function ExperienceCard({ item, index }: { item: Experience; index: number }) {
-  const tilt = useRef<HTMLDivElement>(null);
-  const tiltTo = useRef<((x: number, y: number) => void) | null>(null);
-
-  useEffect(() => {
-    const el = tilt.current;
-    if (!el) return;
-    const rx = gsap.quickTo(el, "rotationX", { duration: 0.6, ease: "power3" });
-    const ry = gsap.quickTo(el, "rotationY", { duration: 0.6, ease: "power3" });
-    tiltTo.current = (x, y) => {
-      rx(x);
-      ry(y);
-    };
-    return () => {
-      tiltTo.current = null;
-      gsap.killTweensOf(el);
-    };
-  }, []);
-
-  const onMove = (e: PointerEvent<HTMLElement>) => {
-    if (!canHover() || prefersReducedMotion()) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    tiltTo.current?.(-((e.clientY - r.top) / r.height - 0.5) * 6, ((e.clientX - r.left) / r.width - 0.5) * 8);
-  };
+  const tiltRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLSpanElement>(null);
+  const { onPointerMove, onPointerLeave } = useTilt(tiltRef, glowRef);
 
   return (
     <article
       tabIndex={0}
       aria-label={item.title}
-      onPointerMove={onMove}
-      onPointerLeave={() => tiltTo.current?.(0, 0)}
+      onPointerMove={onPointerMove}
+      onPointerLeave={onPointerLeave}
       className="js-sp-card group relative w-[82%] shrink-0 snap-center rounded-2xl outline-none [perspective:1200px] sm:w-[60%] md:w-auto"
     >
-      <div ref={tilt} className="relative rounded-2xl [transform-style:preserve-3d]">
+      <div ref={tiltRef} className="relative rounded-2xl [transform-style:preserve-3d]">
+        <TiltGlow glow={glowRef} />
         <div className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0a1322]/90 transition-[border-color,box-shadow] duration-500 group-hover:border-cyan-400/40 group-hover:shadow-[0_0_60px_-14px_rgb(34_211_238/0.55)] group-focus-visible:border-cyan-400/60">
           <div className="flex h-10 items-center gap-3 border-b border-white/[0.06] px-4">
             <span className="flex gap-1.5">

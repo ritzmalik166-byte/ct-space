@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { canHover, prefersReducedMotion } from "@/lib/media";
 import { assetUrl } from "@/features/home/lib/assets";
 import { ExpandVideoModal, previewRatio, type ExpandVideo } from "@/features/home/components/ExpandVideoModal";
+import { TiltGlow, useTilt } from "@/features/home/lib/useTilt";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -133,44 +134,23 @@ function ProjectTile({
   onOpen: (index: number, media: HTMLElement) => void;
 }) {
   const featured = index === 0;
-  const tilt = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
-  const tiltTo = useRef<((x: number, y: number) => void) | null>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
+  const glowRef = useRef<HTMLSpanElement>(null);
+  const { onPointerMove, onPointerLeave } = useTilt(tiltRef, glowRef, featured ? { x: 4, y: 5 } : { x: 7, y: 9 });
 
-  useEffect(() => {
-    const el = tilt.current;
-    if (!el) return;
-    const rx = gsap.quickTo(el, "rotationX", { duration: 0.6, ease: "power3" });
-    const ry = gsap.quickTo(el, "rotationY", { duration: 0.6, ease: "power3" });
-    tiltTo.current = (x, y) => {
-      rx(x);
-      ry(y);
-    };
-    return () => {
-      tiltTo.current = null;
-      gsap.killTweensOf(el);
-    };
-  }, []);
-
-  const onMove = (e: PointerEvent<HTMLElement>) => {
-    if (!canHover() || prefersReducedMotion()) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width - 0.5;
-    const y = (e.clientY - r.top) / r.height - 0.5;
-    tiltTo.current?.(-y * (featured ? 4 : 7), x * (featured ? 5 : 9));
-  };
   const onEnter = () => {
     if (canHover() && !prefersReducedMotion()) play(video.current);
   };
   const onLeave = (e: PointerEvent<HTMLElement>) => {
-    tiltTo.current?.(0, 0);
+    onPointerLeave();
     if (canHover() && e.currentTarget.dataset.focused !== "true") video.current?.pause();
   };
 
   return (
     <article
       onPointerEnter={onEnter}
-      onPointerMove={onMove}
+      onPointerMove={onPointerMove}
       onPointerLeave={onLeave}
       className={`js-arch-tile group relative [perspective:1200px] ${
         featured
@@ -178,7 +158,7 @@ function ProjectTile({
           : "aspect-[4/3] w-[72%] shrink-0 snap-start sm:w-[42%] lg:col-span-3 lg:aspect-auto lg:w-auto"
       }`}
     >
-      <div ref={tilt} className="relative size-full rounded-2xl [transform-style:preserve-3d]">
+      <div ref={tiltRef} className="relative size-full rounded-2xl [transform-style:preserve-3d]">
         <button
           type="button"
           onClick={(e) => onOpen(index, e.currentTarget)}
@@ -201,6 +181,7 @@ function ProjectTile({
             className="absolute inset-0 bg-[linear-gradient(rgb(34_211_238/0.05)_1px,transparent_1px),linear-gradient(90deg,rgb(34_211_238/0.05)_1px,transparent_1px)] bg-[size:40px_40px] opacity-60 transition-opacity duration-500 group-hover:opacity-0"
           />
           <span aria-hidden className="absolute inset-0 bg-gradient-to-t from-[#04070d] via-[#04070d]/35 to-[#04070d]/10" />
+          <TiltGlow glow={glowRef} />
           {CORNERS.map((pos) => (
             <span key={pos} aria-hidden className={`absolute size-3 border-cyan-300/50 ${pos}`} />
           ))}

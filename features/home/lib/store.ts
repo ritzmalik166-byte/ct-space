@@ -2,6 +2,12 @@ export const pointer = { x: 0, y: 0 };
 
 export const motion = { speed: 1, reduced: false };
 
+/** Set once the canvas has rendered its first frames (shaders compiled); the intro loader waits on it. */
+export const scene = { ready: false, introDone: false };
+export const SCENE_READY_EVENT = "ct:scene-ready";
+/** Fired when the intro loader starts lifting; the hero entrance plays from here. */
+export const INTRO_DONE_EVENT = "ct:intro-done";
+
 /** Raw scroll progress written by ScrollTrigger (0..1 per phase). */
 export const journey = { dive: 0, net: 0, tv: 0, disc: 0, flow: 0, arch: 0, space: 0, impact: 0, review: 0, launch: 0 };
 

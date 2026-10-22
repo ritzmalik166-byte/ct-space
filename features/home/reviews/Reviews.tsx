@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/lib/media";
+import { scrollToY } from "@/lib/scroll";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -38,8 +39,44 @@ const REVIEW_STOPS = [STUCK_AT + 0.03, 0.42, 0.6];
 const INK = 0.1;
 const SWAP = 0.04;
 
+function SlideArrow({ dir, onClick }: { dir: 1 | -1; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={dir === 1 ? "Next review" : "Previous review"}
+      className="grid size-10 place-items-center rounded-full text-slate-400 ring-1 ring-white/10 transition-[color,box-shadow,background-color] duration-300 hover:bg-white/[0.04] hover:text-white hover:ring-cyan-400/40 focus-visible:outline-none focus-visible:ring-cyan-400/70"
+    >
+      <svg viewBox="0 0 16 16" className={`size-3.5 ${dir === -1 ? "rotate-180" : ""}`} aria-hidden>
+        <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </button>
+  );
+}
+
+/** Section progress where a review is fully inked, used by the slider controls. */
+const READ_AT = (i: number) => REVIEW_STOPS[i] + INK + 0.02;
+
 export function Reviews() {
   const root = useRef<HTMLElement>(null);
+  const trigger = useRef<ScrollTrigger | null>(null);
+
+  // The slider is the scroll position: controls glide to the point where a review is fully read.
+  const goTo = (i: number) => {
+    const st = trigger.current;
+    if (!st) return;
+    const index = Math.min(REVIEWS.length - 1, Math.max(0, i));
+    scrollToY(st.start + (st.end - st.start) * READ_AT(index));
+  };
+  const step = (dir: 1 | -1) => {
+    const st = trigger.current;
+    if (!st) return;
+    let current = 0;
+    REVIEW_STOPS.forEach((stop, i) => {
+      if (st.progress >= stop - SWAP) current = i;
+    });
+    goTo(current + dir);
+  };
 
   useGSAP(
     () => {
@@ -48,6 +85,7 @@ export function Reviews() {
         defaults: { ease: "none" },
         scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom bottom", scrub: 0.6 },
       });
+      trigger.current = tl.scrollTrigger ?? null;
 
       tl.fromTo(".js-rv-panel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, STUCK_AT)
         .fromTo(".js-rv-veil", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.1 }, STUCK_AT)
@@ -123,13 +161,23 @@ export function Reviews() {
             ))}
           </ul>
 
-          <div aria-hidden className="mt-7 flex gap-1.5">
+          <div className="pointer-events-auto mt-5 flex items-center gap-1">
+            <SlideArrow dir={-1} onClick={() => step(-1)} />
             {REVIEWS.map((review, i) => (
-              <span key={review.company} className="relative h-[3px] w-6 overflow-hidden rounded-full">
-                <span className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-white/20" />
-                <span className={`js-rv-dash-${i} absolute inset-0 origin-left scale-x-0 rounded-full bg-cyan-400`} />
-              </span>
+              <button
+                key={review.company}
+                type="button"
+                onClick={() => goTo(i)}
+                aria-label={`Show review ${i + 1} of ${REVIEWS.length}`}
+                className="group/dash grid h-10 w-8 place-items-center"
+              >
+                <span className="relative h-[3px] w-6 overflow-hidden rounded-full">
+                  <span className="absolute inset-y-0 left-0 w-1/3 rounded-full bg-white/20 transition-[width] duration-300 group-hover/dash:w-full" />
+                  <span className={`js-rv-dash-${i} absolute inset-0 origin-left scale-x-0 rounded-full bg-cyan-400`} />
+                </span>
+              </button>
             ))}
+            <SlideArrow dir={1} onClick={() => step(1)} />
           </div>
         </div>
       </div>

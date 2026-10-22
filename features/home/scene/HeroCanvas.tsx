@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useEffect, useRef, useState } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
-import { COUNTS, motion, pointer, type Quality } from "../lib/store";
+import { COUNTS, motion, pointer, scene, SCENE_READY_EVENT, type Quality } from "../lib/store";
 import { CameraRig } from "./CameraRig";
 import { NeuralCore } from "@/features/home/hero/scene/NeuralCore";
 import { OrbitRings } from "@/features/home/hero/scene/OrbitRings";
@@ -18,6 +18,17 @@ import { SpaceBlocks } from "@/features/home/spaces/scene/SpaceBlocks";
 function detectQuality(): Quality {
   const cores = navigator.hardwareConcurrency ?? 4;
   return window.innerWidth < 768 || cores <= 4 ? "low" : "high";
+}
+
+/** Announces readiness after a few rendered frames, by which point the first shader compile is done. */
+function ReadySignal() {
+  const frames = useRef(0);
+  useFrame(() => {
+    if (scene.ready || ++frames.current < 3) return;
+    scene.ready = true;
+    window.dispatchEvent(new Event(SCENE_READY_EVENT));
+  });
+  return null;
 }
 
 export default function HeroCanvas() {
@@ -66,6 +77,7 @@ export default function HeroCanvas() {
           onDecline={() => setDpr(1)}
           onFallback={() => setDpr(1)}
         />
+        <ReadySignal />
         <Starfield count={counts.stars} />
         <CameraRig>
           <NeuralCore count={counts.core} />
