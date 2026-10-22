@@ -1,0 +1,83 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { PerformanceMonitor } from "@react-three/drei";
+import { COUNTS, motion, pointer, type Quality } from "../lib/store";
+import { CameraRig } from "./CameraRig";
+import { NeuralCore } from "@/features/home/hero/scene/NeuralCore";
+import { OrbitRings } from "@/features/home/hero/scene/OrbitRings";
+import { Satellites } from "@/features/home/hero/scene/Satellites";
+import { Starfield } from "./Starfield";
+import { Synapses } from "@/features/home/hero/scene/Synapses";
+import { NeuralNetwork } from "@/features/home/how-we-think/scene/NeuralNetwork";
+import { DisciplineBeacons } from "@/features/home/disciplines/scene/DisciplineBeacons";
+import { FlowTimeline } from "@/features/home/blueprint/scene/FlowTimeline";
+import { SpaceBlocks } from "@/features/home/spaces/scene/SpaceBlocks";
+
+function detectQuality(): Quality {
+  const cores = navigator.hardwareConcurrency ?? 4;
+  return window.innerWidth < 768 || cores <= 4 ? "low" : "high";
+}
+
+export default function HeroCanvas() {
+  const [quality] = useState<Quality>(detectQuality);
+  const [maxDpr] = useState(() => Math.min(window.devicePixelRatio, quality === "high" ? 1.75 : 1.25));
+  const [dpr, setDpr] = useState(maxDpr);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const applyMotion = () => {
+      motion.reduced = media.matches;
+      motion.speed = media.matches ? 0.25 : 1;
+    };
+    applyMotion();
+    media.addEventListener("change", applyMotion);
+
+    const onMove = (e: PointerEvent) => {
+      pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.y = -((e.clientY / window.innerHeight) * 2 - 1);
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+
+    return () => {
+      media.removeEventListener("change", applyMotion);
+      window.removeEventListener("pointermove", onMove);
+    };
+  }, []);
+
+  const counts = COUNTS[quality];
+
+  return (
+    <div
+      aria-hidden
+      className={`absolute inset-0 transition-opacity duration-[1800ms] ease-out ${ready ? "opacity-100" : "opacity-0"}`}
+    >
+      <Canvas
+        dpr={dpr}
+        camera={{ position: [0, 0, 26], fov: 42, near: 0.05, far: 200 }}
+        gl={{ antialias: false, alpha: true, stencil: false, powerPreference: "high-performance" }}
+        onCreated={() => setReady(true)}
+      >
+        <PerformanceMonitor
+          flipflops={3}
+          onIncline={() => setDpr(maxDpr)}
+          onDecline={() => setDpr(1)}
+          onFallback={() => setDpr(1)}
+        />
+        <Starfield count={counts.stars} />
+        <CameraRig>
+          <NeuralCore count={counts.core} />
+          <Synapses count={counts.nodes} />
+          <OrbitRings count={counts.ring} />
+          <Satellites />
+        </CameraRig>
+        <NeuralNetwork nodes={counts.network} dust={counts.dust} glows={counts.glows} />
+        <DisciplineBeacons />
+        <FlowTimeline />
+        <SpaceBlocks />
+      </Canvas>
+    </div>
+  );
+}

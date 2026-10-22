@@ -1,98 +1,137 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* Two families only: Plus Jakarta Sans for headings, Roboto for body and UI.
+   `font-mono` stays as the class for small uppercase UI labels, now set in Roboto. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-roboto), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@theme {
+  --color-space: #05060b;
+  --color-plasma: #8b5cf6;
+
+  --animate-slide: slide 2.4s ease-in-out infinite;
+  --animate-sweep: sweep 6s ease-in-out infinite;
+  --animate-breathe: breathe 5s ease-in-out infinite;
+  --animate-spin-y: spin-y 16s linear infinite;
+  --animate-sun-arc: sun-arc 7s ease-in-out infinite alternate;
+  --animate-shadow-sweep: shadow-sweep 7s ease-in-out infinite alternate;
+  --animate-scan-y: scan-y 3.2s linear infinite;
+  --animate-drone: drone 10s ease-in-out infinite;
+  --animate-hover-float: hover-float 3.6s ease-in-out infinite;
+  --animate-flicker: flicker 0.18s steps(2) infinite alternate;
+  --animate-marquee: marquee 32s linear infinite;
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
   }
+
+  @keyframes hover-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  @keyframes flicker {
+    from { transform: scaleY(1); opacity: 0.9; }
+    to { transform: scaleY(0.82); opacity: 0.65; }
+  }
+
+  @keyframes spin-y {
+    from { transform: rotateX(-24deg) rotateY(0deg); }
+    to { transform: rotateX(-24deg) rotateY(360deg); }
+  }
+  @keyframes sun-arc {
+    from { transform: rotate(-68deg); }
+    to { transform: rotate(68deg); }
+  }
+  @keyframes shadow-sweep {
+    from { transform: translateX(-2%) skewX(58deg); }
+    to { transform: translateX(-98%) skewX(-58deg); }
+  }
+  @keyframes scan-y {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(1000%); }
+  }
+  @keyframes drone {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(120%, 40%); }
+    50% { transform: translate(60%, 140%); }
+    75% { transform: translate(-40%, 80%); }
+  }
+
+  @keyframes slide {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(200%); }
+  }
+  @keyframes sweep {
+    0% { transform: translateX(-120%) skewX(-12deg); }
+    60%, 100% { transform: translateX(320%) skewX(-12deg); }
+  }
+  @keyframes breathe {
+    0%, 100% { opacity: 0.55; }
+    50% { opacity: 1; }
+  }
+}
+
+html {
+  background: var(--color-space);
+  color: #fff;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100svh;
+  font-family: var(--font-sans);
 }
 
-@keyframes hero-scroll-cue {
-  0%,
-  100% {
-    transform: translateY(-2px);
-    opacity: 0.45;
-  }
-  50% {
-    transform: translateY(3px);
-    opacity: 1;
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    color: #fff;
   }
 }
 
-/* Contenaissance metallic gold, sampled from the logo mark. */
-@layer components {
-  .brand-gold-text {
-    color: #e2bd4f;
-  }
+::selection {
+  background: rgb(253 230 138 / 0.85);
+  color: var(--color-space);
+}
 
-  @supports ((-webkit-background-clip: text) or (background-clip: text)) {
-    .brand-gold-text {
-      background-image: linear-gradient(
-        100deg,
-        #9a6f12 0%,
-        #c9982c 20%,
-        #f4d675 40%,
-        #fff0b3 50%,
-        #e8c45e 62%,
-        #b8860b 84%,
-        #d8b04c 100%
-      );
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-    }
-  }
+.grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.09;
+  mix-blend-mode: overlay;
+}
 
-  .brand-gold-fill {
-    background-image: linear-gradient(90deg, #8a650d 0%, #d4af37 45%, #f4d675 75%, #fff0b3 100%);
-  }
+.tv-static {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23s)'/%3E%3C/svg%3E");
+  animation: tv-static 0.35s steps(4) infinite;
+  mix-blend-mode: screen;
+}
 
-  .brand-gold-button {
-    background-color: #d4af37;
-    background-image: linear-gradient(
-      120deg,
-      #a77b16 0%,
-      #d4af37 28%,
-      #f4d675 50%,
-      #e3bd52 68%,
-      #b8860b 100%
-    );
-    background-size: 220% 100%;
-    background-position: 0% 50%;
-    color: #1c1405;
-    box-shadow:
-      inset 0 1px 0 rgb(255 244 205 / 0.65),
-      inset 0 -1px 0 rgb(92 62 6 / 0.45),
-      0 10px 30px -14px rgb(212 175 55 / 0.6);
-    transition:
-      background-position 700ms cubic-bezier(0.22, 1, 0.36, 1),
-      box-shadow 300ms ease;
-  }
+@keyframes tv-static {
+  0% { background-position: 0 0; }
+  25% { background-position: -60px 40px; }
+  50% { background-position: 50px -70px; }
+  75% { background-position: -30px -20px; }
+  100% { background-position: 0 0; }
+}
 
-  .brand-gold-button:hover {
-    background-position: 100% 50%;
-    box-shadow:
-      inset 0 1px 0 rgb(255 248 220 / 0.8),
-      inset 0 -1px 0 rgb(92 62 6 / 0.45),
-      0 12px 34px -12px rgb(244 214 117 / 0.6);
+.link-underline {
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 0.4s ease;
+}
+.link-underline:hover {
+  background-size: 100% 1px;
+}
+
+.js-reveal {
+  visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
