@@ -7,7 +7,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/lib/media";
-import logo from "./assets/contenaissance-logo.webp";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -15,7 +14,7 @@ const LINKS = [
   { label: "Work", href: "/#archive" },
   { label: "Services", href: "/#disciplines" },
   { label: "Studio", href: "/#how-we-think" },
-  { label: "Journal", href: "/#journal" },
+  { label: "Journal", href: "/blog" },
 ];
 
 /** Below this scroll offset the bar always shows and stays transparent over the hero. */
@@ -79,9 +78,9 @@ export function Navbar() {
           aria-hidden
           className="absolute inset-0 border-b border-white/[0.06] bg-space/85 opacity-0 transition-opacity duration-500 group-data-[scrolled=true]/nav:opacity-100 md:bg-space/60 md:backdrop-blur-md"
         />
-        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-6 pb-3 pt-6 lg:px-10">
+        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-6 pb-3 pt-4 lg:px-10">
           <Link href="/" aria-label="Contenaissance home" className="shrink-0">
-            <Image src={logo} alt="Contenaissance — Ritz GenAI Storytelling Studios" preload className="h-10 w-auto lg:h-11" />
+            <Image src="/images/contenaissance-logo.webp" width={274} height={133} alt="Contenaissance — Ritz GenAI Storytelling Studios" preload className="h-10 w-auto lg:h-13" />
           </Link>
 
           <nav className="hidden items-center gap-8 md:flex">
