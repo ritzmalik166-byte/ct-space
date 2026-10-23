@@ -8,6 +8,13 @@ export function registerLenis(instance: Lenis | null) {
   lenis = instance;
 }
 
+/** Freezes page scrolling (Lenis and native) while an overlay is open. */
+export function lockScroll(locked: boolean) {
+  if (locked) lenis?.stop();
+  else lenis?.start();
+  document.documentElement.style.overflow = locked ? "hidden" : "";
+}
+
 export function scrollToY(y: number) {
   const target = Math.max(0, y);
   if (lenis) {

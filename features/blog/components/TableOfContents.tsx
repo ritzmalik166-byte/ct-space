@@ -3,6 +3,7 @@
 import { useEffect, useState, type MouseEvent } from "react";
 import { scrollToY } from "@/lib/scroll";
 import type { TocEntry } from "../lib/content";
+import Link from "next/link";
 
 const NAV_OFFSET = 96;
 
@@ -46,7 +47,7 @@ export function TableOfContents({ entries, compact = false }: { entries: TocEntr
         const current = active === entry.id;
         return (
           <li key={entry.id}>
-            <a
+            <Link
               href={`#${entry.id}`}
               onClick={(e) => onClick(e, entry.id)}
               aria-current={current ? "location" : undefined}
@@ -57,7 +58,7 @@ export function TableOfContents({ entries, compact = false }: { entries: TocEntr
               }`}
             >
               {entry.text}
-            </a>
+            </Link>
           </li>
         );
       })}

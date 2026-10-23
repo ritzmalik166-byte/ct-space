@@ -97,7 +97,9 @@ export function Navbar() {
 
           <div className="flex items-center gap-3">
             <Link
-              href="/#contact"
+              href="/contact"
+              data-open-contact=""
+              aria-haspopup="dialog"
               className="hidden rounded-full bg-white/[0.06] px-4 py-2 text-sm text-white ring-1 ring-white/15 transition-colors hover:bg-white hover:text-space md:inline-flex"
             >
               Say hello
@@ -138,7 +140,9 @@ export function Navbar() {
             ))}
             <li className="mt-1 border-t border-white/[0.06] p-2 pt-3">
               <Link
-                href="/#contact"
+                href="/contact"
+                data-open-contact=""
+                aria-haspopup="dialog"
                 onClick={() => setOpen(false)}
                 className="flex min-h-12 items-center justify-center rounded-full bg-white text-sm font-medium text-space transition-colors active:bg-cyan-100"
               >

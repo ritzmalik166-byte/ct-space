@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Roboto } from "next/font/google";
 import { Footer } from "@/components/shared/Footer";
 import { Navbar } from "@/components/shared/Navbar";
+import { ContactPopup } from "@/features/contact/components/ContactPopup";
 import "./globals.css";
 
 // Both are variable fonts: one self-hosted file per style covers every weight.
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Navbar />
         {children}
         <Footer />
+        <ContactPopup />
       </body>
     </html>
   );
