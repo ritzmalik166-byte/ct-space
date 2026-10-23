@@ -11,33 +11,66 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const REVIEWS = [
   {
+    variant: "quote",
     quote:
-      "The architectural fidelity and discreet acquisition process was second to none. Contenaissance secured our flagship penthouse launch with flawless execution and uncompromising precision.",
-    role: "Managing Partner",
-    company: "Sovereign Horizon Capital Group",
+      "Fast, creative, and incredibly consistent their AI content workflow completely changed how we scale campaigns.",
+    name: "FAIRFOX IT INFRA",
+    role: "Marketing Head",
+    company: "Ritz Media World",
+    initials: "AS",
   },
   {
+    variant: "quote",
     quote:
-      "Buyers walked our towers months before the first slab was poured. The realtime tour did more for pre-sales than any show flat we have ever built.",
-    role: "Director of Sales",
-    company: "Meridian Crest Developments",
+      "The quality felt premium from day one. Their AI-powered creatives gave our brand a much stronger digital identity.",
+    name: "ELDECO GROUP",
+    role: "Managing Director",
+    company: "Creative Thinks Media",
+    initials: "AV",
   },
   {
+    variant: "quote",
     quote:
-      "From the first sketch to handover film, every frame felt considered. They tell the story of a building the way its architect imagined it.",
-    role: "Principal Architect",
-    company: "Atelier Nouvelle Studio",
+      "What impressed us most was how quickly they turned ideas into high-performing digital campaigns.",
+    name: "MADHUSUDHAN GHEE",
+    role: "Managing Director",
+    company: "Northline AI",
+    initials: "RM",
+  },
+  {
+    variant: "quote",
+    quote:
+      "Their AI-driven approach helped us create engaging content for social media, ads, and brand launches effortlessly.",
+    name: "ESCORTS TRACTOR",
+    role: "Chief Communication Officer ",
+    company: "BrightForge",
+    initials: "IK",
+  },
+  {
+    variant: "quote",
+    quote:
+      "The team understood both creativity and performance marketing, which made every campaign more effective.",
+    name: "SAYA GROUP",
+    role: "Director",
+    company: "GreenByte",
+    initials: "VM",
   },
 ];
 
-/** Progress where the sticky panel locks: the trigger starts when the section enters (100svh of its 460svh). */
-const STUCK_AT = 100 / 460;
-/** Progress where the lift-off section starts entering below. */
-const EXIT_START = 360 / 460;
+/** Must match the section's `h-[640svh]` class. */
+const SECTION_SVH = 640;
+/** Progress where the sticky panel locks: the trigger starts when the section enters (its first 100svh). */
+const STUCK_AT = 100 / SECTION_SVH;
+/** Progress where the lift-off section starts entering below (its last 100svh). */
+const EXIT_START = (SECTION_SVH - 100) / SECTION_SVH;
+/** Each review owns an equal slice of the sticky range, so adding reviews never overlaps them. */
+const FIRST_STOP = STUCK_AT + 0.02;
+const SLOT = (EXIT_START - FIRST_STOP) / REVIEWS.length;
 /** Progress at which each review takes over the stage. */
-const REVIEW_STOPS = [STUCK_AT + 0.03, 0.42, 0.6];
-const INK = 0.1;
-const SWAP = 0.04;
+const REVIEW_STOPS = REVIEWS.map((_, i) => FIRST_STOP + i * SLOT);
+const SWAP = 0.03;
+const INK = SLOT * 0.4;
+const BYLINE_AT = SLOT * 0.35;
 
 function SlideArrow({ dir, onClick }: { dir: 1 | -1; onClick: () => void }) {
   return (
@@ -55,7 +88,7 @@ function SlideArrow({ dir, onClick }: { dir: 1 | -1; onClick: () => void }) {
 }
 
 /** Section progress where a review is fully inked, used by the slider controls. */
-const READ_AT = (i: number) => REVIEW_STOPS[i] + INK + 0.02;
+const READ_AT = (i: number) => REVIEW_STOPS[i] + SLOT * 0.6;
 
 export function Reviews() {
   const root = useRef<HTMLElement>(null);
@@ -97,7 +130,7 @@ export function Reviews() {
 
         tl.fromTo(item, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: SWAP, ease: "power2.out" }, at);
         if (!reduced) tl.fromTo(words, { opacity: 0.12 }, { opacity: 1, duration: INK / words.length, stagger: INK / words.length }, at + 0.01);
-        tl.fromTo(item.querySelectorAll(".js-rv-by"), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.03, stagger: 0.01 }, at + 0.03 + INK * 0.6)
+        tl.fromTo(item.querySelectorAll(".js-rv-by"), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.03, stagger: 0.01 }, at + BYLINE_AT)
           .fromTo(`.js-rv-dash-${i}`, { scaleX: 0 }, { scaleX: 1, duration: SWAP, ease: "power2.out" }, at);
 
         const next = REVIEW_STOPS[i + 1];
@@ -119,7 +152,7 @@ export function Reviews() {
       id="reviews"
       ref={root}
       aria-labelledby="reviews-title"
-      className="pointer-events-none relative -mt-[100svh] h-[460svh]"
+      className="pointer-events-none relative -mt-[100svh] h-[640svh]"
     >
       <div className="js-rv-panel invisible sticky top-0 h-svh overflow-hidden">
         <div

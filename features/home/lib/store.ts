@@ -9,22 +9,18 @@ export const SCENE_READY_EVENT = "ct:scene-ready";
 export const INTRO_DONE_EVENT = "ct:intro-done";
 
 /** Raw scroll progress written by ScrollTrigger (0..1 per phase). */
-export const journey = { dive: 0, net: 0, tv: 0, disc: 0, flow: 0, arch: 0, space: 0, impact: 0, review: 0, launch: 0 };
+export const journey = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, space: 0, impact: 0, review: 0, launch: 0 };
 
 /** Smoothed copy of `journey`, updated once per frame by the camera director. */
-export const view = { dive: 0, net: 0, tv: 0, disc: 0, flow: 0, arch: 0, space: 0, impact: 0, review: 0, launch: 0 };
+export const view = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, space: 0, impact: 0, review: 0, launch: 0 };
 
 /** Shared uniform objects so every material in a scene fades from one value. */
 export const fades = {
   hero: { value: 1 },
   network: { value: 0 },
-  disc: { value: 0 },
   flow: { value: 0 },
   space: { value: 0 },
 };
-
-/** Section progress at which each discipline card (and its 3D beacon) lights up. */
-export const DISC_STOPS = [0.42, 0.47, 0.52, 0.57];
 
 /** Section progress at which each "Blueprint to Handover" milestone becomes active. */
 export const FLOW_STOPS = [0.28, 0.38, 0.48, 0.58, 0.68];
@@ -44,8 +40,20 @@ export function flowDraw(progress: number) {
 /** Fraction of the network path the camera covers during the post-dive phase. */
 export const NET_TRAVEL = 1;
 
-/** Network-phase progress at which each "How we think" step is centred. */
-export const STEP_STOPS = [0.16, 0.34, 0.52, 0.68];
+/**
+ * Scroll distance of the "How we think" phase: the section's height minus one viewport (`h-[400svh]`).
+ * Step timings are written in svh and converted, so resizing the section never speeds the steps up.
+ */
+export const NET_SCROLL_SVH = 300;
+export const netAt = (svh: number) => svh / NET_SCROLL_SVH;
+
+/** Network-phase progress at which each "How we think" step is centred; one entry per step in `HowWeThink`. */
+export const STEP_STOPS = [74, 156, 239].map(netAt);
+
+/** DOM video cards for each step; the 3D key nodes move them every frame to follow the camera. */
+export const stepCards: (HTMLElement | null)[] = [];
+/** Base CSS width of a step card; key nodes scale it to the node's on-screen size. */
+export const STEP_CARD_WIDTH = 350;
 
 export function mulberry32(seed: number) {
   return () => {

@@ -4,8 +4,8 @@ import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import { Billboard } from "@react-three/drei";
 import * as THREE from "three";
-import { fades, motion, mulberry32, STEP_STOPS, view } from "@/features/home/lib/store";
-import { JOURNEY_PATH } from "@/features/home/scene/journeyPath";
+import { fades, motion, mulberry32, netAt, STEP_CARD_WIDTH, STEP_STOPS, stepCards, view } from "@/features/home/lib/store";
+import { JOURNEY_PATH, LOOK_AHEAD } from "@/features/home/scene/journeyPath";
 import {
   fresnelFragment,
   fresnelVertex,
@@ -136,10 +136,28 @@ const LIGHTS: { t: number; offset: [number, number, number]; color: string; size
 ];
 
 const KEY_COLORS = ["#67e8f9", "#c084fc", "#fde68a", "#f0abfc"];
+/** World-space width of a step video card at rest (the ring it replaced was 0.9 across). */
+const CARD_WORLD_WIDTH = 1.8;
+/**
+ * A step's copy is fully visible from 9svh before its stop to 28svh after (see HowWeThink's timeline),
+ * so the card holds its docked slot across that window and blends in/out over DOCK_BLEND either side.
+ */
+const DOCK_CENTER = netAt(9);
+const DOCK_HOLD = netAt(18);
+const DOCK_BLEND = netAt(23);
+const FOCUS_NEAR = netAt(9);
+const FOCUS_FAR = netAt(64);
+/** Path distance between the camera and a step's key node when that step is centred. */
+const KEY_NODE_AHEAD = 0.12;
+
+/** 0 while the card follows its node, 1 while it sits in the fixed slot. */
+function dockAmount(progress: number, index: number) {
+  const offset = Math.abs(progress - STEP_STOPS[index] - DOCK_CENTER);
+  return THREE.MathUtils.smootherstep(1 - THREE.MathUtils.clamp((offset - DOCK_HOLD) / DOCK_BLEND, 0, 1), 0, 1);
+}
 
 function KeyNode({ index, position }: { index: number; position: THREE.Vector3 }) {
   const halo = useRef<THREE.ShaderMaterial>(null);
-  const ring = useRef<THREE.Mesh>(null);
   const group = useRef<THREE.Group>(null);
 
   const haloUniforms = useMemo(
@@ -162,13 +180,67 @@ function KeyNode({ index, position }: { index: number; position: THREE.Vector3 }
     [index],
   );
 
-  useFrame((_, delta) => {
-    const focus = 1 - THREE.MathUtils.smoothstep(Math.abs(view.net - STEP_STOPS[index]), 0.02, 0.14);
+  const projected = useMemo(() => new THREE.Vector3(), []);
+  const cardShown = useRef(false);
+
+  useFrame((state, delta) => {
+    const focus = 1 - THREE.MathUtils.smoothstep(Math.abs(view.net - STEP_STOPS[index]), FOCUS_NEAR, FOCUS_FAR);
     if (halo.current) halo.current.uniforms.uIntensity.value = 0.25 + focus * 0.85;
-    if (group.current) group.current.scale.setScalar(THREE.MathUtils.damp(group.current.scale.x, 1 + focus * 0.35, 4, delta));
-    if (ring.current) {
-      ring.current.rotation.z += Math.min(delta, 0.1) * motion.speed * (0.4 + focus);
-      (ring.current.material as THREE.MeshBasicMaterial).opacity = (0.15 + focus * 0.55) * fades.network.value;
+    const g = group.current;
+    if (!g) return;
+    g.scale.setScalar(THREE.MathUtils.damp(g.scale.x, 1 + focus * 0.35, 4, delta));
+
+    // The video card takes the ring's place: pinned to this node on screen, sized by distance and focus.
+    const card = stepCards[index];
+    if (!card) return;
+    const video = card.querySelector("video");
+    const dock = dockAmount(view.net, index);
+    // Another step's docked card owns the stage: the flying ones clear out so nothing shows behind it.
+    let otherDock = 0;
+    for (let i = 0; i < STEP_STOPS.length; i++) if (i !== index) otherDock = Math.max(otherDock, dockAmount(view.net, i));
+    const opacity = Math.max(0.2 + focus * 0.8, dock) * (1 - otherDock * (1 - dock)) * fades.network.value;
+    const camera = state.camera as THREE.PerspectiveCamera;
+    g.getWorldPosition(projected);
+    const distance = projected.distanceTo(camera.position);
+    projected.project(camera);
+    const onScreen = projected.z <= 1 && Math.abs(projected.x) <= 1.6 && Math.abs(projected.y) <= 1.6;
+
+    if (opacity < 0.01 || (!onScreen && dock < 0.99)) {
+      if (cardShown.current) {
+        card.style.visibility = "hidden";
+        video?.pause();
+        cardShown.current = false;
+      }
+      return;
+    }
+
+    const { width, height } = state.size;
+    const pxPerUnit = height / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2) * distance);
+    const flyScale = (CARD_WORLD_WIDTH * g.scale.x * pxPerUnit) / STEP_CARD_WIDTH;
+    const flyX = (projected.x * 0.5 + 0.5) * width;
+    const flyY = (-projected.y * 0.5 + 0.5) * height;
+
+    // While the step's copy is fully on screen the card parks in a fixed slot, then rejoins its node.
+    const desktop = width >= 1024;
+    const dockScale = Math.min(desktop ? STEP_CARD_WIDTH : width * 0.7, STEP_CARD_WIDTH) / STEP_CARD_WIDTH;
+    const dockX = desktop ? width * 0.73 : width / 2;
+    const dockY = desktop ? height / 2 : height * 0.3;
+    const { lerp } = THREE.MathUtils;
+    const x = lerp(flyX, dockX, dock);
+    const y = lerp(flyY, dockY, dock);
+    const scale = lerp(flyScale, dockScale, dock);
+    card.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%) scale(${scale})`;
+    card.style.opacity = String(opacity);
+    card.style.zIndex = dock > 0.5 ? "1" : "0";
+    if (!cardShown.current) {
+      card.style.visibility = "visible";
+      cardShown.current = true;
+    }
+
+    if (video && !motion.reduced) {
+      const live = focus > 0.35 || dock > 0.5;
+      if (live && video.paused) video.play().catch(() => {});
+      else if (!live && !video.paused) video.pause();
     }
   });
 
@@ -182,15 +254,6 @@ function KeyNode({ index, position }: { index: number; position: THREE.Vector3 }
             vertexShader={glowVertex}
             fragmentShader={glowFragment}
             uniforms={haloUniforms}
-            transparent
-            depthWrite={false}
-            blending={THREE.AdditiveBlending}
-          />
-        </mesh>
-        <mesh ref={ring}>
-          <ringGeometry args={[0.42, 0.45, 64, 1, 0, Math.PI * 1.6]} />
-          <meshBasicMaterial
-            color={KEY_COLORS[index]}
             transparent
             depthWrite={false}
             blending={THREE.AdditiveBlending}
@@ -303,7 +366,9 @@ export function NeuralNetwork({
     const side = width >= 1024 ? 1.5 : 0;
     const lift = width >= 1024 ? 0.1 : 0.55;
     return STEP_STOPS.map((stop) => {
-      const p = JOURNEY_PATH.getPointAt(Math.min(stop + 0.06, 1));
+      // Mirrors CameraRig's path easing so each node sits the same distance ahead of the camera at its stop.
+      const cameraAt = ((1 - Math.cos(Math.PI * stop)) / 2) * (1 - LOOK_AHEAD);
+      const p = JOURNEY_PATH.getPointAt(Math.min(cameraAt + KEY_NODE_AHEAD, 1));
       return p.add(new THREE.Vector3(side, lift, 0));
     });
   }, [width]);

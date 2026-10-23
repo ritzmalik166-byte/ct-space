@@ -23,12 +23,8 @@ export const LOOK_AHEAD = 0.035;
 const PATH_END = JOURNEY_PATH.getPointAt(1 - LOOK_AHEAD);
 const PATH_END_DIR = JOURNEY_PATH.getPointAt(1).sub(PATH_END).normalize();
 
-/** Camera resting position and focus point for the "Four Disciplines" section. */
-export const DISC_CAMERA = PATH_END.clone().addScaledVector(PATH_END_DIR, 7).add(new THREE.Vector3(0, 1.2, 0));
-export const DISC_FOCUS = PATH_END.clone().addScaledVector(PATH_END_DIR, 15).add(new THREE.Vector3(0, 0.6, 0));
-
-/** Centre of the "Blueprint to Handover" timeline, beyond the beacons. It runs along world X, facing +Z. */
-export const FLOW_CENTER = DISC_FOCUS.clone().add(new THREE.Vector3(0, 0.4, -16));
+/** Centre of the "Blueprint to Handover" timeline, beyond the end of the path. It runs along world X, facing +Z. */
+export const FLOW_CENTER = PATH_END.clone().addScaledVector(PATH_END_DIR, 15).add(new THREE.Vector3(0, 1, -16));
 /** Fraction of the viewport half-width the timeline spans. */
 export const FLOW_FILL = 0.66;
 /** Height of the timeline's midpoint on screen, in NDC. */

@@ -5,8 +5,6 @@ import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { fades, journey, motion, NET_TRAVEL, pointer, view } from "../lib/store";
 import {
-  DISC_CAMERA,
-  DISC_FOCUS,
   FLOW_CENTER,
   FLOW_FILL,
   FLOW_SCREEN_Y,
@@ -52,7 +50,6 @@ export function CameraRig({ children }: { children: ReactNode }) {
     view.dive = damp(view.dive, journey.dive, 4.5, delta);
     view.net = damp(view.net, journey.net, 3.5, delta);
     view.tv = damp(view.tv, journey.tv, 3.5, delta);
-    view.disc = damp(view.disc, journey.disc, 3, delta);
     view.flow = damp(view.flow, journey.flow, 3, delta);
     view.arch = damp(view.arch, journey.arch, 3, delta);
     view.space = damp(view.space, journey.space, 3, delta);
@@ -61,7 +58,6 @@ export function CameraRig({ children }: { children: ReactNode }) {
     view.launch = damp(view.launch, journey.launch, 3, delta);
     fades.space.value = smoothstep(view.space, 0.08, 0.3);
     const tvEase = easeInOutCubic(clamp(view.tv, 0, 1));
-    const discEase = easeInOutCubic(smoothstep(view.disc, 0.02, 0.34));
     const flowEase = easeInOutCubic(smoothstep(view.flow, 0.03, 0.26));
 
     const d = clamp(view.dive, 0, 1);
@@ -69,9 +65,7 @@ export function CameraRig({ children }: { children: ReactNode }) {
     const net = easeInOutSine(clamp(view.net, 0, 1)) * Math.min(NET_TRAVEL, 1 - LOOK_AHEAD);
 
     fades.hero.value = 1 - smoothstep(d, 0.55, 0.92);
-    fades.network.value =
-      smoothstep(d, 0.45, 1) * (1 - tvEase * 0.45 * (1 - discEase)) * (1 - flowEase * 0.6);
-    fades.disc.value = smoothstep(view.disc, 0.1, 0.32) * (1 - smoothstep(view.flow, 0.03, 0.18));
+    fades.network.value = smoothstep(d, 0.45, 1) * (1 - tvEase * 0.45 * (1 - flowEase)) * (1 - flowEase * 0.6);
     fades.flow.value = smoothstep(view.flow, 0.05, 0.22);
 
     const fov = 42 + Math.sin(Math.PI * d) * 16 + dEase * 8;
@@ -98,9 +92,7 @@ export function CameraRig({ children }: { children: ReactNode }) {
       cam.position.addScaledVector(forward, tvEase * 2.5);
     }
 
-    if (discEase > 0) cam.position.lerp(DISC_CAMERA, discEase);
-
-    lookTarget.set(offsetX * 0.35, 0, 0).lerp(aheadPoint, dEase).lerp(DISC_FOCUS, discEase);
+    lookTarget.set(offsetX * 0.35, 0, 0).lerp(aheadPoint, dEase);
 
     if (flowEase > 0) {
       // Distance at which the timeline spans FLOW_FILL of the viewport, so 3D nodes align with the DOM columns.

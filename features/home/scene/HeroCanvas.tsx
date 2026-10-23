@@ -11,7 +11,6 @@ import { Satellites } from "@/features/home/hero/scene/Satellites";
 import { Starfield } from "./Starfield";
 import { Synapses } from "@/features/home/hero/scene/Synapses";
 import { NeuralNetwork } from "@/features/home/how-we-think/scene/NeuralNetwork";
-import { DisciplineBeacons } from "@/features/home/disciplines/scene/DisciplineBeacons";
 import { FlowTimeline } from "@/features/home/blueprint/scene/FlowTimeline";
 import { SpaceBlocks } from "@/features/home/spaces/scene/SpaceBlocks";
 
@@ -86,7 +85,6 @@ export default function HeroCanvas() {
           <Satellites />
         </CameraRig>
         <NeuralNetwork nodes={counts.network} dust={counts.dust} glows={counts.glows} />
-        <DisciplineBeacons />
         <FlowTimeline />
         <SpaceBlocks />
       </Canvas>

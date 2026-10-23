@@ -5,46 +5,38 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { HandNote } from "./components/HandNote";
+import { prefersReducedMotion } from "@/lib/media";
 import { RotatingWords } from "./components/RotatingWords";
 import { INTRO_DONE_EVENT, scene } from "../lib/store";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const HEADLINE: { text: string; serif?: boolean }[][] = [
-  [{ text: "We" }, { text: "build" }, { text: "AI" }],
-  [{ text: "that" }, { text: "actually", serif: true }],
-  [{ text: "ships." }],
-];
+const HEADLINE = ["We", "Build", "AI", "That", "Actually", "Ships."];
+const VIDEO_SRC = "/videos/229254_medium.mp4";
 
 export function Hero() {
   const root = useRef<HTMLElement>(null);
   const glow = useRef<HTMLDivElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
 
   useGSAP(
     (_, contextSafe) => {
+      const reduced = prefersReducedMotion();
+      const clip = video.current;
+      const play = () => {
+        if (clip && !reduced) clip.play().catch(() => {});
+      };
+      play();
+
       const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.1, paused: !scene.introDone });
-      tl.fromTo(".js-badge", { y: 12, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.7 }, 0.4)
+      tl.fromTo(".js-hero-media", { autoAlpha: 0, scale: 1.08 }, { autoAlpha: 1, scale: 1, duration: 1.6, ease: "power2.out" }, 0)
         .fromTo(
           ".js-word",
           { yPercent: 110, autoAlpha: 0 },
           { yPercent: 0, autoAlpha: 1, duration: 1.1, stagger: 0.08, ease: "expo.out" },
-          "-=0.4",
+          0.3,
         )
-        .fromTo(
-          ".js-fade",
-          { y: 20, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.12 },
-          "-=0.7",
-        )
-        .set(".js-note", { autoAlpha: 1 }, "+=0.6")
-        .fromTo(".js-note p", { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.6 })
-        .fromTo(
-          ".js-note-path",
-          { strokeDashoffset: 1 },
-          { strokeDashoffset: 0, duration: 0.9, stagger: 0.7, ease: "power2.inOut" },
-          "-=0.2",
-        );
+        .fromTo(".js-fade", { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.12 }, "-=0.7");
 
       gsap.to(".js-scroll-out", {
         y: -90,
@@ -52,6 +44,21 @@ export function Hero() {
         ease: "none",
         stagger: 0.04,
         scrollTrigger: { trigger: root.current, start: "top top", end: "65% top", scrub: true },
+      });
+
+      // The video gives way to the 3D dive underneath, and stops decoding once the hero is gone.
+      gsap.to(".js-hero-veil", {
+        autoAlpha: 0,
+        scale: 1.06,
+        ease: "none",
+        scrollTrigger: {
+          trigger: root.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+          onLeave: () => clip?.pause(),
+          onEnterBack: play,
+        },
       });
 
       const xTo = gsap.quickTo(glow.current, "x", { duration: 0.9, ease: "power3" });
@@ -68,6 +75,7 @@ export function Hero() {
       return () => {
         window.removeEventListener("pointermove", onMove);
         window.removeEventListener(INTRO_DONE_EVENT, start);
+        clip?.pause();
       };
     },
     { scope: root },
@@ -75,103 +83,60 @@ export function Hero() {
 
   return (
     <section id="hero" ref={root} className="relative isolate flex min-h-svh flex-col overflow-hidden">
+      <div aria-hidden className="js-hero-veil pointer-events-none absolute inset-0 -z-10 origin-center">
+        <div className="js-hero-media invisible absolute inset-0">
+          <video
+            ref={video}
+            className="size-full object-cover"
+            src={`${VIDEO_SRC}#t=0.1`}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+        </div>
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_45%,rgb(5_6_11/0.25)_0%,rgb(5_6_11/0.6)_70%,rgb(5_6_11/0.85)_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-space to-transparent" />
+      </div>
+
       <div
         ref={glow}
         aria-hidden
         className="pointer-events-none fixed left-0 top-0 -z-10 size-[460px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(253_230_138/0.06),transparent_65%)]"
       />
 
-      <div aria-hidden className="h-15 shrink-0" />
-      <div className="js-scroll-out pointer-events-none absolute inset-0">
-        <HandNote />
-      </div>
-
-      <div className="js-scroll-out relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-end px-6 pb-10 pt-[36vh] sm:pt-[40vh] lg:justify-center lg:px-10 lg:pb-12 lg:pt-8">
-        <div className="max-w-2xl">
-          <p className="js-badge js-reveal flex items-center gap-2.5 text-sm text-slate-400">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-400/70" />
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-400" />
+      <div className="js-scroll-out relative z-10 mx-auto flex w-full max-w-6xl flex-1 flex-col items-center justify-center px-6 pb-16 pt-28 text-center lg:px-10">
+        <h1 className="font-heading text-[clamp(2.4rem,5.6vw,70px)] font-bold capitalize leading-none tracking-normal text-white [text-shadow:0_4px_40px_rgb(0_0_0/0.45)]">
+          {HEADLINE.map((word) => (
+            <span key={word} className="mr-[0.22em] inline-block overflow-hidden pb-[0.1em] align-top last:mr-0">
+              <span className="js-word js-reveal inline-block">{word}</span>
             </span>
-            Booking two new projects for early 2027
-          </p>
+          ))}
+        </h1>
 
-          <h1 className="mt-6 text-[clamp(2rem,6vw,5.9rem)] font-bold leading-[0.92] tracking-[-0.04em]">
-            {HEADLINE.map((line, i) => (
-              <span key={i} className="block">
-                {line.map((word) => (
-                  <span key={word.text} className="mr-[0.2em] inline-block overflow-hidden pb-[0.1em] align-top">
-                    <span
-                      className={`js-word js-reveal inline-block ${
-                        word.serif ? "italic text-cyan-200" : ""
-                      }`}
-                    >
-                      {word.text}
-                    </span>
-                  </span>
-                ))}
-              </span>
-            ))}
-          </h1>
-
-          <p className="js-fade js-reveal mt-7 max-w-xl text-lg leading-relaxed text-slate-400">
-            We&apos;re a small, senior team of engineers and designers. We help companies turn messy
-            data and big ideas into{" "}
-            <RotatingWords
-              delay={1.8}
-              words={["support agents", "vision models", "internal copilots", "forecasting tools"]}
-            />{" "}
-            that people genuinely use, not demos that die in a slide deck.
-          </p>
-
-          <div className="js-fade js-reveal mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
-            <Link
-              href="#contact"
-              className="group inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-medium text-space transition-colors hover:bg-cyan-100"
-            >
-              Tell us what you&apos;re building
-              <svg viewBox="0 0 16 16" className="size-4 transition-transform group-hover:translate-x-0.5" aria-hidden>
-                <path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </Link>
-            <Link href="#archive" className="inline-flex items-center rounded-full border border-transparent px-6 py-3.5 bg-black text-sm text-white/80 transition-colors border-white text-white">
-              See what we&apos;ve shipped
-            </Link>
-          </div>
-
-          {/* <figure className="js-fade js-reveal mt-12 flex max-w-lg gap-4 border-t border-white/10 pt-6">
-            <div
-              aria-hidden
-              className="grid size-11 shrink-0 place-items-center rounded-full bg-gradient-to-br from-amber-200 to-rose-300 font-serif text-lg italic text-space"
-            >
-              N
-            </div>
-            <div>
-              <blockquote className="font-serif text-[1.2rem] leading-snug text-white/85">
-                &ldquo;They spent a week sitting with our support team before writing a single line of
-                code. That&apos;s why it worked.&rdquo;
-              </blockquote>
-              <figcaption className="mt-2 text-xs text-cyan-400/80">
-                Neha Kapoor · Head of Customer Experience, fintech startup
-              </figcaption>
-            </div>
-          </figure> */}
-        </div>
-      </div>
-
-      <div className="js-scroll-out relative z-10">
-      <div className="js-fade js-reveal mx-auto flex w-full max-w-7xl items-end justify-between gap-6 border-t border-white/[0.07] px-6 py-5 lg:px-10">
-        <p className="max-w-md text-sm text-slate-400">
-          <span className="font-medium text-cyan-300">currently building →</span>{" "}
-          a vision model that spots crop disease from a single phone photo.
+        <p className="js-fade js-reveal mt-6 max-w-[42rem] font-sans text-[17px] font-normal leading-[28px] tracking-normal text-white sm:text-[20px] sm:leading-[32px]">
+          A senior team of engineers and storytellers turning big ideas into{" "}
+          <RotatingWords delay={1.8} words={["brand films", "support agents", "vision models", "internal copilots"]} /> that
+          people genuinely use.
         </p>
-        <span className="hidden items-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-slate-500 sm:flex">
-          Scroll
-          <span className="relative h-px w-10 overflow-hidden bg-white/15">
-            <span className="absolute inset-y-0 left-0 w-1/2 animate-slide bg-white/60" />
+
+        <Link
+          href="/#archive"
+          aria-label="Portfolio"
+          className="js-fade js-reveal group mt-12 flex h-[65px] w-[65px] items-center justify-end overflow-hidden rounded-[32.5px] bg-white text-black shadow-[0_10px_40px_-10px_rgb(255_255_255/0.5)] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:w-[176px] focus-visible:w-[176px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+        >
+          <span
+            aria-hidden
+            className="whitespace-nowrap pl-6 font-sans text-base font-semibold opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:delay-150 group-focus-visible:opacity-100"
+          >
+            Portfolio
           </span>
-        </span>
-      </div>
+          <span className="grid size-[65px] shrink-0 place-items-center">
+            <svg viewBox="0 0 24 24" className="size-7 transition-transform duration-500 group-hover:rotate-45" aria-hidden>
+              <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
+        </Link>
       </div>
     </section>
   );

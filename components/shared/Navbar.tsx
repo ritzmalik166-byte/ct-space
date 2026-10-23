@@ -12,15 +12,22 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const LINKS = [
   { label: "Work", href: "/#archive" },
-  { label: "Services", href: "/#disciplines" },
-  { label: "Studio", href: "/#how-we-think" },
-  { label: "Journal", href: "/blog" },
+  { label: "Capabilities", href: "/#creative-services" },
+  { label: "Our Approach", href: "/#how-we-think" },
 ];
 
 /** Below this scroll offset the bar always shows and stays transparent over the hero. */
 const TOP_ZONE = 120;
 
-/** Overlays the top of every page (3.75rem tall); pages leave that space free at the top. */
+function ArrowUpRight({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 16 16" className={className} aria-hidden>
+      <path d="M5 11 11 5M6 5h5v5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Overlays the top of every page; pages leave that space free at the top. */
 export function Navbar() {
   const root = useRef<HTMLDivElement>(null);
   const header = useRef<HTMLElement>(null);
@@ -71,51 +78,46 @@ export function Navbar() {
       <div
         ref={progress}
         aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-cyan-500 via-cyan-300 to-cyan-200 shadow-[0_0_10px_rgb(34_211_238/0.6)]"
+        className="pointer-events-none fixed inset-x-0 top-0 z-40 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-[#b8863f] via-[#e3b56a] to-[#f5d9a0] shadow-[0_0_10px_rgb(227_181_106/0.6)]"
       />
       <header ref={header} data-scrolled="false" className="group/nav js-reveal fixed inset-x-0 top-0 z-30">
         <div
           aria-hidden
           className="absolute inset-0 border-b border-white/[0.06] bg-space/85 opacity-0 transition-opacity duration-500 group-data-[scrolled=true]/nav:opacity-100 md:bg-space/60 md:backdrop-blur-md"
         />
-        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between px-6 pb-3 pt-4 lg:px-10">
+        <div className="relative mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-4 lg:px-12">
           <Link href="/" aria-label="Contenaissance home" className="shrink-0">
-            <Image src="/images/contenaissance-logo.webp" width={274} height={133} alt="Contenaissance — Ritz GenAI Storytelling Studios" preload className="h-10 w-auto lg:h-13" />
+            <Image src="/images/contenaissance-logo.webp" width={274} height={133} alt="Contenaissance — Ritz GenAI Storytelling Studios" preload className="h-12 w-auto lg:h-[72px] lg:w-[148px]" />
           </Link>
 
-          <nav className="hidden items-center gap-8 md:flex">
+          <nav aria-label="Main" className="hidden items-center gap-9 md:flex">
             {LINKS.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                className="link-underline text-sm text-slate-400 transition-colors hover:text-white"
-              >
+              <Link key={link.label} href={link.href} className="link-underline font-sans text-base font-semibold capitalize leading-none tracking-normal text-[#F0F2EF] transition-colors hover:text-white">
                 {link.label}
               </Link>
             ))}
-          </nav>
-
-          <div className="flex items-center gap-3">
             <Link
               href="/contact"
               data-open-contact=""
               aria-haspopup="dialog"
-              className="hidden rounded-full bg-white/[0.06] px-4 py-2 text-sm text-white ring-1 ring-white/15 transition-colors hover:bg-white hover:text-space md:inline-flex"
+              className="group inline-flex items-center gap-2 font-sans text-base font-semibold capitalize leading-none tracking-normal text-[#DAAF25] transition-colors hover:text-[#f0c94a]"
             >
-              Say hello
+              Start a mission
+              <ArrowUpRight className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
-            <button
-              type="button"
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              aria-controls="mobile-menu"
-              aria-label={open ? "Close menu" : "Open menu"}
-              className="relative grid size-10 place-items-center rounded-full bg-white/[0.06] ring-1 ring-white/15 md:hidden"
-            >
-              <span aria-hidden className={`absolute h-px w-4 bg-white transition-transform duration-300 ${open ? "rotate-45" : "-translate-y-[3px]"}`} />
-              <span aria-hidden className={`absolute h-px w-4 bg-white transition-transform duration-300 ${open ? "-rotate-45" : "translate-y-[3px]"}`} />
-            </button>
-          </div>
+          </nav>
+
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            className="relative grid size-10 place-items-center rounded-full bg-white/[0.06] ring-1 ring-white/15 md:hidden"
+          >
+            <span aria-hidden className={`absolute h-px w-4 bg-white transition-transform duration-300 ${open ? "rotate-45" : "-translate-y-[3px]"}`} />
+            <span aria-hidden className={`absolute h-px w-4 bg-white transition-transform duration-300 ${open ? "-rotate-45" : "translate-y-[3px]"}`} />
+          </button>
         </div>
 
         <nav
@@ -144,9 +146,10 @@ export function Navbar() {
                 data-open-contact=""
                 aria-haspopup="dialog"
                 onClick={() => setOpen(false)}
-                className="flex min-h-12 items-center justify-center rounded-full bg-white text-sm font-medium text-space transition-colors active:bg-cyan-100"
+                className="flex min-h-12 items-center justify-center gap-2 rounded-full bg-[#DAAF25] text-base font-semibold text-space transition-colors active:bg-[#f0c94a]"
               >
-                Say hello
+                Start a mission
+                <ArrowUpRight className="size-3.5" />
               </Link>
             </li>
           </ul>

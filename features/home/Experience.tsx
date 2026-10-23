@@ -8,6 +8,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { Hero } from "./hero/Hero";
+import { Constellation } from "./constellation/Constellation";
 import { journey } from "./lib/store";
 import { prefersReducedMotion } from "@/lib/media";
 import { registerLenis, scrollToHash } from "@/lib/scroll";
@@ -19,9 +20,10 @@ import { Launch } from "./launch/Launch";
 import { Partners } from "./partners/Partners";
 import { Reviews } from "./reviews/Reviews";
 import { Spaces } from "./spaces/Spaces";
-import { Disciplines } from "./disciplines/Disciplines";
 import { HowWeThink } from "./how-we-think/HowWeThink";
+import { ThinkIntro } from "./how-we-think/ThinkIntro";
 import { NowFeaturing } from "./now-featuring/NowFeaturing";
+import { CreativeServices } from "./creative-services/CreativeServices";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
@@ -79,14 +81,6 @@ export function Experience() {
         end: "bottom bottom",
         onUpdate: (self) => (journey.tv = self.progress),
         onRefresh: (self) => (journey.tv = self.progress),
-      });
-
-      ScrollTrigger.create({
-        trigger: "#disciplines",
-        start: "top bottom",
-        end: "bottom bottom",
-        onUpdate: (self) => (journey.disc = self.progress),
-        onRefresh: (self) => (journey.disc = self.progress),
       });
 
       ScrollTrigger.create({
@@ -167,9 +161,11 @@ export function Experience() {
 
       <div className="relative z-10">
         <Hero />
+        <Constellation />
+        <ThinkIntro />
         <HowWeThink />
         <NowFeaturing />
-        <Disciplines />
+        <CreativeServices />
         <Blueprint />
         <Archive />
         <Spaces />

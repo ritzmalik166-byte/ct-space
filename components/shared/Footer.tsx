@@ -17,7 +17,7 @@ const MAX_MESSAGE = 1000;
 
 const QUICK_LINKS = [
   { label: "Home", href: "/" },
-  { label: "Services", href: "/#disciplines" },
+  { label: "Services", href: "/#creative-services" },
   { label: "Portfolio", href: "/#archive" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },

@@ -3,11 +3,10 @@
 import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/lib/media";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger, MotionPathPlugin);
+gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 type Metric = {
   from: number;
@@ -57,6 +56,8 @@ const EXIT_START = 280 / 380;
 const TRAIL_START = STUCK_AT + 0.05;
 const TRAIL_DURATION = 0.24;
 const TRAIL = "M 20 160 C 180 30, 360 20, 500 80 S 800 170, 980 36";
+/** The trail's viewBox size. */
+const TRAIL_BOX = { w: 1000, h: 200 };
 
 function format(metric: Metric, value: number) {
   const n = new Intl.NumberFormat("en-US", {
@@ -103,13 +104,45 @@ export function Impact() {
           TRAIL_START,
         );
 
-      if (!reduced) {
-        tl.fromTo(".js-im-rocket", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, TRAIL_START).to(
-          ".js-im-rocket",
-          {
-            motionPath: { path: "#impact-trail", align: "#impact-trail", alignOrigin: [0.5, 0.5], autoRotate: true },
-            duration: TRAIL_DURATION,
-          },
+      // The curve's viewBox is stretched to the sky box, so the rocket is placed from path coordinates
+      // scaled by the box's live size rather than a position measured once at setup.
+      const sky = root.current?.querySelector<HTMLElement>(".js-im-sky");
+      const path = root.current?.querySelector<SVGPathElement>("#impact-trail");
+      const rocket = root.current?.querySelector<HTMLElement>(".js-im-rocket");
+      let observer: ResizeObserver | undefined;
+
+      if (!reduced && sky && path && rocket) {
+        const length = path.getTotalLength();
+        const flight = { p: 0 };
+        let sx = 1;
+        let sy = 1;
+
+        const place = () => {
+          const at = flight.p * length;
+          const pt = path.getPointAtLength(at);
+          const back = path.getPointAtLength(Math.max(0, at - 1));
+          const ahead = path.getPointAtLength(Math.min(length, at + 1));
+          gsap.set(rocket, {
+            x: pt.x * sx,
+            y: pt.y * sy,
+            rotation: (Math.atan2((ahead.y - back.y) * sy, (ahead.x - back.x) * sx) * 180) / Math.PI,
+          });
+        };
+
+        const measure = () => {
+          sx = sky.clientWidth / TRAIL_BOX.w;
+          sy = sky.clientHeight / TRAIL_BOX.h;
+          place();
+        };
+
+        gsap.set(rocket, { xPercent: -50, yPercent: -50 });
+        measure();
+        observer = new ResizeObserver(measure);
+        observer.observe(sky);
+
+        tl.fromTo(rocket, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, TRAIL_START).to(
+          flight,
+          { p: 1, duration: TRAIL_DURATION, onUpdate: place },
           TRAIL_START,
         );
       }
@@ -151,6 +184,8 @@ export function Impact() {
         .to(".js-im-metric", { autoAlpha: 0, y: -24, scale: 0.94, duration: 0.08, stagger: 0.02, ease: "power2.in" }, EXIT_START + 0.02)
         .to(".js-im-veil", { autoAlpha: 0.4, duration: 0.12 }, EXIT_START + 0.04)
         .set({}, {}, 1);
+
+      return () => observer?.disconnect();
     },
     { scope: root },
   );
@@ -186,7 +221,7 @@ export function Impact() {
           </header>
 
           <div aria-hidden className="js-im-sky relative mt-6 h-[14svh] sm:mt-8 sm:h-[16svh]">
-            <svg viewBox="0 0 1000 200" preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
+            <svg viewBox={`0 0 ${TRAIL_BOX.w} ${TRAIL_BOX.h}`} preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
               <path
                 className="js-im-ghost invisible"
                 d={TRAIL}
