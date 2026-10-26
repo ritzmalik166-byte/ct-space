@@ -16,7 +16,6 @@ export const view = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, space: 0, impact
 
 /** Shared uniform objects so every material in a scene fades from one value. */
 export const fades = {
-  hero: { value: 1 },
   network: { value: 0 },
   flow: { value: 0 },
   space: { value: 0 },
@@ -68,8 +67,11 @@ export type Quality = "high" | "low";
 
 export const COUNTS: Record<
   Quality,
-  { core: number; stars: number; ring: number; nodes: number; network: number; dust: number; glows: number }
+  { stars: number; network: number; dust: number; glows: number; heroTiles: number }
 > = {
-  high: { core: 4800, stars: 2600, ring: 1400, nodes: 110, network: 900, dust: 1600, glows: 5 },
-  low: { core: 2200, stars: 1200, ring: 650, nodes: 60, network: 450, dust: 700, glows: 3 },
+  high: { stars: 2600, network: 900, dust: 1600, glows: 5, heroTiles: 30 },
+  low: { stars: 1200, network: 450, dust: 700, glows: 3, heroTiles: 16 },
 };
+
+/** Hero background video; rendered as a WebGL texture, so it must stay same-origin. */
+export const HERO_VIDEO_SRC = "/videos/229254_medium.mp4";

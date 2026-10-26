@@ -5,11 +5,8 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { PerformanceMonitor } from "@react-three/drei";
 import { COUNTS, motion, pointer, scene, SCENE_READY_EVENT, type Quality } from "../lib/store";
 import { CameraRig } from "./CameraRig";
-import { NeuralCore } from "@/features/home/hero/scene/NeuralCore";
-import { OrbitRings } from "@/features/home/hero/scene/OrbitRings";
-import { Satellites } from "@/features/home/hero/scene/Satellites";
 import { Starfield } from "./Starfield";
-import { Synapses } from "@/features/home/hero/scene/Synapses";
+import { HeroShatter } from "@/features/home/hero/scene/HeroShatter";
 import { NeuralNetwork } from "@/features/home/how-we-think/scene/NeuralNetwork";
 import { FlowTimeline } from "@/features/home/blueprint/scene/FlowTimeline";
 import { SpaceBlocks } from "@/features/home/spaces/scene/SpaceBlocks";
@@ -78,12 +75,8 @@ export default function HeroCanvas() {
         />
         <ReadySignal />
         <Starfield count={counts.stars} />
-        <CameraRig>
-          <NeuralCore count={counts.core} />
-          <Synapses count={counts.nodes} />
-          <OrbitRings count={counts.ring} />
-          <Satellites />
-        </CameraRig>
+        <CameraRig />
+        <HeroShatter cols={counts.heroTiles} />
         <NeuralNetwork nodes={counts.network} dust={counts.dust} glows={counts.glows} />
         <FlowTimeline />
         <SpaceBlocks />

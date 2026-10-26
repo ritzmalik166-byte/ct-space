@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, type ReactNode } from "react";
+import { useMemo, useRef } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 import { fades, journey, motion, NET_TRAVEL, pointer, view } from "../lib/store";
@@ -26,8 +26,7 @@ const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
 const easeInOutCubic = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
 const easeInOutSine = (x: number) => -(Math.cos(Math.PI * x) - 1) / 2;
 
-export function CameraRig({ children }: { children: ReactNode }) {
-  const rig = useRef<THREE.Group>(null);
+export function CameraRig() {
   const width = useThree((s) => s.size.width);
   const sway = useRef({ x: 0, y: 0 });
 
@@ -43,7 +42,6 @@ export function CameraRig({ children }: { children: ReactNode }) {
   const isDesktop = width >= 1024;
   const isMobile = width < 640;
   const offsetX = isDesktop ? 3.6 : 0;
-  const offsetY = isDesktop ? 0 : 1.3;
   const restZ = isDesktop ? 9 : isMobile ? 13 : 11;
 
   useFrame((state, delta) => {
@@ -64,7 +62,6 @@ export function CameraRig({ children }: { children: ReactNode }) {
     const dEase = easeInOutCubic(d);
     const net = easeInOutSine(clamp(view.net, 0, 1)) * Math.min(NET_TRAVEL, 1 - LOOK_AHEAD);
 
-    fades.hero.value = 1 - smoothstep(d, 0.55, 0.92);
     fades.network.value = smoothstep(d, 0.45, 1) * (1 - tvEase * 0.45 * (1 - flowEase)) * (1 - flowEase * 0.6);
     fades.flow.value = smoothstep(view.flow, 0.05, 0.22);
 
@@ -144,17 +141,7 @@ export function CameraRig({ children }: { children: ReactNode }) {
       cam.fov = fov;
       cam.updateProjectionMatrix();
     }
-
-    const g = rig.current;
-    if (!g) return;
-    g.visible = fades.hero.value > 0.002;
-    g.position.x = damp(g.position.x, lerp(offsetX, 0, dEase), 3, delta);
-    g.position.y = damp(g.position.y, lerp(offsetY, 0, dEase), 3, delta);
-    g.scale.setScalar(lerp(0.35, 1, intro) * lerp(1, 4, dEase * dEase));
-    g.rotation.z = lerp(-0.9, 0, intro) + dEase * 0.6;
-    g.rotation.x = damp(g.rotation.x, -pointer.y * 0.25, 2.5, delta);
-    g.rotation.y = damp(g.rotation.y, pointer.x * 0.35, 2.5, delta);
   });
 
-  return <group ref={rig}>{children}</group>;
+  return null;
 }

@@ -1,0 +1,47 @@
+---
+description: Performance-first standards for every new section of the cinematic 3D scroll site
+alwaysApply: true
+---
+
+# Performance-first sections
+
+Smooth scrolling, steady frame rate and minimal loading come before visual extras.
+If an effect costs noticeable frames on mid-range mobile, drop or simplify it.
+
+## Reuse the existing setup
+- One shared canvas: `features/home/scene/HeroCanvas.tsx`. Never add a second `<Canvas>`.
+- New 3D content mounts inside that canvas and fades via a shared uniform in `fades` (`features/home/lib/store.ts`).
+- Site-wide UI (Navbar, Footer) lives in `components/shared/` and is rendered by `app/layout.tsx`.
+- Scroll progress: add a field to `journey` (raw) and `view` (smoothed in `CameraRig`), driven by one
+  `ScrollTrigger.create` in `Experience.tsx`. Camera motion stays in `CameraRig`.
+- Reuse `shaders.ts` (noise, fresnel, soft points), `mulberry32` for deterministic data, Lenis + GSAP ticker as wired.
+
+## Rendering budget
+- Particle counts go in `COUNTS` with `high` and `low` tiers; never hard-code counts.
+- Animate in shaders via uniforms; update uniforms through material refs in `useFrame`.
+- Hide whole groups (`visible = false`) when their fade reaches 0 so they cost no draw calls.
+- Prefer one `points`/`lineSegments` per effect over many meshes. Keep large additive glow planes few.
+- No post-processing unless it is gated to the `high` tier and measured.
+- Respect the existing DPR cap and `PerformanceMonitor`; never raise them.
+
+## React and DOM
+- No per-frame React state. Mutate refs, uniforms or DOM directly (see `FeaturePlayer` progress bar).
+- Scroll animations: GSAP `scrub` timelines inside `useGSAP` with a `scope`, so they reverse automatically.
+- Animate only `transform`, `opacity`, `clip-path`. Avoid animating `filter`, layout or large blurs.
+- Sticky (`position: sticky`) over GSAP `pin` for long sections.
+
+## Loading
+- Client-only 3D loads through `next/dynamic` with `ssr: false` from a client component.
+- No new images or textures unless essential; use `next/image` with explicit size, `.webp`, lazy by default.
+- Video: `preload="metadata"`, `playsInline`, no autoplay, pause when scrolled out of view.
+- Don't add dependencies for things the current stack already does.
+
+## Reduced motion and cleanup
+- Honour `motion.reduced` / `prefers-reduced-motion`: no Lenis, slower ambient motion, no forced camera flights.
+- Dispose geometries/materials/textures you create outside JSX; let R3F dispose JSX-created ones.
+- Remove event listeners, observers and tickers in effect/`useGSAP` cleanup.
+
+## Before finishing
+- `npx tsc --noEmit` and `npx eslint app features` pass.
+- `npx next build` succeeds; check route JS size did not grow unexpectedly.
+- Check DevTools Performance (frame rate while scrolling) and Memory (no growth on repeated scroll up/down).

@@ -62,7 +62,7 @@ export function Experience() {
       ScrollTrigger.create({
         trigger: "#hero",
         start: "top top",
-        end: "bottom top",
+        end: "bottom bottom",
         onUpdate: (self) => (journey.dive = self.progress),
         onRefresh: (self) => (journey.dive = self.progress),
       });
