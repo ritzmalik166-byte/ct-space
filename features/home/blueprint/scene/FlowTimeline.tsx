@@ -6,7 +6,7 @@ import * as THREE from "three";
 import { fades, flowDraw, view } from "@/features/home/lib/store";
 import { FLOW_CENTER, FLOW_FILL, FLOW_RISE, flowHalfWidth } from "@/features/home/scene/journeyPath";
 
-const CYAN = new THREE.Color("#22d3ee");
+const GOLD = new THREE.Color("#DAAF25");
 
 const gridVertex = /* glsl */ `
 varying vec3 vPos;
@@ -43,7 +43,7 @@ export function FlowTimeline() {
   const aspect = useThree((s) => s.size.width / s.size.height);
   const halfWidth = flowHalfWidth(aspect);
   const halfRise = ((FLOW_RISE / 2) * halfWidth) / (FLOW_FILL * aspect);
-  const uniforms = useMemo(() => ({ uColor: { value: CYAN }, uFade: fades.flow, uScan: { value: -14 } }), []);
+  const uniforms = useMemo(() => ({ uColor: { value: GOLD }, uFade: fades.flow, uScan: { value: -14 } }), []);
 
   useFrame(() => {
     const visible = fades.flow.value > 0.002;

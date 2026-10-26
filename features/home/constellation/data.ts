@@ -1,5 +1,3 @@
-import { assetUrl } from "@/features/home/lib/assets";
-
 export type Partner = {
   name: string;
   /** Wordmark shown when there is no logo, or while the logo file is missing. */
@@ -26,42 +24,42 @@ const AI_TOOLS: Partner[] = [
   {
     name: "Pika",
     mark: "Pika",
-    logo: { src: assetUrl("pika.png"), width: 164, height: 57 },
+    logo: { src: "/assets/pika-icon.webp", width: 200, height: 160 },
     description: "AI-powered video generation platform that creates stunning videos from text and images.",
     tone: "#f8f9fa",
   },
   {
     name: "Claude",
     mark: "Claude",
-    logo: { src: "/assets/claude.png", width: 160, height: 56 },
+    logo: { src: "/assets/claude-icon.webp", width: 172, height: 169 },
     description: "Anthropic's AI assistant focused on being helpful, harmless, and honest.",
     tone: "#d97757",
   },
   {
     name: "ChatGPT",
     mark: "ChatGPT",
-    logo: { src: "/assets/chatgpt.png", width: 160, height: 56 },
+    logo: { src: "/assets/chatgpt-icon.webp", width: 190, height: 192 },
     description: "OpenAI's conversational AI that understands context and generates human-like responses.",
     tone: "#10a37f",
   },
   {
     name: "Copilot",
     mark: "Copilot",
-    logo: { src: assetUrl("copilot.png"), width: 181, height: 50 },
+    logo: { src: "/assets/copilot-icon.webp", width: 216, height: 187 },
     description: "Microsoft's AI coding assistant that helps developers write better code faster.",
     tone: "#60a5fa",
   },
   {
     name: "Grok",
     mark: "Grok",
-    logo: { src: assetUrl("grok.png"), width: 156, height: 57 },
+    logo: { src: "/assets/grok-icon.webp", width: 183, height: 183 },
     description: "xAI's witty AI assistant with real-time knowledge and a rebellious streak.",
     tone: "#f8f9fa",
   },
   {
     name: "Gemini",
     mark: "Gemini",
-    logo: { src: assetUrl("gemini.png"), width: 194, height: 87 },
+    logo: { src: "/assets/gemini-icon.webp", width: 197, height: 202 },
     description: "Google's multimodal AI model capable of understanding text, images, and code.",
     tone: "#8ab4f8",
   },

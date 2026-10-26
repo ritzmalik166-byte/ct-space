@@ -53,7 +53,7 @@ export const PULSE_LAYERS = [
   { scale: 0.7, opacity: 0.45 },
   { scale: 0.45, opacity: 0.2 },
 ];
-export const CYAN = "#22d3ee";
+export const GOLD = "#DAAF25";
 export const ORANGE = "#ff6b3d";
 
 export const isHandover = (i: number) => i === LAST;

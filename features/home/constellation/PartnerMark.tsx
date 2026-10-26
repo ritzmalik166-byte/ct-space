@@ -8,14 +8,15 @@ export function PartnerMark({ partner }: { partner: Partner }) {
   const [missing, setMissing] = useState(false);
   if (partner.logo && !missing) {
     return (
-      <span className="grid h-10 place-items-center rounded-lg bg-white px-3 shadow-[0_8px_24px_-8px_rgb(0_0_0/0.6)] lg:h-12 lg:px-4">
+      <span className="grid size-11 place-items-center rounded-full bg-white shadow-[0_8px_24px_-8px_rgb(0_0_0/0.6)] ring-1 ring-white/20 lg:size-14">
         <Image
           src={partner.logo.src}
           width={partner.logo.width}
           height={partner.logo.height}
           alt={partner.name}
+          sizes="56px"
           onError={() => setMissing(true)}
-          className="h-6 w-auto lg:h-7"
+          className="size-6 object-contain lg:size-8"
         />
       </span>
     );

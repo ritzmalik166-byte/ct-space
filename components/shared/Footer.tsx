@@ -132,7 +132,7 @@ export function Footer() {
   );
 
   return (
-    <footer ref={root} className="relative z-10 overflow-hidden bg-[#0F1014] font-sans">
+    <footer ref={root} className="relative z-10 overflow-hidden bg-[#0F1014] font-sans shadow-[0_-24px_60px_rgb(0_0_0/0.55)]">
       <div className="mx-auto flex max-w-[1280px] items-center justify-between gap-10 px-6 py-14 sm:px-10 sm:py-16 lg:px-12">
         <div className="min-w-0">
           <p className="js-ft-eyebrow text-[10px] uppercase tracking-[0.08em] text-slate-400 sm:text-[11px]">10 / Open a new flight plan</p>

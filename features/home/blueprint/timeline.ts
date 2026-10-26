@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { FLOW_STOPS } from "@/features/home/lib/store";
-import { CYAN, EXIT_POINT, EXIT_START, isHandover, LAST, ORANGE, POINTS, STUCK_AT } from "./milestones";
+import { GOLD, EXIT_POINT, EXIT_START, isHandover, LAST, ORANGE, POINTS, STUCK_AT } from "./milestones";
 
 /** Gap between the pulse head and each tail dot, so the tail trails behind like a comet. */
 const TRAIL = 0.006;
@@ -24,19 +24,12 @@ export function blueprintTimeline(root: HTMLElement, desktop: boolean) {
 
   tl.fromTo(q(".js-bp-panel"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, STUCK_AT)
     .fromTo(q(".js-bp-veil"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.08 }, STUCK_AT)
-    .fromTo(
-      q(".js-bp-title"),
-      { yPercent: 110, rotate: 3, transformOrigin: "0% 100%" },
-      { yPercent: 0, rotate: 0, duration: 0.08, ease: "expo.out" },
-      STUCK_AT + 0.01,
-    )
-    .fromTo(q(".js-bp-fade"), { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.05 }, STUCK_AT + 0.04)
     .fromTo(q(".js-bp-ghost"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, STUCK_AT + 0.06);
 
   // The energy pulse rides each segment as it draws, then merges into the Handover node.
   tl.fromTo(pulse, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, FLOW_STOPS[0])
     .to(pulse, { autoAlpha: 0, duration: 0.015 }, FLOW_STOPS[LAST] - 0.01)
-    .fromTo(q(".js-bp-pulse-dot"), { backgroundColor: CYAN }, { backgroundColor: ORANGE, duration: 0.08 }, FLOW_STOPS[LAST - 1]);
+    .fromTo(q(".js-bp-pulse-dot"), { backgroundColor: GOLD }, { backgroundColor: ORANGE, duration: 0.08 }, FLOW_STOPS[LAST - 1]);
 
   FLOW_STOPS.forEach((stop, i) => {
     const next = FLOW_STOPS[i + 1];

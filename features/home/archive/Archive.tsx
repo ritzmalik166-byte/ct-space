@@ -6,6 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { prefersReducedMotion } from "@/lib/media";
 import { ExpandVideoModal, previewRatio } from "@/features/home/components/ExpandVideoModal";
+import { SectionHeading } from "@/features/home/components/SectionHeading";
 import { ProjectCard } from "./ProjectCard";
 import { PROJECTS, projectVideo } from "./projects";
 import { archiveTimeline, bindCardTilt } from "./timeline";
@@ -79,17 +80,8 @@ export function Archive() {
           aria-hidden
           className="js-arch-veil absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgb(8_15_28/0.55)_0%,rgb(6_11_22/0.88)_65%,rgb(5_6_11/0.96)_100%)]"
         />
-
         <div className="relative mx-auto flex h-full w-full max-w-[1280px] flex-col items-center justify-center px-5 sm:px-8 lg:px-10">
-          <header className="js-arch-head flex max-w-[506px] flex-col items-center gap-2.5 text-center">
-            <h2
-              id="archive-title"
-              className="bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text font-heading text-[30px] font-bold uppercase leading-none tracking-[-0.6px] text-transparent sm:text-[38px]"
-            >
-              Portfolio
-            </h2>
-            <p className="font-sans text-base font-normal leading-none tracking-[-0.6px] text-[#94A3B8] sm:text-lg">Development Archive</p>
-          </header>
+          <SectionHeading id="archive-title" title="Portfolio" subtitle="Development Archive" start="top top" className="js-arch-head" />
 
           <div className="pointer-events-auto mt-8 grid w-full grid-cols-2 gap-3 sm:mt-12 lg:h-[min(64svh,620px)] lg:grid-cols-[1.42fr_1fr] lg:grid-rows-2 lg:gap-3.5">
             {PROJECTS.map((project, i) => (

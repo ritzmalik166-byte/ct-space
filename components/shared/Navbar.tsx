@@ -18,8 +18,8 @@ const LINKS = [
 
 ];
 
-/** Past this share of the viewport the full bar folds away and the hamburger takes over. */
-const COMPACT_AT = 0.75;
+/** Past this share of the viewport the full bar folds away and the hamburger takes over (with the hero copy). */
+const COMPACT_AT = 0.2;
 
 const FOLD = "transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:duration-0 group-data-[compact=true]/nav:opacity-0";
 

@@ -1,7 +1,6 @@
 import gsap from "gsap";
 
 export type ServiceParts = {
-  head: HTMLElement;
   /** Tall wrapper whose sticky child holds the full-screen stage. */
   pin: HTMLElement;
   frame: HTMLElement;
@@ -22,23 +21,24 @@ const WIPE_TO = "polygon(0% 0%, 135% 0%, 100% 100%, -35% 100%)";
 const HOLD = 0.7;
 const SWAP = 1;
 const EXIT = 1.2;
-/** Parallax depths: background drifts least, figure most, so the layers separate as they travel left. */
+/** Parallax: the background travels a full frame per swap; the figure slides left past its layer's clipped edge. */
 const BG_DRIFT = 4;
-const BG_TRAVEL = 35;
+const BG_TRAVEL = 100;
 const FIG_DRIFT = 8;
-const FIG_TRAVEL = 110;
+const FIG_EXIT = 100;
+const FIG_ENTER = 28;
 
 const lines = (copy: HTMLElement) => copy.querySelectorAll<HTMLElement>(".js-cs-line");
 const out = { immediateRender: false };
 
 /** Scroll-in: the stage opens from a rounded window while the first slide settles into place. */
-export function servicesEntrance({ head, pin, stage, bgImgs, figs, copies, explore }: ServiceParts, reduced: boolean) {
+export function servicesEntrance({ pin, stage, bgImgs, figs, copies, explore }: ServiceParts, reduced: boolean) {
   const tl = gsap.timeline({
     defaults: { ease: "power2.out" },
     scrollTrigger: { trigger: pin, start: "top bottom", end: "top top", scrub: 1 },
   });
   tl.fromTo(
-    [head, ...lines(copies[0]), explore],
+    [...lines(copies[0]), explore],
     { y: 40, autoAlpha: 0 },
     { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.4, ease: "power3.out" },
     0.5,
@@ -114,19 +114,20 @@ function swap(tl: gsap.core.Timeline, p: ServiceParts, a: number, t: number, red
   }
 
   tl.fromTo(p.bgs[b], { clipPath: WIPE_FROM }, { clipPath: WIPE_TO, duration: SWAP, ease: "power2.inOut" }, t)
-    .fromTo(p.bgImgs[b], { xPercent: BG_TRAVEL, scale: 1.1 }, { xPercent: 0, scale: 1, duration: SWAP, ease: "power2.out" }, t)
-    .fromTo(p.bgImgs[a], { xPercent: -BG_DRIFT }, { xPercent: -BG_TRAVEL, duration: SWAP, ease: "power2.in", ...out }, t)
+    .fromTo(p.bgImgs[b], { xPercent: BG_TRAVEL }, { xPercent: 0, duration: SWAP, ease: "power2.inOut" }, t)
+    .fromTo(p.bgImgs[a], { xPercent: -BG_DRIFT }, { xPercent: -BG_TRAVEL, duration: SWAP, ease: "power2.inOut", ...out }, t)
     .fromTo(
       p.figs[a],
-      { xPercent: -FIG_DRIFT, rotate: 0, autoAlpha: 1 },
-      { xPercent: -FIG_TRAVEL, rotate: -4, autoAlpha: 0, duration: SWAP * 0.7, ease: "power2.in", ...out },
+      { xPercent: -FIG_DRIFT },
+      { xPercent: -FIG_EXIT, duration: SWAP * 0.7, ease: "power2.in", ...out },
       t,
     )
+    .set(p.figs[a], { autoAlpha: 0 }, t + SWAP * 0.7)
     .fromTo(
       p.figs[b],
-      { xPercent: FIG_TRAVEL, rotate: 5, autoAlpha: 0 },
-      { xPercent: 0, rotate: 0, autoAlpha: 1, duration: SWAP * 0.75, ease: "power3.out" },
-      t + SWAP * 0.25,
+      { xPercent: FIG_ENTER, scale: 0.94, autoAlpha: 0 },
+      { xPercent: 0, scale: 1, autoAlpha: 1, duration: SWAP * 0.6, ease: "power2.out" },
+      t + SWAP * 0.4,
     )
     .fromTo(
       lines(p.copies[a]),

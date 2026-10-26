@@ -9,10 +9,10 @@ export const SCENE_READY_EVENT = "ct:scene-ready";
 export const INTRO_DONE_EVENT = "ct:intro-done";
 
 /** Raw scroll progress written by ScrollTrigger (0..1 per phase). */
-export const journey = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, impact: 0, review: 0, launch: 0 };
+export const journey = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, impact: 0, review: 0 };
 
 /** Smoothed copy of `journey`, updated once per frame by the camera director. */
-export const view = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, impact: 0, review: 0, launch: 0 };
+export const view = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, impact: 0, review: 0 };
 
 /** Shared uniform objects so every material in a scene fades from one value. */
 export const fades = {
@@ -66,11 +66,11 @@ export type Quality = "high" | "low";
 
 export const COUNTS: Record<
   Quality,
-  { stars: number; network: number; dust: number; glows: number; heroTiles: number }
+  { stars: number; network: number; dust: number; glows: number }
 > = {
-  high: { stars: 2600, network: 900, dust: 1600, glows: 5, heroTiles: 30 },
-  low: { stars: 1200, network: 450, dust: 700, glows: 3, heroTiles: 16 },
+  high: { stars: 2600, network: 900, dust: 1600, glows: 5 },
+  low: { stars: 1200, network: 450, dust: 700, glows: 3 },
 };
 
-/** Hero background video; rendered as a WebGL texture, so it must stay same-origin. */
+/** Hero background video. */
 export const HERO_VIDEO_SRC = "/videos/229254_medium.mp4";

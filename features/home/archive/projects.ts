@@ -21,8 +21,8 @@ export const PROJECTS: Project[] = [
     type: "Residential tower",
     year: "2026",
     summary: "A 42-storey waterfront tower, taken from massing studies to a full cinematic launch film.",
-    preview: assetUrl("14.mp4"),
-    film: assetUrl("auto.mp4"),
+    preview: assetUrl("07.mp4"),
+    film: assetUrl("07.mp4"),
     stats: [
       ["Floors", "42"],
       ["Residences", "380"],
@@ -36,7 +36,7 @@ export const PROJECTS: Project[] = [
     type: "Villas",
     year: "2025",
     summary: "Beachfront villas walked through room by room, from dawn light to evening interiors.",
-    preview: assetUrl("09.mp4"),
+    preview: assetUrl("08.MP4"),
   },
   {
     code: "ARC-03",
@@ -45,7 +45,7 @@ export const PROJECTS: Project[] = [
     type: "Mixed-use",
     year: "2025",
     summary: "A Victorian foundry reborn as lofts and studios, with heritage brick meeting new steel.",
-    preview: assetUrl("10.mp4"),
+    preview: assetUrl("04.mp4"),
   },
 ];
 

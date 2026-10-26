@@ -142,7 +142,9 @@ export default async function BlogPostPage({ params }: PageProps<"/blog/[slug]">
                 <p className="mt-1 text-sm text-slate-400">Tell us about it and we&apos;ll map out the mission.</p>
               </div>
               <Link
-                href="/#contact"
+                href="/contact"
+                data-open-contact=""
+                aria-haspopup="dialog"
                 className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-white px-6 text-sm font-medium text-space transition-colors hover:bg-cyan-100"
               >
                 Start a mission
