@@ -5,6 +5,7 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { SectionHeading } from "@/features/home/components/SectionHeading";
 import { motion } from "@/features/home/lib/store";
 import { SLIDES } from "./slides";
 import { servicesEntrance, servicesSequence, WIPE_FROM, type ServiceParts } from "./timeline";
@@ -28,7 +29,6 @@ export function CreativeServices() {
       const all = (sel: string) => gsap.utils.toArray<HTMLElement>(sel, section);
       const one = (sel: string) => section.querySelector(sel) as HTMLElement;
       const parts: ServiceParts = {
-        head: one(".js-cs-head"),
         pin: one(".js-cs-pin"),
         frame: one(".js-cs-frame"),
         stage: one(".js-cs-stage"),
@@ -54,18 +54,15 @@ export function CreativeServices() {
   return (
     <section id="creative-services" ref={root} aria-labelledby="creative-services-title" className="relative">
       <div className="js-cs-pin relative h-[550svh]">
-        <div className="js-cs-frame sticky top-0 flex h-svh w-full flex-col gap-3 bg-space pt-[72px] md:gap-4 md:pt-5">
-          <div className="js-cs-head flex shrink-0 flex-col items-center gap-1.5 px-5 text-center sm:gap-2">
-            <h2
-              id="creative-services-title"
-              className="bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text pb-[0.1em] font-heading text-[26px] font-bold uppercase leading-none tracking-[-0.6px] text-transparent sm:text-[34px]"
-            >
-              AI creative services
-            </h2>
-            <p className="max-w-[506px] font-sans text-sm font-normal leading-tight tracking-[-0.4px] text-[#B4C0CE] sm:text-base">
-              AI-powered creative solutions for campaigns, content, branding, &amp; digital experiences.
-            </p>
-          </div>
+        <div className="js-cs-frame sticky top-0 flex h-svh w-full flex-col gap-3 bg-white pt-[72px] md:gap-4 md:pt-5">
+          <SectionHeading
+            id="creative-services-title"
+            title="AI creative services"
+            subtitle="AI-powered creative solutions for campaigns, content, branding, & digital experiences."
+            tone="light"
+            start="top 35%"
+            className="shrink-0 px-5"
+          />
 
           <div
             role="region"
@@ -92,8 +89,8 @@ export function CreativeServices() {
               className="pointer-events-none absolute inset-0 z-[3] bg-black/55 [clip-path:polygon(0_0,100%_0,100%_38%,0_62%)] lg:[clip-path:polygon(0_0,72%_0,44%_100%,0_100%)]"
             />
 
-            {/* Layer 3: figures. */}
-            <div className="pointer-events-none absolute inset-y-0 right-[-6%] z-[4] w-[78%] sm:right-0 sm:w-[55%] lg:left-[44%] lg:right-auto lg:w-[42%]">
+            {/* Layer 3: figures. Clipped on the left edge only, so outgoing figures slide behind an invisible line. */}
+            <div className="pointer-events-none absolute inset-y-0 right-[-6%] z-[4] w-[78%] [clip-path:inset(-20%_-100%_0_0)] sm:right-0 sm:w-[55%] lg:left-[44%] lg:right-auto lg:w-[42%]">
               {SLIDES.map((slide, i) => (
                 <div
                   key={slide.figure}

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useRef } from "react";
 import Lenis from "lenis";
+import Snap from "lenis/snap";
 import "lenis/dist/lenis.css";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,7 +17,6 @@ import { IntroLoader } from "./components/IntroLoader";
 import { Archive } from "./archive/Archive";
 import { Blueprint } from "./blueprint/Blueprint";
 import { Impact } from "./impact/Impact";
-import { Launch } from "./launch/Launch";
 import { Reviews } from "./reviews/Reviews";
 import { Journal } from "./journal/Journal";
 import type { JournalPost } from "./journal/types";
@@ -31,11 +31,13 @@ const HeroCanvas = dynamic(() => import("./scene/HeroCanvas"), { ssr: false });
 
 export function Experience({ posts }: { posts: JournalPost[] }) {
   const root = useRef<HTMLDivElement>(null);
+  const sections = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const reduced = prefersReducedMotion();
       let lenis: Lenis | undefined;
+      let snap: Snap | undefined;
       let tick: ((time: number) => void) | undefined;
 
       if (!reduced) {
@@ -45,6 +47,17 @@ export function Experience({ posts }: { posts: JournalPost[] }) {
         gsap.ticker.add(tick);
         gsap.ticker.lagSmoothing(0);
         registerLenis(lenis);
+
+        // Scrolling that comes to rest near the start of a section settles on it, so each section is seen whole.
+        // Proximity only: stopping partway through a long scroll-driven section leaves it where it is.
+        snap = new Snap(lenis, {
+          type: "proximity",
+          distanceThreshold: "45%",
+          debounce: 250,
+          duration: 0.9,
+          easing: (t) => 1 - (1 - t) ** 3,
+        });
+        if (sections.current) snap.addElements([...sections.current.children] as HTMLElement[], { align: "start", ignoreTransform: true });
       }
 
       // Same-page anchors glide through the journey instead of jumping. Capture phase runs before
@@ -114,20 +127,12 @@ export function Experience({ posts }: { posts: JournalPost[] }) {
         onUpdate: (self) => (journey.review = self.progress),
         onRefresh: (self) => (journey.review = self.progress),
       });
-
-      ScrollTrigger.create({
-        trigger: "#contact",
-        start: "top bottom",
-        end: "bottom bottom",
-        onUpdate: (self) => (journey.launch = self.progress),
-        onRefresh: (self) => (journey.launch = self.progress),
-      });
-
       document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
       return () => {
         document.removeEventListener("click", onAnchorClick, true);
         registerLenis(null);
+        snap?.destroy();
         if (tick) gsap.ticker.remove(tick);
         lenis?.destroy();
       };
@@ -151,7 +156,7 @@ export function Experience({ posts }: { posts: JournalPost[] }) {
         className="pointer-events-none fixed inset-0 z-[1] bg-[radial-gradient(ellipse_at_center,transparent_55%,rgb(5_6_11/0.75)_100%)]"
       />
 
-      <div className="relative z-10">
+      <div ref={sections} className="relative z-10">
         <Hero />
         <Constellation />
         <ThinkIntro />
@@ -163,7 +168,6 @@ export function Experience({ posts }: { posts: JournalPost[] }) {
         <Journal posts={posts} />
         <Impact />
         <Reviews />
-        <Launch />
       </div>
 
       <div aria-hidden className="grain pointer-events-none fixed inset-0 z-50 hidden md:block" />

@@ -114,6 +114,11 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Home only: the footer rises over the last 100svh of the reviews section, whose panel stays pinned beneath it. */
+body:has(#reviews) > footer {
+  margin-top: -100svh;
+}
+
 @layer base {
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);

@@ -5,12 +5,12 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { SectionHeading } from "@/features/home/components/SectionHeading";
 import { prefersReducedMotion } from "@/lib/media";
 import { ALL_PARTNERS, ORBITS } from "./data";
 import { ORBIT_TILT, orbitPath, STAGE_SIZE, VIEW } from "./geometry";
 import { OrbitRider } from "./OrbitRider";
 import { PartnerMark } from "./PartnerMark";
-import { PORTAL_RIM_SIZE, portalExit } from "./portal";
 import { startRiders } from "./riders";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -19,28 +19,28 @@ export function Constellation() {
   const root = useRef<HTMLElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
-  const rim = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const section = root.current;
-      if (!section || !panel.current || !stage.current || !rim.current) return;
+      if (!section || !panel.current || !stage.current) return;
       const reduced = prefersReducedMotion();
 
       gsap
         .timeline({
           defaults: { ease: "power3.out" },
-          scrollTrigger: { trigger: section, start: "top 75%", end: "top 5%", scrub: 0.8 },
+          scrollTrigger: { trigger: section, start: "top 95%", end: "top 30%", scrub: 0.8 },
         })
-        .fromTo(".js-cn-head > *", { y: 30, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.1, duration: 0.4 }, 0)
         .fromTo(".js-cn-orbit", { scale: 0.7, autoAlpha: 0, svgOrigin: "500 310" }, { scale: 1, autoAlpha: 1, stagger: 0.12, duration: 0.6 }, 0.1)
         .fromTo(".js-cn-core", { scale: 0.6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.5 }, 0.2)
         .fromTo(".js-cn-badge", { scale: 0.6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, stagger: 0.05, duration: 0.4 }, 0.45);
 
-      // Arrival from the hero: the section tilts up out of the depth.
+      // Arrival: the section slides up over the pinned hero (its negative top margin) and the panel tilts up out of
+      // the depth. The tilt stays off the section itself: ScrollTrigger measures the section, and a perspective tilt
+      // would make it read far shorter, firing the exit early and leaving a blank gap.
       if (!reduced) {
         gsap.fromTo(
-          section,
+          panel.current,
           { rotateX: -16, scale: 0.94, transformPerspective: 1400, transformOrigin: "50% 0%" },
           {
             rotateX: 0,
@@ -51,15 +51,7 @@ export function Constellation() {
         );
       }
 
-      const parts = { section, panel: panel.current, stage: stage.current, rim: rim.current };
-      const mm = gsap.matchMedia();
-      mm.add("(min-width: 640px)", () => portalExit(parts));
-      const stopRiders = startRiders(section, parts.stage, reduced);
-
-      return () => {
-        mm.revert();
-        stopRiders();
-      };
+      return startRiders(section, stage.current, reduced);
     },
     { scope: root },
   );
@@ -70,28 +62,24 @@ export function Constellation() {
       ref={root}
       data-paused
       aria-labelledby="constellation-title"
-      className="group/cn relative z-10 sm:h-[260svh]"
+      className="group/cn relative z-20 -mt-[100svh]"
     >
       <div
         ref={panel}
-        className="relative overflow-hidden rounded-t-[32px] bg-space py-20 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] sm:sticky sm:top-0 sm:flex sm:h-svh sm:flex-col sm:items-center sm:justify-center sm:rounded-t-[48px] sm:py-6"
+        className="relative overflow-hidden rounded-t-[32px] bg-space py-20 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] sm:flex sm:h-svh sm:flex-col sm:items-center sm:justify-center sm:rounded-t-[48px] sm:py-6"
       >
         <div
           aria-hidden
           className="js-cn-glow pointer-events-none absolute left-1/2 top-[55%] size-[60rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(124_58_237/0.22),rgb(76_29_149/0.08)_45%,transparent_70%)]"
         />
 
-        <div className="js-cn-head relative mx-auto max-w-3xl px-6 text-center">
-          <h2
-            id="constellation-title"
-            className="bg-[linear-gradient(180deg,#FFFFFF_0%,#F1F5F9_50%,#94A3B8_100%)] bg-clip-text align-middle font-heading text-[28px] font-extrabold uppercase leading-[32px] tracking-[-0.6px] text-transparent sm:text-[38px]"
-          >
-            Our constellation of partners
-          </h2>
-          <p className="mx-auto mt-3 max-w-md align-middle font-sans text-[16px] font-normal leading-[19.5px] tracking-normal text-[#94A3B8] sm:text-[18px]">
-            Empowering high-velocity enterprises across dynamic orbits of scale and industry.
-          </p>
-        </div>
+        <SectionHeading
+          id="constellation-title"
+          title="Our constellation of partners"
+          subtitle="Empowering high-velocity enterprises across dynamic orbits of scale and industry."
+          start="top 40%"
+          className="relative px-6"
+        />
 
         <div className="mt-10 w-full [perspective:1300px] sm:mt-4">
           <div
@@ -145,19 +133,6 @@ export function Constellation() {
             </li>
           ))}
         </ul>
-
-        {/* Glowing edge of the portal; `portal.ts` centres it on the core and scales it with the hole. */}
-        <div
-          ref={rim}
-          aria-hidden
-          className="pointer-events-none invisible absolute z-20 will-change-transform"
-          style={{ width: PORTAL_RIM_SIZE, height: PORTAL_RIM_SIZE }}
-        >
-          <svg viewBox="0 0 200 200" className="size-full overflow-visible">
-            <circle cx="100" cy="100" r="100" fill="none" stroke="#a855f7" strokeOpacity="0.35" strokeWidth="18" vectorEffect="non-scaling-stroke" />
-            <circle cx="100" cy="100" r="100" fill="none" stroke="#e9d5ff" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-          </svg>
-        </div>
       </div>
     </section>
   );

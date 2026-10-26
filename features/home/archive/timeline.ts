@@ -3,17 +3,28 @@ import gsap from "gsap";
 /** The section overlaps the previous one by 100svh; the panel locks once that overlap has scrolled past. */
 const SECTION_SVH = 400;
 const STUCK_AT = 100 / SECTION_SVH;
+/** Arrival: the featured card opens first, then each small card in turn. */
+const OPEN_START = STUCK_AT;
+const OPEN_SPAN = 0.12;
+const SIDE_START = STUCK_AT + 0.08;
+const SIDE_GAP = 0.05;
+const PLAY_FROM = OPEN_START + OPEN_SPAN * 0.8;
 /** Scroll window in which the glass rises and the details unfold. */
-const REVEAL_START = 0.42;
-const REVEAL_END = 0.6;
-/** The next section starts entering here. */
-const EXIT_START = (SECTION_SVH - 100) / SECTION_SVH;
+const REVEAL_START = 0.5;
+const REVEAL_END = 0.67;
+/** The exit (about 76svh long) ends as the panel unpins; the Journal fades in over its last 35svh, so no blank scroll is left between them. */
+const EXIT_START = (SECTION_SVH - 76) / SECTION_SVH;
+/** The closing wipes are tighter than the arrival so they fit inside the shorter exit window. */
+const CLOSE_SPAN = 0.08;
+const CLOSE_GAP = 0.03;
 
 export const HIDDEN = "inset(100% 0% 0% 0%)";
 const FULL = "inset(0% 0% 0% 0%)";
+const CLOSED_DOWN = "inset(0% 0% 100% 0%)";
+const CLOSED_RIGHT = "inset(0% 100% 0% 0%)";
 
 /**
- * Arrival swings the cards in like doors, the reveal raises the glass and unfolds each card's details,
+ * Arrival opens the cards with scroll-scrubbed wipes, the reveal raises the glass and unfolds each card's details,
  * and the exit tips the cards back into the floor. `onPlay` reports when the previews should run.
  */
 export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void) {
@@ -27,42 +38,30 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
       trigger: root,
       start: "top bottom",
       end: "bottom bottom",
-      scrub: 1,
+      scrub: 1.5,
       invalidateOnRefresh: true,
-      onUpdate: ({ progress }) => onPlay(progress > STUCK_AT - 0.02 && progress < EXIT_START + 0.06),
+      // Previews start once the featured card is mostly open, so video decoding never competes with the wipes.
+      onUpdate: ({ progress }) => onPlay(progress > PLAY_FROM && progress < EXIT_START + 0.06),
       onLeave: () => onPlay(false),
       onLeaveBack: () => onPlay(false),
     },
   });
 
   tl.fromTo(q(".js-arch-panel"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, STUCK_AT - 0.02)
-    .fromTo(q(".js-arch-veil"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, STUCK_AT - 0.02)
-    .fromTo(
-      q(".js-arch-head"),
-      { y: 40, rotateX: -70, autoAlpha: 0, transformPerspective: 800, transformOrigin: "50% 100%" },
-      { y: 0, rotateX: 0, autoAlpha: 1, duration: 0.06, ease: "power3.out" },
-      STUCK_AT - 0.01,
-    );
+    .fromTo(q(".js-arch-veil"), { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.06 }, STUCK_AT - 0.02);
 
-  // Featured card swings in from the left, the stacked pair from the right, each hinged on its inner edge.
+  // The featured card opens from its top edge down; the small cards are wiped open left to right, one after another.
   cells.forEach((cell, i) => {
-    const side = i === 0 ? -1 : 1;
-    tl.fromTo(
-      cell,
-      {
-        x: side * 160,
-        z: -420,
-        rotateY: side * -38,
-        rotateX: i === 1 ? 10 : i === 2 ? -10 : 0,
-        autoAlpha: 0,
-        transformPerspective: 1400,
-        transformOrigin: i === 0 ? "100% 50%" : "0% 50%",
-      },
-      { x: 0, z: 0, rotateY: 0, rotateX: 0, autoAlpha: 1, duration: 0.1, ease: "power3.out" },
-      STUCK_AT + i * 0.025,
+    const featured = i === 0;
+    const at = featured ? OPEN_START : SIDE_START + (i - 1) * SIDE_GAP;
+    tl.fromTo(cell, { clipPath: featured ? CLOSED_DOWN : CLOSED_RIGHT }, { clipPath: FULL, duration: OPEN_SPAN, ease: "sine.inOut" }, at).fromTo(
+      cards[i],
+      featured ? { yPercent: -8, scale: 1.18 } : { xPercent: -18, scale: 1.08 },
+      { yPercent: 0, xPercent: 0, scale: 1, duration: OPEN_SPAN * 1.3, ease: "power2.out", force3D: true },
+      at,
     );
   });
-  tl.fromTo(q(".js-arch-cta"), { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.04 }, STUCK_AT + 0.08);
+  tl.fromTo(q(".js-arch-cta"), { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.04 }, SIDE_START + SIDE_GAP + OPEN_SPAN * 0.6);
 
   const span = REVEAL_END - REVEAL_START;
   cards.forEach((card, i) => {
@@ -85,37 +84,40 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
     tl.fromTo(
       lines,
       { y: 16, autoAlpha: 0, clipPath: "inset(0% 0% 100% 0%)" },
-      { y: 0, autoAlpha: 1, clipPath: FULL, duration: span * 0.35, stagger: span * 0.08, ease: "power3.out" },
+      { y: 0, autoAlpha: 1, clipPath: FULL, duration: span * 0.4, stagger: span * 0.08, ease: "power2.out" },
       at + span * 0.35,
     );
   });
 
   tl.to(q(".js-arch-head"), { y: -40, autoAlpha: 0, duration: 0.05, ease: "power2.in" }, EXIT_START)
-    .to(q(".js-arch-cta"), { y: 20, autoAlpha: 0, duration: 0.04 }, EXIT_START)
-    .to(
-      cells,
+    .to(q(".js-arch-cta"), { y: 20, autoAlpha: 0, duration: 0.04 }, EXIT_START);
+
+  // The exit plays the arrival backwards: the small cards wipe shut right to left (last first), then the featured card closes upward.
+  const last = cells.length - 1;
+  cells.forEach((cell, i) => {
+    const featured = i === 0;
+    const at = EXIT_START + 0.01 + (featured ? last : last - i) * CLOSE_GAP;
+    tl.to(cell, { clipPath: featured ? CLOSED_DOWN : CLOSED_RIGHT, duration: CLOSE_SPAN, ease: "sine.inOut" }, at).to(
+      cards[i],
       {
-        rotateX: 55,
-        y: 120,
-        z: -300,
-        autoAlpha: 0,
-        transformOrigin: "50% 100%",
-        duration: 0.1,
+        ...(featured ? { yPercent: -8, scale: 1.18 } : { xPercent: -18, scale: 1.08 }),
+        duration: CLOSE_SPAN * 1.3,
         ease: "power2.in",
-        stagger: { each: 0.015, from: "end" },
+        force3D: true,
       },
-      EXIT_START + 0.01,
-    )
-    .to(q(".js-arch-veil"), { autoAlpha: 0, duration: 0.1 }, EXIT_START + 0.05)
-    .set({}, {}, 1);
+      at - CLOSE_SPAN * 0.3,
+    );
+  });
+
+  tl.set({}, {}, 1);
 }
 
 /** Pointer tilt on fine pointers. */
 export function bindCardTilt(root: HTMLElement) {
   const offs = (gsap.utils.selector(root)(".js-arch-card") as HTMLElement[]).map((card) => {
     gsap.set(card, { transformPerspective: 1000 });
-    const rx = gsap.quickTo(card, "rotationX", { duration: 0.6, ease: "power3.out" });
-    const ry = gsap.quickTo(card, "rotationY", { duration: 0.6, ease: "power3.out" });
+    const rx = gsap.quickTo(card, "rotationX", { duration: 0.9, ease: "power2.out" });
+    const ry = gsap.quickTo(card, "rotationY", { duration: 0.9, ease: "power2.out" });
     const move = (e: PointerEvent) => {
       const r = card.getBoundingClientRect();
       ry(((e.clientX - r.left) / r.width - 0.5) * 10);

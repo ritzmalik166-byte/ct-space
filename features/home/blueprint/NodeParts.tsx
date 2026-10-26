@@ -19,7 +19,7 @@ export function NodeBadge({ index }: { index: number }) {
     );
   }
   return (
-    <span className="relative grid size-7 place-items-center rounded-full border-[1.5px] border-cyan-400 bg-[#05060b] text-[10px] font-medium text-cyan-200 lg:size-9 lg:text-[11px]">
+    <span className="relative grid size-7 place-items-center rounded-full border-[1.5px] border-[#DAAF25] bg-[#05060b] text-[10px] font-medium text-[#F3D77A] lg:size-9 lg:text-[11px]">
       {pad(index)}
     </span>
   );
@@ -51,24 +51,24 @@ export function NodePopup({ item, index }: { item: Milestone; index: number }) {
         className={`relative rounded-2xl border bg-[#0b1626]/95 p-4 text-left ${
           handover
             ? "border-[#ff6b3d]/35 shadow-[0_18px_50px_-18px_rgb(255_107_61/0.6)]"
-            : "border-cyan-400/25 shadow-[0_18px_50px_-18px_rgb(34_211_238/0.55)]"
+            : "border-[#DAAF25]/25 shadow-[0_18px_50px_-18px_rgb(218_175_37/0.55)]"
         }`}
       >
         <div className="flex items-center justify-between">
           <span
             className={`flex items-center gap-1.5 rounded-full px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] ${
-              handover ? "bg-[#ff6b3d]/15 text-[#ffa27f]" : "bg-cyan-400/10 text-cyan-300"
+              handover ? "bg-[#ff6b3d]/15 text-[#ffa27f]" : "bg-[#DAAF25]/10 text-[#F3D77A]"
             }`}
           >
-            <span className={`size-1.5 rounded-full ${handover ? "bg-[#ff6b3d]" : "bg-cyan-400"}`} />
+            <span className={`size-1.5 rounded-full ${handover ? "bg-[#ff6b3d]" : "bg-[#DAAF25]"}`} />
             {item.when}
           </span>
           <span className="font-mono text-[10px] tracking-[0.16em] text-slate-500">
             {pad(index)} / {pad(LAST)}
           </span>
         </div>
-        <p className="mt-3 text-[15px] font-semibold tracking-tight">{item.title}</p>
-        <p className="mt-1.5 text-[12.5px] leading-relaxed text-slate-400">{item.details}</p>
+        <p className="mt-3 font-heading text-[15px] font-bold uppercase tracking-[-0.3px] text-[#F1F5F9]">{item.title}</p>
+        <p className="mt-1.5 font-sans text-[12.5px] leading-relaxed text-[#94A3B8]">{item.details}</p>
         <ul className="mt-3 flex flex-wrap gap-1.5">
           {item.outputs.map((o) => (
             <li key={o} className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[10px] text-slate-300">
@@ -79,7 +79,7 @@ export function NodePopup({ item, index }: { item: Milestone; index: number }) {
         <span
           aria-hidden
           className={`absolute -bottom-[7px] ${align.arrow} size-3 rotate-45 border-b border-r bg-[#0b1626] ${
-            handover ? "border-[#ff6b3d]/35" : "border-cyan-400/25"
+            handover ? "border-[#ff6b3d]/35" : "border-[#DAAF25]/25"
           }`}
         />
       </div>

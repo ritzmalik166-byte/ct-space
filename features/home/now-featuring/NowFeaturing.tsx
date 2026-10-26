@@ -5,6 +5,7 @@ import Link from "next/link";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { SectionHeading } from "@/features/home/components/SectionHeading";
 import { assetUrl } from "@/features/home/lib/assets";
 import { motion } from "@/features/home/lib/store";
 import { bindTilt, cardsEntrance, cardsExit, simpleEntrance, type FeatureParts } from "./animations";
@@ -12,9 +13,9 @@ import { bindTilt, cardsEntrance, cardsExit, simpleEntrance, type FeatureParts }
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const FEATURES = [
-  { title: "Eye of the storm", video: assetUrl("06.mp4") },
-  { title: "Signal from deep space", video: assetUrl("04.mp4") },
-  { title: "The island that walks", video: assetUrl("07.mp4") },
+  { title: "Eye of the storm", video: assetUrl("auto.mp4") },
+  { title: "Signal from deep space", video: assetUrl("01.mp4") },
+  { title: "The island that walks", video: assetUrl("02.mp4") },
 ];
 
 const pick = (scope: Element, selector: string) => scope.querySelector(selector) as HTMLElement;
@@ -38,9 +39,7 @@ export function NowFeaturing() {
           tilt: pick(li, ".js-nfc-tilt"),
           shine: pick(li, ".js-nfc-shine"),
         })),
-        head: { inner: pick(section, ".js-nfc-head"), outer: pick(section, ".js-nfc-head-out") },
         cta: { inner: pick(section, ".js-nfc-cta"), outer: pick(section, ".js-nfc-cta-out") },
-        fade: pick(section, ".js-nfc-fade"),
       };
 
       const mm = gsap.matchMedia();
@@ -48,7 +47,7 @@ export function NowFeaturing() {
         if (motion.reduced) return simpleEntrance(parts);
         const { fan, fine } = ctx.conditions ?? {};
         cardsEntrance(parts, Boolean(fan));
-        if (fan) cardsExit(parts);
+        cardsExit(parts);
         if (fine) return bindTilt(parts);
       });
 
@@ -71,20 +70,12 @@ export function NowFeaturing() {
 
   return (
     <section id="now-featuring" ref={root} aria-labelledby="now-featuring-title" className="relative h-[200svh]">
-      <div ref={panel} className="sticky top-0 flex h-svh flex-col items-center justify-center overflow-hidden px-5 py-10 sm:px-8">
-        <div className="js-nfc-head-out">
-          <div className="js-nfc-head flex max-w-[506px] flex-col items-center gap-2.5 text-center">
-            <h2
-              id="now-featuring-title"
-              className="bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text font-heading text-[30px] font-bold uppercase leading-none tracking-[-0.6px] text-transparent sm:text-[38px]"
-            >
-              Now featuring
-            </h2>
-            <p className="font-sans text-base font-normal leading-none tracking-[-0.6px] text-[#94A3B8] sm:text-lg">
-              Inside every good AI product is a network of small, careful decisions.
-            </p>
-          </div>
-        </div>
+      <div ref={panel} className="sticky top-0 flex h-svh flex-col items-center justify-center overflow-hidden bg-space px-5 py-10 sm:px-8">
+        <SectionHeading
+          id="now-featuring-title"
+          title="Now featuring"
+          subtitle="Inside every good AI product is a network of small, careful decisions."
+        />
 
         {/* Card width is capped by viewport height so heading, cards and button always fit the sticky frame. */}
         <ul className="mt-10 flex w-full max-w-[min(1311px,calc((100svh_-_19rem)*407/541*3_+_90px))] snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] sm:mt-14 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:pb-0 lg:gap-[45px]">
@@ -135,8 +126,6 @@ export function NowFeaturing() {
             </span>
           </Link>
         </div>
-
-        <div aria-hidden className="js-nfc-fade pointer-events-none invisible absolute inset-0 z-20 bg-gradient-to-b from-transparent via-space/60 to-space" />
       </div>
     </section>
   );

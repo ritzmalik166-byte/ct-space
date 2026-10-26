@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { SectionHeading } from "@/features/home/components/SectionHeading";
 import { EnergyLine } from "./EnergyLine";
 import { countdown, isHandover, MILESTONES, pad, POINTS } from "./milestones";
 import { NodeBadge, NodePopup } from "./NodeParts";
@@ -40,16 +41,13 @@ export function Blueprint() {
           <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#05060b]/80 to-transparent" />
         </div>
 
-        <header className="js-bp-head relative mx-auto max-w-7xl px-5 pt-[14svh] sm:px-8 lg:px-10 lg:pt-[16svh]">
-          <p className="js-bp-fade font-mono text-[10px] uppercase tracking-[0.3em] text-cyan-400/80 sm:text-[11px]">
-            Process · 05 milestones
-          </p>
-          <h2 id="blueprint-title" className="mt-3 overflow-hidden pb-[0.08em]">
-            <span className="js-bp-title inline-block text-[clamp(1.9rem,3.6vw,3rem)] font-bold leading-tight tracking-[-0.03em]">
-              From blueprint to <span className="italic text-cyan-200">handover</span>
-            </span>
-          </h2>
-        </header>
+        <SectionHeading
+          id="blueprint-title"
+          title="From blueprint to handover"
+          subtitle="Five milestones take every project from first brief to final delivery."
+          start="top top"
+          className="js-bp-head relative px-5 pt-[88px] lg:pt-[12svh]"
+        />
 
         <div className="js-bp-stage absolute inset-0 origin-[83%_40%]">
           <EnergyLine />
@@ -70,13 +68,13 @@ export function Blueprint() {
                       className={`js-bp-glow invisible absolute -inset-2.5 rounded-full border ${
                         handover
                           ? "border-[#ff6b3d]/50 shadow-[0_0_30px_rgb(255_107_61/0.5)]"
-                          : "border-cyan-400/40 shadow-[0_0_30px_rgb(34_211_238/0.45)]"
+                          : "border-[#DAAF25]/40 shadow-[0_0_30px_rgb(218_175_37/0.45)]"
                       }`}
                     />
                     <span
                       aria-hidden
                       className={`js-bp-ring pointer-events-none absolute inset-0 rounded-full border opacity-0 ${
-                        handover ? "border-[#ff8a5c]" : "border-cyan-300"
+                        handover ? "border-[#ff8a5c]" : "border-[#F3D77A]"
                       }`}
                     />
                     <button
@@ -95,11 +93,11 @@ export function Blueprint() {
                       handover ? "-left-6 mt-10" : "-left-[1.125rem] mt-8"
                     }`}
                   >
-                    <p className={`invisible font-mono text-[10px] tracking-[0.18em] ${handover ? "text-[#ff8a5c]" : "text-cyan-400"}`}>
+                    <p className={`invisible font-sans text-[10px] font-medium uppercase tracking-[0.18em] ${handover ? "text-[#ff8a5c]" : "text-[#DAAF25]"}`}>
                       {countdown(i)}
                     </p>
-                    <h3 className="invisible mt-1.5 text-base font-semibold tracking-tight xl:text-[17px]">{item.title}</h3>
-                    <p className="invisible mt-1.5 text-[13px] leading-relaxed text-slate-400">{item.body}</p>
+                    <h3 className="invisible mt-1.5 font-heading text-base font-bold uppercase tracking-[-0.3px] text-[#F1F5F9] xl:text-[17px]">{item.title}</h3>
+                    <p className="invisible mt-1.5 font-sans text-[13px] leading-relaxed tracking-[-0.2px] text-[#94A3B8]">{item.body}</p>
                   </div>
                 </li>
               );
@@ -110,11 +108,11 @@ export function Blueprint() {
         <div className="absolute inset-x-0 top-[68%] mx-auto grid max-w-sm px-5 lg:hidden">
           {MILESTONES.map((item, i) => (
             <div key={item.title} className="js-bp-card invisible [grid-area:1/1]">
-              <p className={`font-mono text-[10px] tracking-[0.18em] ${isHandover(i) ? "text-[#ff8a5c]" : "text-cyan-400"}`}>
+              <p className={`font-sans text-[10px] font-medium uppercase tracking-[0.18em] ${isHandover(i) ? "text-[#ff8a5c]" : "text-[#DAAF25]"}`}>
                 {pad(i)} • {countdown(i)}
               </p>
-              <h3 className="mt-1.5 text-lg font-semibold tracking-tight">{item.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-slate-400">{item.body}</p>
+              <h3 className="mt-1.5 font-heading text-lg font-bold uppercase tracking-[-0.3px] text-[#F1F5F9]">{item.title}</h3>
+              <p className="mt-1.5 font-sans text-sm leading-relaxed tracking-[-0.2px] text-[#94A3B8]">{item.body}</p>
             </div>
           ))}
         </div>

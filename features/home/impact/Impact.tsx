@@ -4,6 +4,7 @@ import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import { SectionHeading } from "@/features/home/components/SectionHeading";
 import { prefersReducedMotion } from "@/lib/media";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
@@ -27,8 +28,8 @@ const METRICS: Metric[] = [
 
 /** Progress where the sticky panel locks: the trigger starts when the section enters (100svh of its 380svh). */
 const STUCK_AT = 100 / 380;
-/** Progress where the client reviews start entering below. */
-const EXIT_START = 280 / 380;
+/** The exit (about 62svh long) ends exactly when the reviews panel appears, so no blank scroll is left between them. */
+const EXIT_START = 318 / 380;
 const TRAIL_START = STUCK_AT + 0.05;
 const TRAIL_DURATION = 0.24;
 const TRAIL = "M 20 160 C 180 30, 360 20, 500 80 S 800 170, 980 36";
@@ -48,9 +49,9 @@ function Rocket() {
   return (
     <svg viewBox="0 0 32 20" className="h-5 w-8" aria-hidden>
       <ellipse cx="5" cy="10" rx="5" ry="2.6" fill="#ff6b3d" className="animate-pulse" />
-      <path d="M8 6.5 4.5 2h4.5l4 4.5zM8 13.5 4.5 18h4.5l4-4.5z" fill="#0e7490" />
-      <path d="M7 10c3-4.2 9-5.6 17-4.5 2.6 1 4.6 2.6 6 4.5-1.4 1.9-3.4 3.5-6 4.5-8 1.1-14-.3-17-4.5z" fill="#e0f7ff" />
-      <circle cx="22" cy="10" r="2" fill="#0b1626" stroke="#22d3ee" strokeWidth="0.8" />
+      <path d="M8 6.5 4.5 2h4.5l4 4.5zM8 13.5 4.5 18h4.5l4-4.5z" fill="#a8841a" />
+      <path d="M7 10c3-4.2 9-5.6 17-4.5 2.6 1 4.6 2.6 6 4.5-1.4 1.9-3.4 3.5-6 4.5-8 1.1-14-.3-17-4.5z" fill="#fff6dc" />
+      <circle cx="22" cy="10" r="2" fill="#0b1626" stroke="#DAAF25" strokeWidth="0.8" />
     </svg>
   );
 }
@@ -67,9 +68,7 @@ export function Impact() {
       });
 
       tl.fromTo(".js-im-panel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, STUCK_AT)
-        .fromTo(".js-im-veil", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.1 }, STUCK_AT)
-        .fromTo(".js-im-title", { yPercent: 110 }, { yPercent: 0, duration: 0.06, ease: "power3.out" }, STUCK_AT + 0.01)
-        .fromTo(".js-im-fade", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.05, stagger: 0.02 }, STUCK_AT + 0.04);
+        .fromTo(".js-im-veil", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.1 }, STUCK_AT);
 
       // The rocket flies the dotted curve while the bright trail fills in behind it.
       tl.fromTo(".js-im-ghost", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.04 }, TRAIL_START - 0.02)
@@ -175,16 +174,13 @@ export function Impact() {
         />
 
         <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-5 sm:px-8 lg:px-10">
-          <header className="js-im-head mx-auto flex max-w-[506px] flex-col items-center gap-2.5 text-center">
-            <h2 id="impact-title" className="overflow-hidden pb-[0.08em]">
-              <span className="js-im-title inline-block bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text font-heading text-[30px] font-bold uppercase leading-none tracking-[-0.6px] text-transparent sm:text-[38px]">
-                Our impact
-              </span>
-            </h2>
-            <p className="js-im-fade font-sans text-base font-normal leading-snug tracking-[-0.6px] text-white sm:text-lg">
-              Fourteen years of turning ideas into films, campaigns and brands that people remember.
-            </p>
-          </header>
+          <SectionHeading
+            id="impact-title"
+            title="Our impact"
+            subtitle="Fourteen years of turning ideas into films, campaigns and brands that people remember."
+            start="top top"
+            className="js-im-head"
+          />
 
           <div aria-hidden className="js-im-sky relative mt-6 h-[14svh] sm:mt-8 sm:h-[16svh]">
             <svg viewBox={`0 0 ${TRAIL_BOX.w} ${TRAIL_BOX.h}`} preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
@@ -203,15 +199,15 @@ export function Impact() {
                 className="js-im-trail"
                 d={TRAIL}
                 fill="none"
-                stroke="#22d3ee"
+                stroke="#DAAF25"
                 strokeWidth="2.2"
                 strokeDasharray="1 9"
                 strokeLinecap="round"
                 vectorEffect="non-scaling-stroke"
-                style={{ filter: "drop-shadow(0 0 4px rgb(34 211 238 / 0.7))" }}
+                style={{ filter: "drop-shadow(0 0 4px rgb(218 175 37 / 0.7))" }}
               />
             </svg>
-            <div className="js-im-rocket invisible absolute left-0 top-0 drop-shadow-[0_0_10px_rgb(34_211_238/0.6)]">
+            <div className="js-im-rocket invisible absolute left-0 top-0 drop-shadow-[0_0_10px_rgb(218_175_37/0.6)]">
               <Rocket />
             </div>
           </div>

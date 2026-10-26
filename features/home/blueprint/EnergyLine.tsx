@@ -1,4 +1,4 @@
-import { CYAN, LAST, ORANGE, POINTS, PULSE_LAYERS } from "./milestones";
+import { GOLD, LAST, ORANGE, POINTS, PULSE_LAYERS } from "./milestones";
 
 const lineProps = { strokeLinecap: "round", vectorEffect: "non-scaling-stroke" } as const;
 
@@ -17,7 +17,7 @@ export function EnergyLine() {
             x2={end.left}
             y2={end.top}
           >
-            <stop offset="0" stopColor={CYAN} />
+            <stop offset="0" stopColor={GOLD} />
             <stop offset="1" stopColor={ORANGE} />
           </linearGradient>
         </defs>
@@ -31,7 +31,7 @@ export function EnergyLine() {
           vectorEffect="non-scaling-stroke"
         />
         {POINTS.slice(0, LAST).map((p, i) => {
-          const stroke = i === LAST - 1 ? "url(#bp-handover-line)" : CYAN;
+          const stroke = i === LAST - 1 ? "url(#bp-handover-line)" : GOLD;
           return (
             <g key={i}>
               {[7, 1.6].map((width) => (
@@ -70,8 +70,8 @@ export function EnergyLine() {
       {PULSE_LAYERS.map((layer, i) => (
         <div key={i} aria-hidden className="js-bp-pulse invisible absolute inset-0" style={{ zIndex: PULSE_LAYERS.length - i }}>
           <span className="absolute left-0 top-0 -translate-x-1/2 -translate-y-1/2" style={{ scale: layer.scale, opacity: layer.opacity }}>
-            {i === 0 && <span className="absolute -inset-3 rounded-full bg-cyan-300/20" />}
-            <span className="js-bp-pulse-dot block size-2.5 rounded-full bg-cyan-400 shadow-[0_0_14px_3px_rgb(165_243_252/0.8)]" />
+            {i === 0 && <span className="absolute -inset-3 rounded-full bg-[#F3D77A]/20" />}
+            <span className="js-bp-pulse-dot block size-2.5 rounded-full bg-[#DAAF25] shadow-[0_0_14px_3px_rgb(243_215_122/0.8)]" />
           </span>
         </div>
       ))}

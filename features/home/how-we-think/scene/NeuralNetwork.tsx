@@ -198,7 +198,10 @@ function KeyNode({ index, position }: { index: number; position: THREE.Vector3 }
     // Another step's docked card owns the stage: the flying ones clear out so nothing shows behind it.
     let otherDock = 0;
     for (let i = 0; i < STEP_STOPS.length; i++) if (i !== index) otherDock = Math.max(otherDock, dockAmount(view.net, i));
-    const opacity = Math.max(0.2 + focus * 0.8, dock) * (1 - otherDock * (1 - dock)) * fades.network.value;
+    // The network shows behind other sections too; the cards belong to "How we think" only.
+    const { smoothstep } = THREE.MathUtils;
+    const inPhase = smoothstep(view.net, 0.01, 0.06) * (1 - smoothstep(view.net, 0.95, 1)) * (1 - smoothstep(view.tv, 0, 0.05));
+    const opacity = Math.max(0.2 + focus * 0.8, dock) * (1 - otherDock * (1 - dock)) * fades.network.value * inPhase;
     const camera = state.camera as THREE.PerspectiveCamera;
     g.getWorldPosition(projected);
     const distance = projected.distanceTo(camera.position);

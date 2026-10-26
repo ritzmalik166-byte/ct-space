@@ -22,7 +22,7 @@ export function ProjectCard({ project, index, load, onOpen }: Props) {
         onClick={(e) => onOpen(index, e.currentTarget)}
         aria-haspopup="dialog"
         aria-label={`Watch ${project.title}`}
-        className="js-arch-card group relative block size-full overflow-hidden bg-[#0a1220] text-left ring-1 ring-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25]"
+        className="js-arch-card group relative block size-full overflow-hidden will-change-transform bg-[#0a1220] text-left ring-1 ring-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25]"
       >
         <video
           className="js-arch-video absolute inset-0 size-full object-cover transition-[scale] duration-[1200ms] ease-out group-hover:scale-105"

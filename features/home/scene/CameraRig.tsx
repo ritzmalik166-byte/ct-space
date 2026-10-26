@@ -19,7 +19,6 @@ const ARCH_PULLBACK = new THREE.Vector3(0, 2.4, 8);
 const ARCH_LOOK_DROP = new THREE.Vector3(0, -1.2, 0);
 const IMPACT_PULLBACK = new THREE.Vector3(0, 3, 9);
 const REVIEW_DRIFT = new THREE.Vector3(0, 2, -12);
-const LAUNCH_RISE = new THREE.Vector3(0, 9, -2);
 const { clamp, damp, lerp, smoothstep } = THREE.MathUtils;
 const easeOutCubic = (x: number) => 1 - Math.pow(1 - x, 3);
 const easeInOutCubic = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
@@ -50,7 +49,6 @@ export function CameraRig() {
     view.arch = damp(view.arch, journey.arch, 3, delta);
     view.impact = damp(view.impact, journey.impact, 3, delta);
     view.review = damp(view.review, journey.review, 3, delta);
-    view.launch = damp(view.launch, journey.launch, 3, delta);
     const tvEase = easeInOutCubic(clamp(view.tv, 0, 1));
     const flowEase = easeInOutCubic(smoothstep(view.flow, 0.03, 0.26));
 
@@ -115,13 +113,6 @@ export function CameraRig() {
       if (reviewEase > 0) {
         cam.position.lerp(flowCamera.add(REVIEW_DRIFT), reviewEase);
         lookTarget.lerp(impactLook.set(FLOW_CENTER.x, FLOW_CENTER.y + 4, FLOW_CENTER.z - 30), reviewEase);
-      }
-
-      // Ready for lift-off: climb and tilt up into the stars.
-      const launchEase = easeInOutCubic(smoothstep(view.launch, 0.02, 0.4));
-      if (launchEase > 0) {
-        cam.position.lerp(flowCamera.add(LAUNCH_RISE), launchEase);
-        lookTarget.lerp(impactLook.set(FLOW_CENTER.x, FLOW_CENTER.y + 22, FLOW_CENTER.z - 34), launchEase);
       }
     }
     cam.lookAt(lookTarget);

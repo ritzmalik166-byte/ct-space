@@ -6,7 +6,6 @@ import { PerformanceMonitor } from "@react-three/drei";
 import { COUNTS, motion, pointer, scene, SCENE_READY_EVENT, type Quality } from "../lib/store";
 import { CameraRig } from "./CameraRig";
 import { Starfield } from "./Starfield";
-import { HeroShatter } from "@/features/home/hero/scene/HeroShatter";
 import { NeuralNetwork } from "@/features/home/how-we-think/scene/NeuralNetwork";
 import { FlowTimeline } from "@/features/home/blueprint/scene/FlowTimeline";
 
@@ -75,7 +74,6 @@ export default function HeroCanvas() {
         <ReadySignal />
         <Starfield count={counts.stars} />
         <CameraRig />
-        <HeroShatter cols={counts.heroTiles} />
         <NeuralNetwork nodes={counts.network} dust={counts.dust} glows={counts.glows} />
         <FlowTimeline />
       </Canvas>
