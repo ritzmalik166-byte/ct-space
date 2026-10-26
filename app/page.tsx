@@ -1,8 +1,9 @@
-import React from "react";
-import Home from "@/features/(website)/home/components/Home";
+import { Experience } from "@/features/home/Experience";
 
-const page = () => {
-  return <Home />;
-};
-
-export default page;
+export default function Home() {
+  return (
+    <main>
+      <Experience />
+    </main>
+  );
+}
