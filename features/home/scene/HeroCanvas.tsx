@@ -9,7 +9,6 @@ import { Starfield } from "./Starfield";
 import { HeroShatter } from "@/features/home/hero/scene/HeroShatter";
 import { NeuralNetwork } from "@/features/home/how-we-think/scene/NeuralNetwork";
 import { FlowTimeline } from "@/features/home/blueprint/scene/FlowTimeline";
-import { SpaceBlocks } from "@/features/home/spaces/scene/SpaceBlocks";
 
 function detectQuality(): Quality {
   const cores = navigator.hardwareConcurrency ?? 4;
@@ -79,7 +78,6 @@ export default function HeroCanvas() {
         <HeroShatter cols={counts.heroTiles} />
         <NeuralNetwork nodes={counts.network} dust={counts.dust} glows={counts.glows} />
         <FlowTimeline />
-        <SpaceBlocks />
       </Canvas>
     </div>
   );

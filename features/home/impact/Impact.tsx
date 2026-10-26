@@ -16,37 +16,13 @@ type Metric = {
   prefix?: string;
   suffix?: string;
   label: string;
-  note: string;
 };
 
 const METRICS: Metric[] = [
-  {
-    from: 0,
-    to: 4.8,
-    decimals: 1,
-    grouping: true,
-    prefix: "$",
-    suffix: "B+",
-    label: "Transacted portfolio value",
-    note: "Across residential, commercial and mixed-use launches we helped sell.",
-  },
-  {
-    from: 0,
-    to: 1200,
-    decimals: 0,
-    grouping: true,
-    suffix: "+",
-    label: "Sanctuaries delivered",
-    note: "Homes, villas and estates visualised, filmed and brought to market.",
-  },
-  {
-    from: 1990,
-    to: 2012,
-    decimals: 0,
-    grouping: false,
-    label: "Architectural heritage",
-    note: "More than a decade of design craft behind every frame we make.",
-  },
+  { from: 0, to: 250, decimals: 0, grouping: true, suffix: "+", label: "Projects created" },
+  { from: 0, to: 40, decimals: 0, grouping: true, suffix: "+", label: "Creative partners" },
+  { from: 0, to: 98, decimals: 0, grouping: true, suffix: "%", label: "Brand recall lift" },
+  { from: 0, to: 15, decimals: 0, grouping: true, suffix: "+", label: "Global industries" },
 ];
 
 /** Progress where the sticky panel locks: the trigger starts when the section enters (100svh of its 380svh). */
@@ -151,9 +127,11 @@ export function Impact() {
         const metric = METRICS[i];
         const value = el.querySelector<HTMLElement>(".js-im-value");
         const counter = { v: metric.from };
-        const at = TRAIL_START + 0.02 + i * 0.07;
+        const at = TRAIL_START + 0.02 + i * 0.05;
 
-        tl.fromTo(el, { autoAlpha: 0, y: 50 }, { autoAlpha: 1, y: 0, duration: 0.07, ease: "power3.out" }, at);
+        tl.fromTo(el, { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.07, ease: "power3.out" }, at);
+        const rules = el.querySelectorAll(".js-im-rule");
+        if (rules.length) tl.fromTo(rules, { scaleY: 0 }, { scaleY: 1, duration: 0.06, ease: "power2.out" }, at + 0.02);
         if (!reduced) {
           tl.fromTo(
             counter,
@@ -169,14 +147,7 @@ export function Impact() {
             at + 0.01,
           );
         }
-        tl.fromTo(el.querySelector(".js-im-glow"), { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.1 }, at + 0.04)
-          .fromTo(
-            el.querySelector(".js-im-bar"),
-            { scaleX: 0 },
-            { scaleX: 1, duration: 0.06, ease: "power2.out" },
-            at + 0.12,
-          )
-          .fromTo(el.querySelectorAll(".js-im-copy"), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.05, stagger: 0.015 }, at + 0.08);
+        tl.fromTo(el.querySelector(".js-im-copy"), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.05 }, at + 0.06);
       });
 
       tl.to(".js-im-head", { autoAlpha: 0, y: -40, duration: 0.06, ease: "power2.in" }, EXIT_START)
@@ -204,19 +175,14 @@ export function Impact() {
         />
 
         <div className="relative mx-auto flex h-full max-w-7xl flex-col justify-center px-5 sm:px-8 lg:px-10">
-          <header className="js-im-head flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="js-im-fade font-mono text-[10px] uppercase tracking-[0.3em] text-cyan-400/80 sm:text-[11px]">
-                Track record · Since 2012
-              </p>
-              <h2 id="impact-title" className="mt-3 overflow-hidden pb-[0.08em]">
-                <span className="js-im-title inline-block text-[clamp(1.9rem,3.6vw,3rem)] font-bold leading-tight tracking-[-0.03em]">
-                  Our <span className="italic text-cyan-200">impact</span>
-                </span>
-              </h2>
-            </div>
-            <p className="js-im-fade max-w-sm text-sm leading-relaxed text-slate-400 lg:text-right">
-              Fourteen years of turning drawings into places people want to live, work and invest in.
+          <header className="js-im-head mx-auto flex max-w-[506px] flex-col items-center gap-2.5 text-center">
+            <h2 id="impact-title" className="overflow-hidden pb-[0.08em]">
+              <span className="js-im-title inline-block bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text font-heading text-[30px] font-bold uppercase leading-none tracking-[-0.6px] text-transparent sm:text-[38px]">
+                Our impact
+              </span>
+            </h2>
+            <p className="js-im-fade font-sans text-base font-normal leading-snug tracking-[-0.6px] text-white sm:text-lg">
+              Fourteen years of turning ideas into films, campaigns and brands that people remember.
             </p>
           </header>
 
@@ -250,27 +216,16 @@ export function Impact() {
             </div>
           </div>
 
-          <dl className="grid gap-8 border-t border-white/10 pt-6 sm:grid-cols-3 sm:gap-0 sm:pt-8">
+          <dl className="mx-auto mt-6 grid w-full max-w-[880px] grid-cols-2 gap-y-8 sm:mt-10 sm:grid-cols-4">
             {METRICS.map((metric, i) => (
-              <div
-                key={metric.label}
-                className={`js-im-metric invisible relative flex flex-col sm:px-6 lg:px-10 ${i > 0 ? "sm:border-l sm:border-white/10" : "sm:pl-0 lg:pl-0"}`}
-              >
-                <span
-                  aria-hidden
-                  className="js-im-glow pointer-events-none absolute -left-6 -top-10 size-48 rounded-full bg-[radial-gradient(circle,rgb(34_211_238/0.18),transparent_70%)]"
-                />
-                <dt className="js-im-copy relative order-2 mt-4 font-mono text-[10px] uppercase tracking-[0.2em] text-cyan-300 sm:text-[11px]">
-                  {metric.label}
-                </dt>
-                <dd className="relative order-1">
-                  <span className="js-im-value block text-[clamp(2.8rem,6.4vw,5.6rem)] font-semibold leading-none tracking-[-0.04em] tabular-nums text-white [text-shadow:0_0_40px_rgb(34_211_238/0.35)]">
+              <div key={metric.label} className="js-im-metric invisible relative flex flex-col pl-5 sm:pl-[18px]">
+                {i % 2 === 1 && <span aria-hidden className="js-im-rule absolute inset-y-0 left-0 w-px origin-top bg-white/20" />}
+                {i === 2 && <span aria-hidden className="js-im-rule absolute inset-y-0 left-0 hidden w-px origin-top bg-white/20 sm:block" />}
+                <dt className="js-im-copy order-2 mt-2.5 font-sans text-[10px] uppercase tracking-[0.12em] text-white/85 sm:text-[11px]">{metric.label}</dt>
+                <dd className="order-1">
+                  <span className="js-im-value block font-heading text-[32px] font-bold leading-none tracking-[-0.02em] tabular-nums text-white sm:text-[40px]">
                     {format(metric, metric.to)}
                   </span>
-                  <span aria-hidden className="js-im-bar mt-4 block h-px w-16 origin-left bg-gradient-to-r from-cyan-300 to-transparent" />
-                </dd>
-                <dd className="js-im-copy relative order-3 mt-2 max-w-xs text-sm leading-relaxed text-slate-400 [@media(max-height:760px)]:hidden">
-                  {metric.note}
                 </dd>
               </div>
             ))}

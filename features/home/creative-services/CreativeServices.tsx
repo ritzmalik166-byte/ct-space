@@ -37,12 +37,14 @@ export function CreativeServices() {
         figs: all(".js-cs-figure"),
         copies: all(".js-cs-copy"),
         bars: all(".js-cs-bar"),
+        explore: one(".js-cs-explore"),
       };
       const counter = one(".js-cs-count");
 
       servicesEntrance(parts, motion.reduced);
       servicesSequence(parts, motion.reduced, (index) => {
         counter.textContent = pad(index + 1);
+        parts.explore.dataset.openContact = SLIDES[index].service;
         parts.copies.forEach((copy, i) => copy.toggleAttribute("inert", i !== index));
       });
     },
@@ -50,26 +52,26 @@ export function CreativeServices() {
   );
 
   return (
-    <section id="creative-services" ref={root} aria-labelledby="creative-services-title" className="relative pt-20 sm:pt-28">
-      <div className="js-cs-head mx-auto flex max-w-[506px] flex-col items-center gap-2.5 px-5 text-center">
-          <h2
-            id="creative-services-title"
-            className="bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text font-heading text-[30px] font-bold uppercase leading-none tracking-[-0.6px] text-transparent sm:text-[38px]"
-          >
-            AI creative services
-          </h2>
-          <p className="font-sans text-base font-normal leading-tight tracking-[-0.6px] text-[#94A3B8] sm:text-lg">
-            AI-powered creative solutions for campaigns, content, branding, &amp; digital experiences.
-          </p>
-        </div>
+    <section id="creative-services" ref={root} aria-labelledby="creative-services-title" className="relative">
+      <div className="js-cs-pin relative h-[550svh]">
+        <div className="js-cs-frame sticky top-0 flex h-svh w-full flex-col gap-3 bg-space pt-[72px] md:gap-4 md:pt-5">
+          <div className="js-cs-head flex shrink-0 flex-col items-center gap-1.5 px-5 text-center sm:gap-2">
+            <h2
+              id="creative-services-title"
+              className="bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text pb-[0.1em] font-heading text-[26px] font-bold uppercase leading-none tracking-[-0.6px] text-transparent sm:text-[34px]"
+            >
+              AI creative services
+            </h2>
+            <p className="max-w-[506px] font-sans text-sm font-normal leading-tight tracking-[-0.4px] text-[#B4C0CE] sm:text-base">
+              AI-powered creative solutions for campaigns, content, branding, &amp; digital experiences.
+            </p>
+          </div>
 
-      <div className="js-cs-pin relative mt-10 h-[550svh] sm:mt-14">
-        <div className="js-cs-frame sticky top-0 h-svh w-full">
           <div
             role="region"
             aria-roledescription="carousel"
             aria-label="AI creative services, scroll to browse"
-            className="js-cs-stage relative size-full overflow-hidden bg-space"
+            className="js-cs-stage relative min-h-0 w-full flex-1 overflow-hidden bg-space"
           >
             {/* Layer 1: background images; later slides wipe in over earlier ones. */}
             {SLIDES.map((slide, i) => (
@@ -113,8 +115,8 @@ export function CreativeServices() {
             />
 
             {/* Layer 5: copy and scroll progress. */}
-            <div className="absolute inset-0 z-[6] flex items-end px-5 pb-10 sm:px-10 lg:items-center lg:px-[99px] lg:pb-0">
-              <div className="flex w-full max-w-[479px] flex-col gap-[30px]">
+            <div className="absolute inset-0 z-[6] flex items-end px-5 pb-8 sm:px-10 sm:pb-12 lg:items-center lg:px-[80px] lg:pb-0">
+              <div className="flex w-full max-w-[479px] flex-col gap-6 sm:gap-[30px]">
                 <div aria-live="polite" className="grid">
                   {SLIDES.map((slide, i) => (
                     <div
@@ -129,23 +131,22 @@ export function CreativeServices() {
                         {slide.title}
                       </h3>
                       <p className={`js-cs-line font-sans text-base leading-none text-white-400 sm:text-[18px] ${i === 0 ? "" : "invisible"}`}>{slide.body}</p>
-                      <div className={`js-cs-line ${i === 0 ? "" : "invisible"}`}>
-                        <button
-                          type="button"
-                          data-open-contact={slide.service}
-                          className="group/explore flex h-[46px] w-[180px] items-center justify-between gap-2.5 rounded-[100px] bg-white px-[19px] py-[9px] font-sans text-base font-semibold text-black transition-[scale] duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                        >
-                          Explore
-                          <span className="grid size-7 place-items-center rounded-full bg-black text-white">
-                            <svg viewBox="0 0 24 24" className="size-4 transition-transform duration-500 group-hover/explore:rotate-45" aria-hidden>
-                              <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                            </svg>
-                          </span>
-                        </button>
-                      </div>
                     </div>
                   ))}
                 </div>
+
+                <button
+                  type="button"
+                  data-open-contact={SLIDES[0].service}
+                  className="js-cs-explore group/explore flex h-[46px] w-[180px] items-center justify-between gap-2.5 rounded-[100px] bg-white px-[19px] py-[9px] font-sans text-base font-semibold text-black transition-[scale] duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25] focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+                >
+                  Explore
+                  <span className="grid size-7 place-items-center rounded-full bg-black text-white">
+                    <svg viewBox="0 0 24 24" className="size-4 transition-[rotate] duration-500 group-hover/explore:rotate-45" aria-hidden>
+                      <path d="M7 17 17 7M9 7h8v8" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </span>
+                </button>
 
                 <div className="flex items-center gap-4" aria-hidden>
                   <span className="font-sans text-sm tabular-nums tracking-wide text-white/60">

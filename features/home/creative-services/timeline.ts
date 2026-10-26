@@ -11,6 +11,8 @@ export type ServiceParts = {
   figs: HTMLElement[];
   copies: HTMLElement[];
   bars: HTMLElement[];
+  /** Shared across slides, so it stays put while the copy swaps. */
+  explore: HTMLElement;
 };
 
 /** Diagonal wipe that leans with the stage's shadow bands. */
@@ -30,18 +32,13 @@ const lines = (copy: HTMLElement) => copy.querySelectorAll<HTMLElement>(".js-cs-
 const out = { immediateRender: false };
 
 /** Scroll-in: the stage opens from a rounded window while the first slide settles into place. */
-export function servicesEntrance({ head, pin, stage, bgImgs, figs, copies }: ServiceParts, reduced: boolean) {
-  gsap.fromTo(
-    head,
-    { y: 50, autoAlpha: 0 },
-    { y: 0, autoAlpha: 1, ease: "power2.out", scrollTrigger: { trigger: head, start: "top 90%", end: "top 55%", scrub: 1 } },
-  );
+export function servicesEntrance({ head, pin, stage, bgImgs, figs, copies, explore }: ServiceParts, reduced: boolean) {
   const tl = gsap.timeline({
     defaults: { ease: "power2.out" },
     scrollTrigger: { trigger: pin, start: "top bottom", end: "top top", scrub: 1 },
   });
   tl.fromTo(
-    lines(copies[0]),
+    [head, ...lines(copies[0]), explore],
     { y: 40, autoAlpha: 0 },
     { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.4, ease: "power3.out" },
     0.5,
