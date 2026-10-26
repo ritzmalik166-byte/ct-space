@@ -17,7 +17,6 @@ import {
 const INTRO_SECONDS = 3.2;
 const ARCH_PULLBACK = new THREE.Vector3(0, 2.4, 8);
 const ARCH_LOOK_DROP = new THREE.Vector3(0, -1.2, 0);
-const SPACE_RISE = new THREE.Vector3(0, 6.5, -3);
 const IMPACT_PULLBACK = new THREE.Vector3(0, 3, 9);
 const REVIEW_DRIFT = new THREE.Vector3(0, 2, -12);
 const LAUNCH_RISE = new THREE.Vector3(0, 9, -2);
@@ -36,7 +35,6 @@ export function CameraRig() {
   const forward = useMemo(() => new THREE.Vector3(), []);
   const flowCamera = useMemo(() => new THREE.Vector3(), []);
   const flowLook = useMemo(() => new THREE.Vector3(), []);
-  const spaceLook = useMemo(() => new THREE.Vector3(), []);
   const impactLook = useMemo(() => new THREE.Vector3(), []);
 
   const isDesktop = width >= 1024;
@@ -50,11 +48,9 @@ export function CameraRig() {
     view.tv = damp(view.tv, journey.tv, 3.5, delta);
     view.flow = damp(view.flow, journey.flow, 3, delta);
     view.arch = damp(view.arch, journey.arch, 3, delta);
-    view.space = damp(view.space, journey.space, 3, delta);
     view.impact = damp(view.impact, journey.impact, 3, delta);
     view.review = damp(view.review, journey.review, 3, delta);
     view.launch = damp(view.launch, journey.launch, 3, delta);
-    fades.space.value = smoothstep(view.space, 0.08, 0.3);
     const tvEase = easeInOutCubic(clamp(view.tv, 0, 1));
     const flowEase = easeInOutCubic(smoothstep(view.flow, 0.03, 0.26));
 
@@ -107,14 +103,7 @@ export function CameraRig() {
         lookTarget.lerp(flowLook.add(ARCH_LOOK_DROP), archEase);
       }
 
-      // Spaces That Inspire: rise into a drone's-eye view over the blocks growing out of the blueprint floor.
-      const spaceEase = easeInOutCubic(smoothstep(view.space, 0.02, 0.3));
-      if (spaceEase > 0) {
-        cam.position.lerp(flowCamera.add(SPACE_RISE), spaceEase);
-        lookTarget.lerp(spaceLook.set(FLOW_CENTER.x, FLOW_CENTER.y - 2.4, FLOW_CENTER.z), spaceEase);
-      }
-
-      // Our Impact: pull back and tilt up to the horizon, leaving the lit blocks as a skyline below.
+      // Our Impact: pull back and tilt up to the horizon over the blueprint floor.
       const impactEase = easeInOutCubic(smoothstep(view.impact, 0.02, 0.3));
       if (impactEase > 0) {
         cam.position.lerp(flowCamera.add(IMPACT_PULLBACK), impactEase);

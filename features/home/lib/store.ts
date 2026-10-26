@@ -9,16 +9,15 @@ export const SCENE_READY_EVENT = "ct:scene-ready";
 export const INTRO_DONE_EVENT = "ct:intro-done";
 
 /** Raw scroll progress written by ScrollTrigger (0..1 per phase). */
-export const journey = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, space: 0, impact: 0, review: 0, launch: 0 };
+export const journey = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, impact: 0, review: 0, launch: 0 };
 
 /** Smoothed copy of `journey`, updated once per frame by the camera director. */
-export const view = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, space: 0, impact: 0, review: 0, launch: 0 };
+export const view = { dive: 0, net: 0, tv: 0, flow: 0, arch: 0, impact: 0, review: 0, launch: 0 };
 
 /** Shared uniform objects so every material in a scene fades from one value. */
 export const fades = {
   network: { value: 0 },
   flow: { value: 0 },
-  space: { value: 0 },
 };
 
 /** Section progress at which each "Blueprint to Handover" milestone becomes active. */

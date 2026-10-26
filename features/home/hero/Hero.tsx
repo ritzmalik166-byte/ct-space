@@ -131,8 +131,7 @@ export function Hero() {
           <div className="js-hero-sub flex flex-col items-center">
             <p className="js-fade js-fade-text js-reveal mt-6 max-w-[42rem] font-sans text-[17px] font-normal leading-[28px] tracking-normal text-white sm:text-[20px] sm:leading-[32px]">
               A senior team of engineers and storytellers turning big ideas into{" "}
-              <RotatingWords delay={2.8} words={["brand films", "support agents", "vision models", "internal copilots"]} /> that
-              people genuinely use.
+              <RotatingWords delay={2.8} words={["AI products.", "digital experiences.", "intelligent systems.", "customer solutions."]} />
             </p>
 
             <Link

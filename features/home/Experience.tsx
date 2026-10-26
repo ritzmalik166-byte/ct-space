@@ -17,9 +17,9 @@ import { Archive } from "./archive/Archive";
 import { Blueprint } from "./blueprint/Blueprint";
 import { Impact } from "./impact/Impact";
 import { Launch } from "./launch/Launch";
-import { Partners } from "./partners/Partners";
 import { Reviews } from "./reviews/Reviews";
-import { Spaces } from "./spaces/Spaces";
+import { Journal } from "./journal/Journal";
+import type { JournalPost } from "./journal/types";
 import { HowWeThink } from "./how-we-think/HowWeThink";
 import { ThinkIntro } from "./how-we-think/ThinkIntro";
 import { NowFeaturing } from "./now-featuring/NowFeaturing";
@@ -29,7 +29,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const HeroCanvas = dynamic(() => import("./scene/HeroCanvas"), { ssr: false });
 
-export function Experience() {
+export function Experience({ posts }: { posts: JournalPost[] }) {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -100,14 +100,6 @@ export function Experience() {
       });
 
       ScrollTrigger.create({
-        trigger: "#spaces",
-        start: "top bottom",
-        end: "bottom bottom",
-        onUpdate: (self) => (journey.space = self.progress),
-        onRefresh: (self) => (journey.space = self.progress),
-      });
-
-      ScrollTrigger.create({
         trigger: "#impact",
         start: "top bottom",
         end: "bottom bottom",
@@ -168,11 +160,10 @@ export function Experience() {
         <CreativeServices />
         <Blueprint />
         <Archive />
-        <Spaces />
+        <Journal posts={posts} />
         <Impact />
         <Reviews />
         <Launch />
-        <Partners />
       </div>
 
       <div aria-hidden className="grain pointer-events-none fixed inset-0 z-50 hidden md:block" />
