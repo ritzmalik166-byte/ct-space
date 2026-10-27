@@ -191,17 +191,6 @@ export function Footer() {
               </li>
             ))}
           </ul>
-          <button
-            type="button"
-            onClick={() => scrollToY(0)}
-            className="js-ft-item group w-fit uppercase transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-            style={{ color: GOLD }}
-          >
-            End of transmission / Back to top{" "}
-            <span aria-hidden className="inline-block transition-transform duration-300 group-hover:-translate-y-0.5">
-              ↑
-            </span>
-          </button>
         </div>
       </div>
     </footer>

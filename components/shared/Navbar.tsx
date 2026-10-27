@@ -37,7 +37,6 @@ export function Navbar() {
   const header = useRef<HTMLElement>(null);
   const nav = useRef<HTMLElement>(null);
   const burger = useRef<HTMLButtonElement>(null);
-  const progress = useRef<HTMLDivElement>(null);
   const locked = useRef(false);
   const [open, setOpen] = useState(false);
 
@@ -82,7 +81,6 @@ export function Navbar() {
       gsap.fromTo(".js-burger-in", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.9, delay: 0.25 });
 
       const desktop = window.matchMedia("(min-width: 768px)");
-      const setProgress = gsap.quickSetter(progress.current, "scaleX");
       let compact = false;
       const sync = () => {
         el.dataset.compact = String(compact);
@@ -96,7 +94,6 @@ export function Navbar() {
         start: 0,
         end: "max",
         onUpdate: (self) => {
-          setProgress(self.progress);
           const y = self.scroll();
           const scrolled = String(y > 40);
           if (el.dataset.scrolled !== scrolled) el.dataset.scrolled = scrolled;
@@ -114,11 +111,6 @@ export function Navbar() {
 
   return (
     <div ref={root} data-scrolled="false" data-compact="false" data-open={open} className="group/nav">
-      <div
-        ref={progress}
-        aria-hidden
-        className="pointer-events-none fixed inset-x-0 top-0 z-[45] h-[2px] origin-left scale-x-0 bg-gradient-to-r from-[#b8863f] via-[#e3b56a] to-[#f5d9a0] shadow-[0_0_10px_rgb(227_181_106/0.6)]"
-      />
       <header ref={header} className="js-reveal fixed inset-x-0 top-0 z-30 group-data-[compact=true]/nav:pointer-events-none">
         <div
           aria-hidden

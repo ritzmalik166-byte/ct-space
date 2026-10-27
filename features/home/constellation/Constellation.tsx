@@ -151,7 +151,7 @@ export function Constellation() {
         </ul>
       </div>
       {/* Scroll room for the pinned panel while ThinkIntro slides over it; padding would not count for sticky. */}
-      <div aria-hidden className="hidden h-svh sm:block" />
+      <div aria-hidden className="hidden h-[120svh] sm:block" />
     </section>
   );
 }

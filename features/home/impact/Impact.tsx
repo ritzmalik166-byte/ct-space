@@ -214,7 +214,7 @@ export function Impact() {
 
           <dl className="mx-auto mt-6 grid w-full max-w-[880px] grid-cols-2 gap-y-8 sm:mt-10 sm:grid-cols-4">
             {METRICS.map((metric, i) => (
-              <div key={metric.label} className="js-im-metric invisible relative flex flex-col pl-5 sm:pl-[18px]">
+              <div key={metric.label} className="js-im-metric invisible relative flex flex-col pl-5 sm:pl-[18px] items-center">
                 {i % 2 === 1 && <span aria-hidden className="js-im-rule absolute inset-y-0 left-0 w-px origin-top bg-white/20" />}
                 {i === 2 && <span aria-hidden className="js-im-rule absolute inset-y-0 left-0 hidden w-px origin-top bg-white/20 sm:block" />}
                 <dt className="js-im-copy order-2 mt-2.5 font-sans text-[10px] uppercase tracking-[0.12em] text-white/85 sm:text-[11px]">{metric.label}</dt>
