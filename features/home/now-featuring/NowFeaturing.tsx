@@ -15,7 +15,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 const FEATURES = [
   { title: "Eye of the storm", video: assetUrl("auto.mp4") },
   { title: "Signal from deep space", video: assetUrl("01.mp4") },
-  { title: "The island that walks", video: assetUrl("02.mp4") },
+  { title: "The island that walks", video: assetUrl("02.MP4") },
 ];
 
 const pick = (scope: Element, selector: string) => scope.querySelector(selector) as HTMLElement;
@@ -57,7 +57,7 @@ export function NowFeaturing() {
         end: "bottom top",
         onToggle: ({ isActive }) => {
           for (const v of videos) {
-            if (isActive && !motion.reduced) v.play().catch(() => {});
+            if (isActive && !motion.reduced) v.play().catch(() => { });
             else v.pause();
           }
         },
@@ -69,20 +69,29 @@ export function NowFeaturing() {
   );
 
   return (
-    <section id="now-featuring" ref={root} aria-labelledby="now-featuring-title" className="relative h-[200svh]">
-      <div ref={panel} className="sticky top-0 flex h-svh flex-col items-center justify-center overflow-hidden bg-space px-5 py-10 sm:px-8">
-        <SectionHeading
+<section
+  id="now-featuring"
+  ref={root}
+  aria-labelledby="now-featuring-title"
+  className="relative min-h-svh"
+>
+<div
+  ref={panel}
+  className="relative flex min-h-svh flex-col items-center justify-start overflow-visible px-5 pb-16 pt-28 sm:px-8 sm:pb-20 sm:pt-32"
+>
+            <SectionHeading
           id="now-featuring-title"
           title="Now featuring"
           subtitle="Inside every good AI product is a network of small, careful decisions."
         />
 
         {/* Card width is capped by viewport height so heading, cards and button always fit the sticky frame. */}
-        <ul className="mt-10 flex w-full max-w-[min(1311px,calc((100svh_-_19rem)*407/541*3_+_90px))] snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [scrollbar-width:none] sm:mt-14 sm:grid sm:grid-cols-3 sm:gap-6 sm:overflow-visible sm:pb-0 lg:gap-[45px]">
+        <ul className="mt-8 grid w-full max-w-[1150px] grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-3 sm:gap-5 lg:gap-8">
           {FEATURES.map((item, i) => (
             <li
-              key={item.video}
-              className={`js-nfc-item relative aspect-[407/541] w-[68vw] shrink-0 snap-center sm:w-auto ${i === 1 ? "z-10" : ""}`}
+className={`js-nfc-item relative aspect-[4/5] w-full max-w-[320px] justify-self-center sm:max-w-none ${
+  i === 1 ? "z-10" : ""
+}`}
             >
               <div className="js-nfc-card size-full">
                 <div className="js-nfc-tilt group relative size-full overflow-hidden bg-white/[0.03] [clip-path:inset(0%_round_10px)]">
@@ -113,7 +122,7 @@ export function NowFeaturing() {
           ))}
         </ul>
 
-        <div className="js-nfc-cta-out mt-10 sm:mt-14">
+        <div className="js-nfc-cta-out mt-8 shrink-0 sm:mt-10">
           <Link
             href="/#archive"
             className="js-nfc-cta group flex h-[52px] items-center gap-6 rounded-full bg-white pl-6 pr-1.5 font-sans text-sm font-semibold uppercase text-black shadow-[0_10px_40px_-14px_rgb(255_255_255/0.5)] transition-[scale] duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25] focus-visible:ring-offset-2 focus-visible:ring-offset-black"

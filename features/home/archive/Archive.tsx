@@ -55,7 +55,7 @@ export function Archive() {
         if (on === playing) return;
         playing = on;
         for (const v of videos) {
-          if (on) v.play().catch(() => {});
+          if (on) v.play().catch(() => { });
           else v.pause();
         }
       });
@@ -75,7 +75,7 @@ export function Archive() {
       aria-labelledby="archive-title"
       className="pointer-events-none relative -mt-[100svh] h-[400svh]"
     >
-      <div className="js-arch-panel invisible sticky top-0 h-svh overflow-hidden">
+      <div className="js-arch-panel invisible sticky top-0 min-h-svh overflow-hidden py-20">
         <div
           aria-hidden
           className="js-arch-veil absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgb(8_15_28/0.55)_0%,rgb(6_11_22/0.88)_65%,rgb(5_6_11/0.96)_100%)]"

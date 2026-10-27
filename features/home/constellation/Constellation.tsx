@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -19,6 +19,22 @@ export function Constellation() {
   const root = useRef<HTMLElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const stage = useRef<HTMLDivElement>(null);
+
+  // The pinned panel can be taller than the viewport; ThinkIntro reads its height to slide up over it exactly.
+  useEffect(() => {
+    const el = panel.current;
+    if (!el) return;
+    const rootStyle = document.documentElement.style;
+    const observer = new ResizeObserver(() => {
+      rootStyle.setProperty("--cn-h", `${el.offsetHeight}px`);
+      ScrollTrigger.refresh();
+    });
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      rootStyle.removeProperty("--cn-h");
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -66,7 +82,7 @@ export function Constellation() {
     >
       <div
         ref={panel}
-        className="relative overflow-hidden rounded-t-[32px] bg-space py-20 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] sm:flex sm:h-svh sm:flex-col sm:items-center sm:justify-center sm:rounded-t-[48px] sm:py-6"
+        className="relative overflow-hidden sm:sticky sm:top-[min(0px,calc(100svh-var(--cn-h,100svh)))] rounded-t-[32px] bg-space py-20 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] sm:flex sm:min-h-svh sm:flex-col sm:items-center sm:justify-center sm:rounded-t-[48px] sm:py-20"
       >
         <div
           aria-hidden
@@ -134,6 +150,8 @@ export function Constellation() {
           ))}
         </ul>
       </div>
+      {/* Scroll room for the pinned panel while ThinkIntro slides over it; padding would not count for sticky. */}
+      <div aria-hidden className="hidden h-svh sm:block" />
     </section>
   );
 }

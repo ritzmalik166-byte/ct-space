@@ -33,9 +33,9 @@ export function Blueprint() {
       id="blueprint"
       ref={root}
       aria-labelledby="blueprint-title"
-      className="pointer-events-none relative -mt-[100svh] h-[640svh]"
+      className="pointer-events-none relative -mt-[170svh] h-[640svh]"
     >
-      <div className="js-bp-panel invisible sticky top-0 h-svh overflow-hidden">
+      <div className="js-bp-panel invisible sticky top-0 min-h-svh overflow-hidden">
         <div aria-hidden className="js-bp-veil absolute inset-0 bg-[#05060b]/55">
           <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-[#05060b]/70 to-transparent" />
           <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-[#05060b]/80 to-transparent" />
