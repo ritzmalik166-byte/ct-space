@@ -53,7 +53,7 @@ export function CreativeServices() {
 
   return (
     <section id="creative-services" ref={root} aria-labelledby="creative-services-title" className="relative z-[1]">
-      <div className="js-cs-pin relative h-[650svh]">
+      <div className="js-cs-pin relative h-[1000svh]">
         <div className="js-cs-frame sticky top-[-100px] flex h-[calc(100svh+100px)] w-full flex-col gap-3 overflow-hidden bg-white pt-[72px] md:gap-4 md:pt-20">
           <SectionHeading
             id="creative-services-title"
@@ -71,6 +71,7 @@ export function CreativeServices() {
             className="js-cs-stage relative min-h-[65svh] w-full flex-1 overflow-hidden bg-space"
           >
             {/* Layer 1: background images; later slides wipe in over earlier ones. */}
+
             {SLIDES.map((slide, i) => (
               <div
                 key={slide.bg}
@@ -78,7 +79,14 @@ export function CreativeServices() {
                 style={i === 0 ? undefined : { clipPath: WIPE_FROM }}
               >
                 <div className="js-cs-bg-img absolute inset-0 will-change-transform">
-                  <Image src={slide.bg} alt="" fill sizes="100vw" className="object-cover" onError={hideOnError} />
+                  <Image
+                    src={slide.bg}
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    className="object-cover"
+                    onError={hideOnError}
+                  />
                 </div>
               </div>
             ))}

@@ -125,7 +125,7 @@ export function Experience({ posts }: { posts: JournalPost[] }) {
   );
 
   return (
-    <div ref={root} className="relative">
+    <div ref={root} className="relative mb-0 pb-0">
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute -left-48 top-1/3 size-[36rem] rounded-full bg-plasma/12 blur-[150px]" />
         <div className="absolute right-[-12rem] top-[-10rem] size-[40rem] rounded-full bg-amber-200/[0.06] blur-[150px]" />

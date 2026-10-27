@@ -10,13 +10,11 @@ const SIDE_START = STUCK_AT + 0.08;
 const SIDE_GAP = 0.05;
 const PLAY_FROM = OPEN_START + OPEN_SPAN * 0.8;
 /** Scroll window in which the glass rises and the details unfold. */
-const REVEAL_START = 0.5;
-const REVEAL_END = 0.67;
-/** The exit (about 76svh long) ends as the panel unpins; the Journal fades in over its last 35svh, so no blank scroll is left between them. */
-const EXIT_START = (SECTION_SVH - 76) / SECTION_SVH;
-/** The closing wipes are tighter than the arrival so they fit inside the shorter exit window. */
-const CLOSE_SPAN = 0.08;
-const CLOSE_GAP = 0.03;
+const REVEAL_START = 0.52;
+const REVEAL_END = 0.72;
+/** The button below the cards appears once card animation finishes. */
+const CTA_START = REVEAL_END + 0.03;
+const CTA_DURATION = 0.1;
 
 export const HIDDEN = "inset(100% 0% 0% 0%)";
 const FULL = "inset(0% 0% 0% 0%)";
@@ -24,8 +22,8 @@ const CLOSED_DOWN = "inset(0% 0% 100% 0%)";
 const CLOSED_RIGHT = "inset(0% 100% 0% 0%)";
 
 /**
- * Arrival opens the cards with scroll-scrubbed wipes, the reveal raises the glass and unfolds each card's details,
- * and the exit tips the cards back into the floor. `onPlay` reports when the previews should run.
+ * Arrival opens the cards with scroll-scrubbed wipes and the reveal raises the glass and unfolds each card's details.
+ * The button appears after the cards finish animating, leaving the section assembled for normal scrolling to the next section.
  */
 export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void) {
   const q = gsap.utils.selector(root);
@@ -41,7 +39,7 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
       scrub: 1.5,
       invalidateOnRefresh: true,
       // Previews start once the featured card is mostly open, so video decoding never competes with the wipes.
-      onUpdate: ({ progress }) => onPlay(progress > PLAY_FROM && progress < EXIT_START + 0.06),
+      onUpdate: ({ progress }) => onPlay(progress > PLAY_FROM),
       onLeave: () => onPlay(false),
       onLeaveBack: () => onPlay(false),
     },
@@ -61,7 +59,6 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
       at,
     );
   });
-  tl.fromTo(q(".js-arch-cta"), { y: 20, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.04 }, SIDE_START + SIDE_GAP + OPEN_SPAN * 0.6);
 
   const span = REVEAL_END - REVEAL_START;
   cards.forEach((card, i) => {
@@ -89,25 +86,23 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
     );
   });
 
-  tl.to(q(".js-arch-head"), { y: -40, autoAlpha: 0, duration: 0.05, ease: "power2.in" }, EXIT_START)
-    .to(q(".js-arch-cta"), { y: 20, autoAlpha: 0, duration: 0.04 }, EXIT_START);
-
-  // The exit plays the arrival backwards: the small cards wipe shut right to left (last first), then the featured card closes upward.
-  const last = cells.length - 1;
-  cells.forEach((cell, i) => {
-    const featured = i === 0;
-    const at = EXIT_START + 0.01 + (featured ? last : last - i) * CLOSE_GAP;
-    tl.to(cell, { clipPath: featured ? CLOSED_DOWN : CLOSED_RIGHT, duration: CLOSE_SPAN, ease: "sine.inOut" }, at).to(
-      cards[i],
-      {
-        ...(featured ? { yPercent: -8, scale: 1.18 } : { xPercent: -18, scale: 1.08 }),
-        duration: CLOSE_SPAN * 1.3,
-        ease: "power2.in",
-        force3D: true,
-      },
-      at - CLOSE_SPAN * 0.3,
-    );
-  });
+  // The button below the section appears after the card animation finishes.
+  tl.fromTo(
+    q(".js-arch-cta"),
+    {
+      y: 35,
+      autoAlpha: 0,
+      scale: 0.96,
+    },
+    {
+      y: 0,
+      autoAlpha: 1,
+      scale: 1,
+      duration: CTA_DURATION,
+      ease: "power3.out",
+    },
+    CTA_START,
+  );
 
   tl.set({}, {}, 1);
 }

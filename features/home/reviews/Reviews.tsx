@@ -59,7 +59,7 @@ const REVIEWS = [
 ];
 
 /** Must match the section's `h-[640svh]` class. */
-const SECTION_SVH = 640;
+const SECTION_SVH = 900;
 /** Progress where the sticky panel locks: the trigger starts when the section enters (its first 100svh). */
 const STUCK_AT = 100 / SECTION_SVH;
 /** Progress where the footer starts rising over the panel (its last 100svh, see globals.css). */
@@ -71,10 +71,10 @@ const SLOT = (EXIT_START - FIRST_STOP) / REVIEWS.length;
 const REVIEW_STOPS = REVIEWS.map((_, i) => FIRST_STOP + i * SLOT);
 const SWAP = 0.03;
 /** Scroll share a card spends rising from below the screen onto the pile. */
-const RISE = SLOT * 0.45;
-const INK_AT = RISE * 0.6;
-const INK = SLOT * 0.4;
-const BYLINE_AT = SLOT * 0.6;
+const RISE = SLOT * 0.65;
+const INK_AT = RISE * 0.7;
+const INK = SLOT * 0.5;
+const BYLINE_AT = SLOT * 0.72;
 /** Resting pose by depth in the pile: 0 is the card on top. Anything deeper than the last entry is hidden. */
 const DECK = [
   { rotate: 0, y: 0, scale: 1, shade: 0 },
@@ -126,7 +126,7 @@ export function Reviews() {
       const reduced = prefersReducedMotion();
       const tl = gsap.timeline({
         defaults: { ease: "none" },
-        scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom bottom", scrub: 0.6, invalidateOnRefresh: true },
+        scrollTrigger: { trigger: root.current, start: "top bottom", end: "bottom bottom", scrub: 1.2, invalidateOnRefresh: true },
       });
       trigger.current = tl.scrollTrigger ?? null;
 
@@ -142,8 +142,21 @@ export function Reviews() {
 
         tl.fromTo(
           item,
-          reduced ? { autoAlpha: 0 } : { autoAlpha: 0, y: () => window.innerHeight * 0.75, rotate: 8 },
-          { autoAlpha: 1, y: 0, rotate: 0, duration: reduced ? SWAP : RISE, ease: "power3.out" },
+          {
+            autoAlpha: 0,
+            y: () => window.innerHeight * 0.75,
+            rotate: 8,
+            zIndex: i + 10,
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
+            rotate: 0,
+            zIndex: i + 10,
+            duration: reduced ? SWAP : RISE,
+            ease: "power3.out",
+            immediateRender: false,
+          },
           at,
         );
         if (!reduced) tl.fromTo(words, { opacity: 0.12 }, { opacity: 1, duration: INK / words.length, stagger: INK / words.length }, at + INK_AT);
@@ -181,7 +194,7 @@ export function Reviews() {
       id="reviews"
       ref={root}
       aria-labelledby="reviews-title"
-      className="pointer-events-none relative -mt-[100svh] h-[640svh]"
+      className="pointer-events-none relative -mt-[100svh] h-[900svh]"
     >
       <div className="js-rv-panel invisible sticky top-0 h-svh overflow-hidden">
         <div
@@ -195,8 +208,11 @@ export function Reviews() {
           <div className="mt-12 w-full max-w-[600px] sm:mt-16">
             <ul className="grid w-full [grid-template-areas:'stack']">
               {REVIEWS.map((review) => (
-                <li key={review.company} className="js-rv-item invisible [grid-area:stack]">
-                  <figure className="relative flex h-full flex-col justify-center rounded-[24px] bg-white px-6 py-7 text-left shadow-[0_30px_80px_-30px_rgb(0_0_0/0.7)] sm:px-10 sm:py-9">
+                <li
+                key={review.company}
+                className="js-rv-item invisible relative [grid-area:stack]"
+              >
+<figure className="relative z-10 flex h-full flex-col justify-center overflow-hidden rounded-[24px] border border-white/10 bg-white px-6 py-7 text-left shadow-[0_30px_80px_-30px_rgb(0_0_0/0.7)] sm:px-10 sm:py-9">
                     <blockquote className="js-rv-content font-sans text-[clamp(1.05rem,1.9vw,1.4rem)] font-medium leading-[1.45] tracking-[-0.01em] text-[#111111]">
                       <p>
                         {`“${review.quote}”`.split(" ").map((word, w) => (
@@ -218,7 +234,10 @@ export function Reviews() {
                         <span className="mt-0.5 font-sans text-xs text-[#6B7280]">{review.role}</span>
                       </span>
                     </figcaption>
-                    <span aria-hidden className="js-rv-shade pointer-events-none absolute inset-0 rounded-[24px] bg-[#0b0d12] opacity-0" />
+                    <span
+  aria-hidden
+  className="js-rv-shade pointer-events-none absolute inset-0 z-0 rounded-[24px] bg-[#0b0d12] opacity-0"
+/>
                   </figure>
                 </li>
               ))}

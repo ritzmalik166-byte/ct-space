@@ -38,13 +38,34 @@ export function ThinkIntro() {
       // Once the section has scrolled fully into place, the film wipes up from the bottom on its own (time-based,
       // not scrubbed); scrolling back above the section closes it again.
       const reveal = gsap
-        .timeline({ paused: true, defaults: { duration: 1.2, ease: "power3.out" } })
-        .fromTo(".js-ti-frame", { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)" }, 0)
-        .fromTo(".js-ti-video", { scale: 1.15 }, { scale: 1 }, 0);
+        .timeline({
+          paused: true,
+          defaults: { duration: 1.4, ease: "power3.inOut" },
+        })
+        .fromTo(
+          ".js-ti-frame",
+          {
+            clipPath: "inset(40% 40% 40% 40%)",
+            scale: 0.65,
+            borderRadius: "24px",
+          },
+          {
+            clipPath: "inset(0% 0% 0% 0%)",
+            scale: 1,
+            borderRadius: "24px",
+          },
+          0,
+        )
+        .fromTo(
+          ".js-ti-video",
+          { scale: 1.3 },
+          { scale: 1, duration: 1.4 },
+          0,
+        );
 
       ScrollTrigger.create({
-        trigger: root.current,
-        start: "top 10%",
+        trigger: ".js-ti-frame",
+        start: "top 85%",
         onEnter: () => reveal.play(),
         onLeaveBack: () => reveal.reverse(),
       });
@@ -58,7 +79,7 @@ export function ThinkIntro() {
     <section
       ref={root}
       aria-labelledby="how-we-think-title"
-      className="relative z-30 flex min-h-0 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] sm:mt-[calc(-1*min(var(--cn-h,100svh),100svh))] flex-col items-center gap-2.5 bg-white pt-[76px] sm:gap-3 lg:pt-20"
+      className="relative z-30 flex min-h-0 flex-col items-center gap-2.5 bg-white pt-[76px] sm:mt-[calc(-1*min(var(--cn-h,100svh),100svh))] sm:gap-3 lg:pt-20"
     >
       <SectionHeading
         id="how-we-think-title"
@@ -68,7 +89,7 @@ export function ThinkIntro() {
         className="px-4"
       />
 
-      <div className="js-ti-frame h-[55svh] max-h-[700px] min-h-0 w-full shrink-0 overflow-hidden bg-white/[0.03] sm:h-[60svh] lg:h-[85svh]">
+<div className="js-ti-frame mx-auto h-[55svh] max-h-[700px] min-h-0 w-full max-w-7xl shrink-0 overflow-hidden rounded-3xl bg-white/[0.03] sm:h-[60svh] lg:h-[85svh]">
         <video
           ref={video}
           className="js-ti-video block size-full object-cover"
