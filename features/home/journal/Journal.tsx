@@ -33,7 +33,7 @@ export function Journal({ posts }: { posts: JournalPost[] }) {
 
   return (
     <section id="journal" ref={root} aria-labelledby="journal-title" className="pointer-events-none relative -mt-[130svh] h-[340svh]">
-      <div className="js-jr-panel invisible sticky top-0 h-svh overflow-hidden">
+      <div className="js-jr-panel invisible sticky top-0 min-h-svh overflow-hidden py-20">
         <div
           aria-hidden
           className="js-jr-veil absolute inset-0 bg-white"

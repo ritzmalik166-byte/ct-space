@@ -52,9 +52,9 @@ export function CreativeServices() {
   );
 
   return (
-    <section id="creative-services" ref={root} aria-labelledby="creative-services-title" className="relative">
-      <div className="js-cs-pin relative h-[550svh]">
-        <div className="js-cs-frame sticky top-0 flex h-svh w-full flex-col gap-3 bg-white pt-[72px] md:gap-4 md:pt-5">
+    <section id="creative-services" ref={root} aria-labelledby="creative-services-title" className="relative z-[1]">
+      <div className="js-cs-pin relative h-[650svh]">
+        <div className="js-cs-frame sticky top-[-100px] flex h-[calc(100svh+100px)] w-full flex-col gap-3 overflow-hidden bg-white pt-[72px] md:gap-4 md:pt-20">
           <SectionHeading
             id="creative-services-title"
             title="AI creative services"
@@ -68,7 +68,7 @@ export function CreativeServices() {
             role="region"
             aria-roledescription="carousel"
             aria-label="AI creative services, scroll to browse"
-            className="js-cs-stage relative min-h-0 w-full flex-1 overflow-hidden bg-space"
+            className="js-cs-stage relative min-h-[65svh] w-full flex-1 overflow-hidden bg-space"
           >
             {/* Layer 1: background images; later slides wipe in over earlier ones. */}
             {SLIDES.map((slide, i) => (

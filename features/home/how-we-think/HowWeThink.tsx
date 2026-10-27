@@ -28,7 +28,7 @@ const STEPS: { lead: string; accent: string; body: string; video: string }[] = [
     lead: "Prototype in",
     accent: "days.",
     body: "A rough, working version in your hands within two weeks. Real data, real users, honest feedback. Then we iterate.",
-    video: assetUrl("02.mp4"),
+    video: assetUrl("02.MP4"),
   },
   {
     lead: "Ship, then",
@@ -104,7 +104,7 @@ export function HowWeThink() {
       <div className="sticky top-0 h-svh overflow-hidden bg-white">
         <div
           aria-hidden
-          className="js-think-ui absolute left-1/2 top-[30%] h-[44svh] w-0 -translate-y-1/2 lg:left-[71%] lg:top-1/2 lg:h-[min(72svh,680px)]"
+          className="js-think-ui absolute left-1/2 top-[30%] h-[44svh] w-0 -translate-y-1/2 lg:left-[64%] lg:top-1/2 lg:h-[min(72svh,680px)]"
         >
           {STEPS.map((step) => (
             <div

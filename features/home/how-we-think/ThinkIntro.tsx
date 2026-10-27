@@ -28,7 +28,7 @@ export function ThinkIntro() {
         end: "bottom top",
         onToggle: (self) => {
           if (!clip || reduced) return;
-          if (self.isActive) clip.play().catch(() => {});
+          if (self.isActive) clip.play().catch(() => { });
           else clip.pause();
         },
       });
@@ -58,7 +58,7 @@ export function ThinkIntro() {
     <section
       ref={root}
       aria-labelledby="how-we-think-title"
-      className="relative z-10 flex h-svh flex-col items-center gap-2.5 bg-white pt-[76px] sm:gap-3 lg:pt-3"
+      className="relative z-30 flex min-h-0 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] sm:mt-[calc(-1*min(var(--cn-h,100svh),100svh))] flex-col items-center gap-2.5 bg-white pt-[76px] sm:gap-3 lg:pt-20"
     >
       <SectionHeading
         id="how-we-think-title"
@@ -68,7 +68,7 @@ export function ThinkIntro() {
         className="px-4"
       />
 
-      <div className="js-ti-frame min-h-0 w-full flex-1 overflow-hidden bg-white/[0.03]">
+      <div className="js-ti-frame h-[55svh] max-h-[700px] min-h-0 w-full shrink-0 overflow-hidden bg-white/[0.03] sm:h-[60svh] lg:h-[85svh]">
         <video
           ref={video}
           className="js-ti-video block size-full object-cover"

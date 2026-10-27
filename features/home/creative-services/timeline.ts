@@ -18,6 +18,10 @@ export type ServiceParts = {
 export const WIPE_FROM = "polygon(135% 0%, 135% 0%, 100% 100%, 100% 100%)";
 const WIPE_TO = "polygon(0% 0%, 135% 0%, 100% 100%, -35% 100%)";
 
+/** Scroll distance (svh) at the end of the pin for the exit wipe; the next section is already locked behind it. */
+export const WIPE_SVH = 70;
+const wipeStart = () => `bottom-=${(window.innerHeight * WIPE_SVH) / 100} bottom`;
+
 const HOLD = 0.7;
 const SWAP = 1;
 const EXIT = 1.2;
@@ -51,15 +55,16 @@ export function servicesEntrance({ pin, stage, bgImgs, figs, copies, explore }: 
 
 /**
  * The pinned scroll story: each slide holds (drifting left, its progress bar filling), then the next one
- * wipes in diagonally while background and figure leave at different speeds. Ends by tilting the whole
- * stage back into the page as the next section arrives. `onSlide` fires when the visible slide changes.
+ * wipes in diagonally while background and figure leave at different speeds. Over the last
+ * `WIPE_SVH` of the pin the frame holds still while a vertical edge wipes it away from right to left,
+ * uncovering the next section already locked behind it. `onSlide` fires when the visible slide changes.
  */
 export function servicesSequence(p: ServiceParts, reduced: boolean, onSlide: (index: number) => void) {
   const n = p.bgs.length;
   const mids: number[] = [];
   const tl = gsap.timeline({
     defaults: { ease: "none" },
-    scrollTrigger: { trigger: p.pin, start: "top top", end: "bottom bottom", scrub: 1 },
+    scrollTrigger: { trigger: p.pin, start: "top top", end: wipeStart, scrub: 1, invalidateOnRefresh: true },
   });
 
   let t = 0;
@@ -81,19 +86,16 @@ export function servicesSequence(p: ServiceParts, reduced: boolean, onSlide: (in
     t += SWAP;
   }
 
-  const last = n - 1;
+  const exit = gsap.timeline({
+    defaults: { ease: "none" },
+    scrollTrigger: { trigger: p.pin, start: wipeStart, end: "bottom bottom", scrub: 0.6, invalidateOnRefresh: true },
+  });
   if (reduced) {
-    tl.fromTo(p.frame, { autoAlpha: 1 }, { autoAlpha: 0, duration: EXIT, ...out }, t);
+    exit.fromTo(p.frame, { autoAlpha: 1 }, { autoAlpha: 0, duration: EXIT });
   } else {
-    tl.fromTo(
-      p.frame,
-      { rotateX: 0, scale: 1, y: 0, clipPath: "inset(0% round 0px)", transformPerspective: 1200, transformOrigin: "50% 100%" },
-      { rotateX: 24, scale: 0.84, y: -40, clipPath: "inset(0% round 32px)", duration: EXIT, ease: "power2.in", ...out },
-      t,
-    )
-      .fromTo(p.frame, { autoAlpha: 1 }, { autoAlpha: 0, duration: EXIT * 0.4, ...out }, t + EXIT * 0.6)
-      .fromTo(p.bgImgs[last], { xPercent: -BG_DRIFT }, { xPercent: -14, duration: EXIT, ...out }, t)
-      .fromTo(p.figs[last], { xPercent: -FIG_DRIFT }, { xPercent: -45, duration: EXIT, ease: "power2.in", ...out }, t);
+    exit
+      .fromTo(p.frame, { clipPath: "inset(0% 0% 0% 0%)" }, { clipPath: "inset(0% 100% 0% 0%)", duration: EXIT, ease: "power1.inOut" })
+      .set(p.frame, { autoAlpha: 0 });
   }
 
   let shown = 0;

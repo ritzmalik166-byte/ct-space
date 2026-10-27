@@ -102,10 +102,29 @@ export function createDeck(cards: HTMLElement[], reduced: boolean) {
         return;
       }
       gsap
-        .timeline()
-        .to(card, { xPercent: 115, yPercent: -8, rotation: 16, scale: 0.95, duration: 0.35, ease: "power2.in" })
-        .call(() => restack(current))
-        .to(card, { ...target, duration: 0.5, ease: "power3.out" });
+      .timeline()
+      // Move the outgoing card down and out of view
+      .to(card, {
+        yPercent: 120,
+        xPercent: 0,
+        rotation: 0,
+        opacity: 0,
+        duration: 0.35,
+        ease: "power2.in",
+      })
+      .call(() => restack(current))
+      // Reset below the stack
+      .set(card, {
+        yPercent: 120,
+        xPercent: 0,
+        opacity: 0,
+      })
+      // Enter upward from the bottom into its resting position
+      .to(card, {
+        ...target,
+        duration: 0.6,
+        ease: "power3.out",
+      });
     });
   };
 
