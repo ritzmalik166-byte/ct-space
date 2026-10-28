@@ -75,11 +75,11 @@ export function NowFeaturing() {
   aria-labelledby="now-featuring-title"
   className="relative min-h-svh"
 >
-<div
-  ref={panel}
-  className="relative flex min-h-svh flex-col items-center justify-start overflow-visible px-5 pb-16 pt-28 sm:px-8 sm:pb-20 sm:pt-32"
->
-            <SectionHeading
+      <div
+        ref={panel}
+        className="relative flex min-h-svh flex-col items-center justify-start overflow-visible px-5 pb-16 pt-28 sm:px-8 sm:pb-20 sm:pt-32"
+      >
+        <SectionHeading
           id="now-featuring-title"
           title="Now featuring"
           subtitle="Inside every good AI product is a network of small, careful decisions."
@@ -89,9 +89,8 @@ export function NowFeaturing() {
         <ul className="mt-8 grid w-full max-w-[1150px] grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-3 sm:gap-5 lg:gap-8">
           {FEATURES.map((item, i) => (
             <li
-className={`js-nfc-item relative aspect-[4/5] w-full max-w-[320px] justify-self-center sm:max-w-none ${
-  i === 1 ? "z-10" : ""
-}`}
+              className={`js-nfc-item relative aspect-[4/5] w-full max-w-[320px] justify-self-center sm:max-w-none ${i === 1 ? "z-10" : ""
+                }`}
             >
               <div className="js-nfc-card size-full">
                 <div className="js-nfc-tilt group relative size-full overflow-hidden bg-white/[0.03] [clip-path:inset(0%_round_10px)]">

@@ -1,4 +1,5 @@
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 export type FeatureItem = { li: HTMLElement; card: HTMLElement; tilt: HTMLElement; shine: HTMLElement };
 
@@ -58,22 +59,33 @@ export function cardsEntrance({ section, items, cta }: FeatureParts, fan: boolea
  * Hand-off to the next section while the panel is pinned: everything shrinks back and fades out together,
  * then the next section scrolls in.
  */
-export function cardsExit({ section, panel }: FeatureParts) {
-  gsap
-    .timeline({
-      defaults: { ease: "none" },
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: true,
-        onUpdate: (self) => section.toggleAttribute("data-exiting", self.progress > 0.02),
-      },
-    })
-    .fromTo(panel, { scale: 1 }, { scale: 0.7, duration: 1, ease: "power1.in" }, 0)
-    .fromTo(panel, { autoAlpha: 1 }, { autoAlpha: 0, duration: 0.85, ease: "power1.in" }, 0.15);
-}
 
+
+export function cardsExit({ section, items, cta }: FeatureParts) {
+  const targets = [
+    ...items.map(({ card }) => card),
+    cta.outer,
+  ];
+
+  gsap.to(targets, {
+    autoAlpha: 0,
+    y: -80,
+    ease: "none",
+    stagger: 0.05,
+
+scrollTrigger: {
+  trigger: section,
+  start: "top top",
+  end: "center top",
+  scrub: 0.5,
+  invalidateOnRefresh: true,
+  onUpdate: (self) => {
+    section.toggleAttribute("data-exiting", self.progress > 0.02);
+  },
+},
+
+  });
+}
 
 /** Pointer tilt on fine pointers; paused while the exit has taken over the cards. */
 export function bindTilt({ section, items }: FeatureParts) {
