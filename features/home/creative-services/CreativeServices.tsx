@@ -68,7 +68,7 @@ export function CreativeServices() {
             role="region"
             aria-roledescription="carousel"
             aria-label="AI creative services, scroll to browse"
-            className="js-cs-stage sm:mt-5 relative min-h-[65svh] w-full flex-1 overflow-hidden bg-space"
+            className="js-cs-stage mt-5 sm:mt-5 relative min-h-[65svh] w-full flex-1 overflow-hidden bg-space"
           >
             {/* Layer 1: background images; later slides wipe in over earlier ones. */}
 
@@ -130,7 +130,7 @@ export function CreativeServices() {
                       aria-roledescription="slide"
                       aria-label={`${i + 1} of ${SLIDES.length}`}
                       inert={i !== 0}
-                      className="js-cs-copy flex flex-col items-start gap-[30px] [grid-area:1/1]"
+                      className="js-cs-copy flex flex-col items-start gap-[10px] [grid-area:1/1]"
                     >
                       <h3 className={`js-cs-line font-heading text-[30px] font-bold leading-none tracking-normal text-white-700 sm:text-[38px] ${i === 0 ? "" : "invisible"}`}>
                         {slide.title}

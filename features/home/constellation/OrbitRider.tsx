@@ -13,9 +13,9 @@ export function OrbitRider({ partner, index }: { partner: Partner; index: number
           aria-describedby={partner.description ? tipId : undefined}
           className="js-cn-badge relative flex cursor-default flex-col items-center gap-1.5 rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-violet-400"
         >
-          <span className="block transition-transform duration-300 group-hover/rider:scale-110">
-            <PartnerMark partner={partner} />
-          </span>
+<span className="block scale-75 transition-transform duration-300 group-hover/rider:scale-90 sm:scale-100 sm:group-hover/rider:scale-110">
+  <PartnerMark partner={partner} />
+</span>
           {partner.description && (
             <span
               id={tipId}

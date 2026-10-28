@@ -108,7 +108,7 @@ export function SectionHeading({
     >
       <h2
         id={id}
-        className="font-heading text-[30px] font-extrabold uppercase leading-tight tracking-[-0.6px] sm:text-[38px]"
+        className="font-heading text-[25px] font-extrabold uppercase leading-tight tracking-[-0.6px] sm:text-[38px]"
       >
         {title.split(" ").map((word, i) => (
           <span

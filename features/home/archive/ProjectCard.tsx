@@ -40,19 +40,24 @@ export function ProjectCard({ project, index, load, onOpen }: Props) {
         <span aria-hidden className="js-arch-glass absolute inset-0 border-t border-white/15 bg-black/55" style={{ clipPath: HIDDEN }} />
 
         <span
-          className={`js-arch-content absolute inset-x-0 bottom-0 flex flex-col [text-shadow:0_1px_12px_rgb(0_0_0/0.5)] ${
-            featured ? "items-center p-5 text-center sm:p-8" : "items-start p-4 sm:p-5"
-          }`}
+          className={`js-arch-content absolute inset-x-0 bottom-0 flex flex-col [text-shadow:0_1px_12px_rgb(0_0_0/0.5)] ${featured
+              ? "items-center p-5 text-center sm:p-8"
+              : "max-sm:hidden items-start p-4 sm:p-5"
+            }`}
         >
           <span
-            className={`js-arch-title invisible block font-heading font-bold leading-tight text-white ${
-              featured ? "text-lg sm:text-[24px]" : "text-sm sm:text-lg"
-            }`}
+            className={`js-arch-title invisible block font-heading font-bold leading-tight text-white ${featured
+                ? "text-lg sm:text-[24px]"
+                : "max-sm:invisible text-xs leading-tight sm:text-lg"
+              }`}
           >
             {project.title}
           </span>
 
-          <span className={`js-arch-details mt-3 flex flex-col gap-3 sm:gap-4 ${featured ? "items-center" : "items-start"}`}>
+          <span
+            className={`js-arch-details mt-2 flex flex-col gap-2 sm:mt-3 sm:gap-4 ${featured ? "items-center" : "max-sm:invisible items-start"
+              }`}
+          >
             <span className="js-arch-line invisible flex flex-wrap items-center gap-2 font-sans text-[10px] uppercase tracking-[0.2em] text-white/70 sm:text-[11px]">
               <span className="rounded-full border border-white/25 px-2 py-0.5 text-white">{project.code}</span>
               {project.place} · {project.year}

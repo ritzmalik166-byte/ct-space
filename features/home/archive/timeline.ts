@@ -129,7 +129,7 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
   });
 
   allCardTexts.forEach((items, i) => {
-    const at = REVEAL_START + 0.015 + i * 0.025;
+    const at = REVEAL_START + 0.015 + (i === 0 ? 0 : 0.025);
     tl.fromTo(
       items,
       { y: 16, autoAlpha: 0, clipPath: "inset(0% 0% 100% 0%)" },
