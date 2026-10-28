@@ -35,7 +35,7 @@ export function ProjectCard({ project, index, load, onOpen }: Props) {
         />
         {featured && (
           // Height matches the resting title row: its padding plus one 1.25-leading line.
-          <span aria-hidden className="js-arch-strip absolute inset-x-0 bottom-0 h-[63px] bg-black/45 sm:h-[94px]" />
+          <span aria-hidden className="js-arch-strip invisible absolute inset-x-0 bottom-0 h-[63px] bg-black/45 sm:h-[94px]" />
         )}
         <span aria-hidden className="js-arch-glass absolute inset-0 border-t border-white/15 bg-black/55" style={{ clipPath: HIDDEN }} />
 
@@ -45,8 +45,8 @@ export function ProjectCard({ project, index, load, onOpen }: Props) {
           }`}
         >
           <span
-            className={`js-arch-title block font-heading font-bold leading-tight text-white ${
-              featured ? "text-lg sm:text-[24px]" : "invisible text-sm sm:text-lg"
+            className={`js-arch-title invisible block font-heading font-bold leading-tight text-white ${
+              featured ? "text-lg sm:text-[24px]" : "text-sm sm:text-lg"
             }`}
           >
             {project.title}

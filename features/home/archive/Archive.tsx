@@ -73,17 +73,17 @@ export function Archive() {
       id="archive"
       ref={root}
       aria-labelledby="archive-title"
-      className="pointer-events-none relative -mt-[100svh] h-[400svh]"
+      className="pointer-events-none relative -mt-[100svh] h-[550svh]"
     >
-      <div className="js-arch-panel invisible sticky top-0 min-h-svh overflow-hidden py-20">
+      <div className="js-arch-panel invisible sticky top-0 h-svh min-h-svh overflow-hidden py-8 lg:py-10">
         <div
           aria-hidden
           className="js-arch-veil absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgb(8_15_28/0.55)_0%,rgb(6_11_22/0.88)_65%,rgb(5_6_11/0.96)_100%)]"
         />
-<div className="relative z-10 mx-auto flex h-full w-full max-w-[1280px] flex-col items-center justify-center px-5 sm:px-8 lg:px-10">
-            <SectionHeading id="archive-title" title="Portfolio" subtitle="Development Archive" start="top top" className="js-arch-head" />
+        <div className="relative z-10 mx-auto flex h-full w-full max-w-[1280px] flex-col items-center justify-center px-5 sm:px-8 lg:px-10">
+          <SectionHeading id="archive-title" title="Portfolio" subtitle="Development Archive" start="top top" className="js-arch-head" />
 
-          <div className="pointer-events-auto mt-8 grid w-full grid-cols-2 gap-3 sm:mt-12 lg:h-[min(64svh,620px)] lg:grid-cols-[1.42fr_1fr] lg:grid-rows-2 lg:gap-3.5">
+          <div className="pointer-events-auto mt-5 grid w-full grid-cols-2 gap-3 sm:mt-7 lg:h-[min(64svh,620px)] lg:grid-cols-[1.42fr_1fr] lg:grid-rows-2 lg:gap-3.5">
             {PROJECTS.map((project, i) => (
               <ProjectCard key={project.code} project={project} index={i} load={load} onOpen={open} />
             ))}
@@ -93,8 +93,8 @@ export function Archive() {
             type="button"
             onClick={(e) => open(0, e.currentTarget.parentElement?.querySelector(".js-arch-card") ?? e.currentTarget)}
             aria-haspopup="dialog"
-            className="js-arch-cta group pointer-events-auto mt-8 flex h-[46px] w-[180px] items-center justify-between gap-2.5 rounded-[100px] bg-white px-[19px] py-[9px] font-sans text-base font-semibold text-black transition-[scale] duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25] focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:mt-12"
-                      >
+            className="js-arch-cta group pointer-events-auto mt-5 flex h-[46px] w-[180px] items-center justify-between gap-2.5 rounded-[100px] bg-white px-[19px] py-[9px] font-sans text-base font-semibold text-black transition-[scale] duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25] focus-visible:ring-offset-2 focus-visible:ring-offset-black sm:mt-7"
+          >
             Portfolio
             <span className="grid size-7 place-items-center rounded-full bg-black text-white">
               <svg viewBox="0 0 24 24" className="size-4 transition-transform duration-500 group-hover:rotate-45" aria-hidden>
