@@ -146,13 +146,13 @@ export function Reviews() {
             autoAlpha: 0,
             y: () => window.innerHeight * 0.75,
             rotate: 8,
-            zIndex: i + 10,
+            zIndex: 100 + i,
           },
           {
             autoAlpha: 1,
             y: 0,
             rotate: 0,
-            zIndex: i + 10,
+            zIndex: 100 + i,
             duration: reduced ? SWAP : RISE,
             ease: "power3.out",
             immediateRender: false,
@@ -183,7 +183,19 @@ export function Reviews() {
       });
 
       // The footer slides up over the pinned panel across this last stretch; the stage recedes beneath it.
-      if (!reduced) tl.to(".js-rv-stage", { y: -60, scale: 0.92, opacity: 0.35, duration: 1 - EXIT_START, ease: "power1.in" }, EXIT_START);
+      if (!reduced) {
+        tl.to(
+          ".js-rv-stage",
+          {
+            y: -30,
+            scale: 0.96,
+            opacity: 0.7,
+            duration: 1 - EXIT_START,
+            ease: "none",
+          },
+          EXIT_START,
+        );
+      }
       tl.set({}, {}, 1);
     },
     { scope: root },
@@ -194,7 +206,7 @@ export function Reviews() {
       id="reviews"
       ref={root}
       aria-labelledby="reviews-title"
-      className="pointer-events-none relative -mt-[100svh] h-[900svh]"
+      className="pointer-events-none relative z-0 h-[900svh]"
     >
       <div className="js-rv-panel invisible sticky top-0 h-svh overflow-hidden">
         <div
@@ -209,10 +221,10 @@ export function Reviews() {
             <ul className="grid w-full [grid-template-areas:'stack']">
               {REVIEWS.map((review) => (
                 <li
-                key={review.company}
-                className="js-rv-item invisible relative [grid-area:stack]"
-              >
-<figure className="relative z-10 flex h-full flex-col justify-center overflow-hidden rounded-[24px] border border-white/10 bg-white px-6 py-7 text-left shadow-[0_30px_80px_-30px_rgb(0_0_0/0.7)] sm:px-10 sm:py-9">
+                  key={review.company}
+                  className="js-rv-item invisible relative isolate [grid-area:stack] bg-white rounded-[24px]"
+                >
+                  <figure className="relative z-10 flex h-full flex-col justify-center overflow-hidden rounded-[24px] border border-white/10 bg-white opacity-100 text-left shadow-[0_30px_80px_-30px_rgb(0_0_0/0.7)] px-6 py-7 sm:px-10 sm:py-9">
                     <blockquote className="js-rv-content font-sans text-[clamp(1.05rem,1.9vw,1.4rem)] font-medium leading-[1.45] tracking-[-0.01em] text-[#111111]">
                       <p>
                         {`“${review.quote}”`.split(" ").map((word, w) => (
@@ -235,16 +247,16 @@ export function Reviews() {
                       </span>
                     </figcaption>
                     <span
-  aria-hidden
-  className="js-rv-shade pointer-events-none absolute inset-0 z-0 rounded-[24px] bg-[#0b0d12] opacity-0"
-/>
+                      aria-hidden
+                      className="js-rv-shade pointer-events-none absolute inset-0 z-0 rounded-[24px] bg-[#0b0d12] opacity-0"
+                    />
                   </figure>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="pointer-events-auto mt-5 flex items-center gap-1">
+          <div className="pointer-events-auto mt-5 sm:mt-15 flex items-center gap-1">
             <SlideArrow dir={-1} onClick={() => step(-1)} />
             {REVIEWS.map((review, i) => (
               <button

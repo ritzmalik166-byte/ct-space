@@ -43,11 +43,63 @@ export function NowFeaturing() {
       };
 
       const mm = gsap.matchMedia();
-      mm.add({ fan: "(min-width: 640px)", fine: "(hover: hover) and (pointer: fine)" }, (ctx) => {
+
+      mm.add("(max-width: 639px)", () => {
         if (motion.reduced) return simpleEntrance(parts);
-        const { fan, fine } = ctx.conditions ?? {};
-        cardsEntrance(parts, Boolean(fan));
+
+        const cards = gsap.utils.toArray<HTMLElement>(".js-nfc-item");
+
+        // Stack all cards in the same centered position.
+        gsap.set(cards, {
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          xPercent: -50,
+          yPercent: -50,
+          autoAlpha: 0,
+          scale: 0.92,
+        });
+
+        const sequence = gsap.timeline({
+          scrollTrigger: {
+            trigger: section,
+            start: "top top",
+            end: () => `+=${window.innerHeight * cards.length}`,
+            pin: panel.current,
+            scrub: 0.6,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        cards.forEach((card, index) => {
+          sequence
+            .to(card, {
+              autoAlpha: 1,
+              scale: 1,
+              duration: 0.25,
+            })
+            .to(card, {
+              autoAlpha: 1,
+              scale: 1,
+              duration: 0.5,
+            })
+            .to(card, {
+              autoAlpha: 0,
+              scale: 0.94,
+              duration: 0.25,
+            });
+        });
+
+        return () => sequence.scrollTrigger?.kill();
+      });
+
+      mm.add("(min-width: 640px)", (ctx) => {
+        if (motion.reduced) return simpleEntrance(parts);
+
+        const { fine } = ctx.conditions ?? {};
+        cardsEntrance(parts, true);
         cardsExit(parts);
+
         if (fine) return bindTilt(parts);
       });
 
@@ -69,15 +121,15 @@ export function NowFeaturing() {
   );
 
   return (
-<section
-  id="now-featuring"
-  ref={root}
-  aria-labelledby="now-featuring-title"
-  className="relative min-h-svh"
->
+    <section
+      id="now-featuring"
+      ref={root}
+      aria-labelledby="now-featuring-title"
+      className="relative min-h-svh"
+    >
       <div
         ref={panel}
-        className="relative flex min-h-svh flex-col items-center justify-start overflow-visible px-5 pb-16 pt-28 sm:px-8 sm:pb-20 sm:pt-32"
+        className="relative flex min-h-svh flex-col items-center justify-start overflow-hidden px-5 pb-16 pt-28 sm:px-8 sm:pb-20 sm:pt-32"
       >
         <SectionHeading
           id="now-featuring-title"
@@ -86,11 +138,10 @@ export function NowFeaturing() {
         />
 
         {/* Card width is capped by viewport height so heading, cards and button always fit the sticky frame. */}
-        <ul className="mt-8 grid w-full max-w-[1150px] grid-cols-1 gap-6 sm:mt-10 sm:grid-cols-3 sm:gap-5 lg:gap-8">
+        <ul className="relative mt-15 h-[46svh] w-full max-w-[1150px] sm:mt-10 sm:grid sm:h-auto sm:grid-cols-3 sm:gap-5 lg:gap-8">
           {FEATURES.map((item, i) => (
             <li
-              className={`js-nfc-item relative aspect-[4/5] w-full max-w-[320px] justify-self-center sm:max-w-none ${i === 1 ? "z-10" : ""
-                }`}
+              className={`js-nfc-item absolute left-0 top-0 aspect-[4/5] w-full max-w-[320px] sm:relative sm:left-auto sm:top-auto sm:w-full sm:max-w-none sm:translate-x-0 sm:translate-y-0 ${i === 1 ? "z-10" : ""}`}
             >
               <div className="js-nfc-card size-full">
                 <div className="js-nfc-tilt group relative size-full overflow-hidden bg-white/[0.03] [clip-path:inset(0%_round_10px)]">
@@ -121,7 +172,7 @@ export function NowFeaturing() {
           ))}
         </ul>
 
-        <div className="js-nfc-cta-out mt-8 shrink-0 sm:mt-10">
+        <div className="js-nfc-cta-out mt-15 shrink-0 sm:mt-10">
           <Link
             href="/#archive"
             className="js-nfc-cta group flex h-[52px] items-center gap-6 rounded-full bg-white pl-6 pr-1.5 font-sans text-sm font-semibold uppercase text-black shadow-[0_10px_40px_-14px_rgb(255_255_255/0.5)] transition-[scale] duration-300 hover:scale-[1.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#DAAF25] focus-visible:ring-offset-2 focus-visible:ring-offset-black"

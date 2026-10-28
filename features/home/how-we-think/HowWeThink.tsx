@@ -101,11 +101,24 @@ export function HowWeThink() {
 
   return (
     <section id="how-we-think" ref={root} aria-labelledby="how-we-think-title" className="relative h-[500svh]">
-      <div className="sticky top-0 h-svh overflow-hidden bg-white">
-        <div
-          aria-hidden
-          className="js-think-ui absolute left-1/2 top-[30%] h-[44svh] w-0 -translate-y-1/2 lg:left-[64%] lg:top-1/2 lg:h-[min(72svh,680px)]"
-        >
+      <div className="sticky top-0 h-svh overflow-hidden bg-white py-10 md:py-auto">
+<div
+  aria-hidden
+  className="
+    js-think-ui
+    absolute left-1/2 top-[5svh]
+    mt-0 h-[48svh] w-0 -translate-x-1/2
+
+    md:top-[4svh]
+    md:h-[50svh]
+
+    lg:left-[64%]
+    lg:top-1/2
+    lg:mt-20
+    lg:h-[min(72svh,680px)]
+    lg:-translate-y-3/5
+  "
+>
           {STEPS.map((step) => (
             <div
               key={step.video}
@@ -116,8 +129,9 @@ export function HowWeThink() {
           ))}
         </div>
 
-<div className="relative mx-auto flex h-full w-full max-w-7xl items-center px-6 lg:px-10">
-            <div aria-hidden className="js-think-ui absolute left-6 top-1/2 hidden h-56 -translate-y-1/2 lg:left-10 lg:block">
+        <div className="relative mx-auto h-full w-full max-w-7xl px-6 lg:flex lg:items-center lg:px-10">
+
+          <div aria-hidden className="js-think-ui absolute left-6 top-1/2 hidden h-56 -translate-y-1/2 lg:left-10 lg:block">
             <div className="relative h-full w-px bg-black/15">
               <div className="js-rail-fill absolute inset-0 origin-top bg-black" />
             </div>
@@ -130,36 +144,35 @@ export function HowWeThink() {
             ))}
           </div>
 
-<div className="relative h-full w-full max-w-[440px] lg:ml-16 lg:max-w-[min(400px,34vw)]">
+          <div className="relative h-full w-full max-w-[440px] pb-[12svh] md:left-1/2 md:-translate-x-1/2 lg:left-auto lg:translate-x-0 lg:ml-16 lg:max-w-[min(400px,34vw)]">
+            {STEPS.map((step, i) => (
+              <div
+                key={step.lead}
+                className="absolute inset-x-0 bottom-0 top-auto flex flex-col justify-end pb-8 md:bottom-auto md:top-[calc(53svh+30px)] md:pb-0 lg:inset-0 lg:top-0 lg:justify-center lg:pb-0"
+              >
+                <article className="js-step relative flex w-full flex-col gap-2.5 text-black">
+                  <p className="js-step-fade font-sans text-base font-normal leading-none tracking-[-0.6px] text-black/70 sm:text-lg">
+                    Step {String(i + 1).padStart(2, "0")} /{" "}
+                    {String(STEPS.length).padStart(2, "0")}
+                  </p>
 
-{STEPS.map((step, i) => (
-  <div
-    key={step.lead}
-    className="absolute inset-0 flex items-center"
-  >
-    <article className="js-step invisible relative flex w-full flex-col gap-2.5">
-      <p className="js-step-fade font-sans text-base font-normal leading-none tracking-[-0.6px] text-black/70 sm:text-lg">
-        Step {String(i + 1).padStart(2, "0")} /{" "}
-        {String(STEPS.length).padStart(2, "0")}
-      </p>
+                  <h3 className="font-heading text-[28px] font-bold leading-tight tracking-[-0.6px] text-black sm:text-[38px]">
+                    {`${step.lead} ${step.accent}`.split(" ").map((word, wordIndex) => (
+                      <span
+                        key={`${word}-${wordIndex}`}
+                        className="mr-[0.25em] inline-block overflow-hidden pb-[0.08em] align-top last:mr-0"
+                      >
+                        <span className="js-step-word inline-block">{word}</span>
+                      </span>
+                    ))}
+                  </h3>
 
-      <h3 className="font-heading text-[30px] font-bold leading-none tracking-[-0.6px] text-black sm:text-[38px]">
-        {`${step.lead} ${step.accent}`.split(" ").map((word, wordIndex) => (
-          <span
-            key={`${word}-${wordIndex}`}
-            className="mr-[0.25em] inline-block overflow-hidden pb-[0.08em] align-top last:mr-0"
-          >
-            <span className="js-step-word inline-block">{word}</span>
-          </span>
-        ))}
-      </h3>
-
-      <p className="js-step-fade font-sans text-base font-normal leading-snug tracking-[-0.6px] text-black sm:text-lg">
-        {step.body}
-      </p>
-    </article>
-  </div>
-))}
+                  <p className="js-step-fade max-w-full pr-2 font-sans text-sm font-normal leading-snug tracking-[-0.3px] text-black sm:text-lg">
+                    {step.body}
+                  </p>
+                </article>
+              </div>
+            ))}
 
           </div>
         </div>

@@ -47,12 +47,12 @@ export function ThinkIntro() {
           {
             clipPath: "inset(40% 40% 40% 40%)",
             scale: 0.65,
-            borderRadius: "24px",
+            borderRadius: window.innerWidth < 940 ? "0px" : "24px",
           },
           {
             clipPath: "inset(0% 0% 0% 0%)",
             scale: 1,
-            borderRadius: "24px",
+            borderRadius: window.innerWidth < 940 ? "0px" : "24px",
           },
           0,
         )
@@ -79,7 +79,7 @@ export function ThinkIntro() {
     <section
       ref={root}
       aria-labelledby="how-we-think-title"
-      className="relative z-30 flex min-h-0 flex-col items-center gap-2.5 bg-white pt-[76px] sm:mt-[calc(-1*min(var(--cn-h,100svh),100svh))] sm:gap-3 lg:pt-20"
+      className="relative z-30 flex min-h-svh flex-col items-center gap-2.5 bg-white pt-[76px] sm:mt-[calc(-1*min(var(--cn-h,100svh),100svh))] sm:gap-3 lg:py-20"
     >
       <SectionHeading
         id="how-we-think-title"
@@ -89,7 +89,7 @@ export function ThinkIntro() {
         className="px-4"
       />
 
-      <div className="js-ti-frame mx-auto h-[55svh] max-h-[700px] min-h-0 w-full max-w-7xl shrink-0 overflow-hidden rounded-3xl bg-white/[0.03] sm:h-[60svh] lg:h-[85svh]">
+      <div className="js-ti-frame mx-auto mt-5 h-[68svh] max-h-none min-h-0 w-full max-w-7xl shrink-0 overflow-hidden rounded-none bg-white sm:mt-5 sm:h-[60svh] sm:max-h-[700px] sm:rounded-3xl lg:h-[85svh]">
         <video
           ref={video}
           className="js-ti-video block size-full object-cover"

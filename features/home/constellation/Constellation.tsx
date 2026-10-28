@@ -78,11 +78,11 @@ export function Constellation() {
       ref={root}
       data-paused
       aria-labelledby="constellation-title"
-      className="group/cn relative z-20 -mt-[100svh]"
+      className="group/cn relative z-20 -mt-[100svh] sm:-mt-[100svh]"
     >
       <div
         ref={panel}
-        className="relative overflow-hidden sm:sticky sm:top-[min(0px,calc(100svh-var(--cn-h,100svh)))] rounded-t-[32px] bg-space py-20 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] sm:flex sm:min-h-svh sm:flex-col sm:items-center sm:justify-center sm:rounded-t-[48px] sm:py-20"
+        className="sticky top-0 relative overflow-hidden rounded-t-[32px] bg-space py-20 shadow-[0_-30px_80px_-20px_rgb(0_0_0/0.8)] flex min-h-svh flex-col items-center justify-center sm:top-[min(0px,calc(100svh-var(--cn-h,100svh)))] sm:rounded-t-[48px] sm:py-20"
       >
         <div
           aria-hidden
@@ -97,11 +97,11 @@ export function Constellation() {
           className="relative px-6"
         />
 
-        <div className="mt-10 w-full [perspective:1300px] sm:mt-4">
+        <div className="mt-6 w-full px-2 [perspective:1300px] sm:mt-4 sm:px-0">
           <div
             ref={stage}
             style={STAGE_SIZE}
-            className="relative mx-auto will-change-transform [transform-style:preserve-3d] [transform:rotateX(var(--cn-tilt,0deg))_scale(var(--cn-zoom,1))]"
+            className="relative mx-auto w-full max-w-[min(100%,900px)] will-change-transform [transform-style:preserve-3d] [transform:rotateX(var(--cn-tilt,0deg))_scale(var(--cn-zoom,1))]"
           >
             <svg viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}`} aria-hidden className="absolute inset-0 size-full overflow-visible">
               <g transform={`rotate(${ORBIT_TILT} 500 310)`}>
@@ -133,22 +133,13 @@ export function Constellation() {
               </div>
             </div>
 
-            <ul className="pointer-events-none absolute inset-0 hidden [transform-style:preserve-3d] sm:block">
+            <ul className="pointer-events-none absolute inset-0 [transform-style:preserve-3d]">
               {ALL_PARTNERS.map((partner, i) => (
                 <OrbitRider key={partner.name} partner={partner} index={i} />
               ))}
             </ul>
           </div>
         </div>
-
-        <ul className="relative mx-auto mt-10 grid max-w-md grid-cols-2 gap-4 px-6 sm:hidden">
-          {ALL_PARTNERS.map((partner) => (
-            <li key={partner.name} className="flex flex-col items-center gap-2 rounded-2xl bg-white/[0.03] p-4 text-center ring-1 ring-white/[0.06]">
-              <PartnerMark partner={partner} />
-              {partner.description && <span className="font-sans text-xs leading-snug text-slate-400">{partner.description}</span>}
-            </li>
-          ))}
-        </ul>
       </div>
       {/* Scroll room for the pinned panel while ThinkIntro slides over it; padding would not count for sticky. */}
       <div aria-hidden className="hidden h-[120svh] sm:block" />

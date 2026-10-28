@@ -165,7 +165,7 @@ export function Impact() {
       id="impact"
       ref={root}
       aria-labelledby="impact-title"
-      className="pointer-events-none relative -mt-[100svh] h-[380svh]"
+      className="pointer-events-none relative z-0 h-[380svh]"
     >
       <div className="js-im-panel invisible sticky top-0 h-svh overflow-hidden">
         <div
@@ -182,7 +182,7 @@ export function Impact() {
             className="js-im-head"
           />
 
-          <div aria-hidden className="js-im-sky relative mt-6 h-[14svh] sm:mt-8 sm:h-[16svh]">
+          <div aria-hidden className="js-im-sky relative mt-6 h-[14svh] sm:mt-18 sm:h-[16svh]">
             <svg viewBox={`0 0 ${TRAIL_BOX.w} ${TRAIL_BOX.h}`} preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
               <path
                 className="js-im-ghost invisible"
