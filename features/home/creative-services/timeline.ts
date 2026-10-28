@@ -141,7 +141,7 @@ export function servicesSequence(
       trigger: p.pin,
       start: "top top",
       end: "bottom bottom",
-      scrub: 2,
+      scrub: 0.5,
       invalidateOnRefresh: true,
     },
   });

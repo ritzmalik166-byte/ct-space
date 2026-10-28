@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useRef } from "react";
@@ -10,10 +11,13 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 const TONES = {
   dark: {
-    title: "bg-[linear-gradient(0deg,#94AEB8_0%,#F1F5F9_50%,#FFFFFF_100%)] bg-clip-text text-transparent",
-    subtitle: "text-[#94A3B8]",
+    title: "text-white",
+    subtitle: "text-white",
   },
-  light: { title: "text-black", subtitle: "text-black" },
+  light: {
+    title: "text-black",
+    subtitle: "text-black",
+  },
 };
 
 type Props = {
@@ -21,19 +25,18 @@ type Props = {
   title: string;
   subtitle: string;
   tone?: keyof typeof TONES;
-  /**
-   * ScrollTrigger start, measured on the enclosing `<section>`. Sections whose sticky panel only appears once
-   * they reach the top of the viewport should pass "top top" so the reveal is never played while hidden.
-   */
   start?: string;
   className?: string;
 };
 
-/**
- * Shared section title: the words flip up in 3D like the hero headline, then the subtitle fades in.
- * Plays once the section reaches `start` and reverses when scrolled back above it.
- */
-export function SectionHeading({ id, title, subtitle, tone = "dark", start = "top 45%", className = "" }: Props) {
+export function SectionHeading({
+  id,
+  title,
+  subtitle,
+  tone = "dark",
+  start = "top 45%",
+  className = "",
+}: Props) {
   const root = useRef<HTMLElement>(null);
   const styles = TONES[tone];
 
@@ -43,16 +46,49 @@ export function SectionHeading({ id, title, subtitle, tone = "dark", start = "to
       if (!trigger) return;
 
       const tl = gsap.timeline({ paused: true });
+
       if (prefersReducedMotion()) {
-        tl.fromTo([".js-sh-word", ".js-sh-sub"], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.8, stagger: 0.2 });
+        tl.fromTo(
+          [".js-sh-word", ".js-sh-sub"],
+          { autoAlpha: 0 },
+          {
+            autoAlpha: 1,
+            duration: 0.8,
+            stagger: 0.2,
+          },
+        );
       } else {
-        // A short lead-in lets the panel settle before the words rise, so the reveal is seen rather than missed.
         tl.fromTo(
           ".js-sh-word",
-          { yPercent: 100, rotateX: -80, autoAlpha: 0, transformOrigin: "50% 100%" },
-          { yPercent: 0, rotateX: 0, autoAlpha: 1, duration: 1.6, stagger: 0.14, ease: "power3.out" },
+          {
+            yPercent: 100,
+            rotateX: -80,
+            autoAlpha: 0,
+            transformOrigin: "50% 100%",
+          },
+          {
+            yPercent: 0,
+            rotateX: 0,
+            autoAlpha: 1,
+            duration: 1.6,
+            stagger: 0.14,
+            ease: "power3.out",
+          },
           0.25,
-        ).fromTo(".js-sh-sub", { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1.4, ease: "power2.out" }, 0.9);
+        ).fromTo(
+          ".js-sh-sub",
+          {
+            y: 24,
+            autoAlpha: 0,
+          },
+          {
+            y: 0,
+            autoAlpha: 1,
+            duration: 1.4,
+            ease: "power2.out",
+          },
+          0.9,
+        );
       }
 
       ScrollTrigger.create({
@@ -66,17 +102,33 @@ export function SectionHeading({ id, title, subtitle, tone = "dark", start = "to
   );
 
   return (
-    <header ref={root} className={`mx-auto flex max-w-[740px] flex-col items-center gap-2.5 text-center ${className}`}>
-      <h2 id={id} className="font-heading text-[30px] font-bold uppercase leading-none tracking-[-0.6px] sm:text-[38px]">
+    <header
+      ref={root}
+      className={`mx-auto flex max-w-[740px] flex-col items-center gap-2.5 text-center ${className}`}
+    >
+      <h2
+        id={id}
+        className="font-heading text-[30px] font-extrabold uppercase leading-tight tracking-[-0.6px] sm:text-[38px]"
+      >
         {title.split(" ").map((word, i) => (
-          <span key={i} className="mr-[0.22em] inline-block pb-[0.1em] align-top last:mr-0">
-            <span className="-mb-[0.2em] inline-block overflow-hidden pb-[0.2em] align-top [perspective:600px]">
-              <span className={`js-sh-word invisible inline-block ${styles.title}`}>{word}</span>
+          <span
+            key={i}
+            className="mr-[0.22em] inline-block pb-[0.1em] align-top last:mr-0"
+          >
+            <span className="inline-block overflow-hidden pb-[0.2em] align-top [perspective:600px]">
+              <span
+                className={`js-sh-word invisible inline-block font-extrabold ${styles.title}`}
+              >
+                {word}
+              </span>
             </span>
           </span>
         ))}
       </h2>
-      <p className={`js-sh-sub invisible max-w-[540px] font-sans text-base font-normal leading-snug tracking-[-0.6px] sm:text-lg ${styles.subtitle}`}>
+
+      <p
+        className={`js-sh-sub invisible max-w-[540px] font-sans text-base font-normal leading-snug tracking-[-0.3px] sm:text-lg ${styles.subtitle}`}
+      >
         {subtitle}
       </p>
     </header>

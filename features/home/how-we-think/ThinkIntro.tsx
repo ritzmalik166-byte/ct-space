@@ -89,7 +89,7 @@ export function ThinkIntro() {
         className="px-4"
       />
 
-<div className="js-ti-frame mx-auto h-[55svh] max-h-[700px] min-h-0 w-full max-w-7xl shrink-0 overflow-hidden rounded-3xl bg-white/[0.03] sm:h-[60svh] lg:h-[85svh]">
+      <div className="js-ti-frame mx-auto h-[55svh] max-h-[700px] min-h-0 w-full max-w-7xl shrink-0 overflow-hidden rounded-3xl bg-white/[0.03] sm:h-[60svh] lg:h-[85svh]">
         <video
           ref={video}
           className="js-ti-video block size-full object-cover"
