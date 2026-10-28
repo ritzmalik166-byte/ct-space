@@ -68,7 +68,7 @@ export function CreativeServices() {
             role="region"
             aria-roledescription="carousel"
             aria-label="AI creative services, scroll to browse"
-            className="js-cs-stage relative min-h-[65svh] w-full flex-1 overflow-hidden bg-space"
+            className="js-cs-stage sm:mt-5 relative min-h-[65svh] w-full flex-1 overflow-hidden bg-space"
           >
             {/* Layer 1: background images; later slides wipe in over earlier ones. */}
 

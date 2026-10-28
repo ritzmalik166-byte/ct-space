@@ -53,7 +53,7 @@ export function Journal({ posts }: { posts: JournalPost[] }) {
       id="journal"
       ref={root}
       aria-labelledby="journal-title"
-      className="relative w-full bg-white py-20 text-black sm:py-24"
+      className="relative z-10 w-full bg-white py-20 text-black sm:py-24"
     >
       <div className="relative mx-auto flex w-full max-w-[1280px] flex-col items-center px-5 sm:px-8 lg:px-10">
         <SectionHeading

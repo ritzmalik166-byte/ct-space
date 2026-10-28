@@ -26,13 +26,6 @@ const CTA_SPAN = 0.055;
 // 3. Pinned Reading Hold
 const HOLD_END = 0.630;
 
-// 4. Content Hide: On further scrolling, hide content first
-const HIDE_START = HOLD_END;
-const CTA_HIDE_SPAN = 0.040;
-const TEXT_HIDE_SPAN = 0.045;
-const GLASS_HIDE_SPAN = 0.050;
-const VIDEO_HIDE_SPAN = 0.060;
-
 // 5. Card Closing in Reverse Reveal Order: using exact reverse of their opening wipe animations
 const CLOSE_SPAN = 0.055;
 const CLOSE_TRANSFORM_SPAN = CLOSE_SPAN * 1.25;
@@ -155,32 +148,6 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
 
   tl.set([...cards, ...cta], { pointerEvents: "auto" }, CTA_START + CTA_SPAN * 0.5);
 
-  // 4. Content Hide: hide content first (CTA, text, glass, video zoom)
-  tl.set([...cards, ...cta], { pointerEvents: "none" }, HIDE_START);
-
-  tl.to(
-    cta,
-    { y: 24, autoAlpha: 0, scale: 0.96, duration: CTA_HIDE_SPAN, ease: "power2.in" },
-    HIDE_START,
-  );
-
-  const flatTextList = allCardTexts.flat();
-  tl.to(
-    flatTextList,
-    { y: 16, autoAlpha: 0, clipPath: "inset(0% 0% 100% 0%)", duration: TEXT_HIDE_SPAN, stagger: 0.006, ease: "power2.in" },
-    HIDE_START + 0.01,
-  );
-
-  tl.to(
-    glasses,
-    { clipPath: HIDDEN, duration: GLASS_HIDE_SPAN, ease: "power2.inOut" },
-    HIDE_START + 0.025,
-  ).to(
-    videos,
-    { scale: 1, duration: VIDEO_HIDE_SPAN, ease: "power1.inOut" },
-    HIDE_START + 0.015,
-  );
-
   // 5. Close all cards in reverse reveal order using exact reverse of opening wipe animations
   for (let i = cells.length - 1; i >= 1; i--) {
     const closeIndex = (cells.length - 1) - i;
@@ -213,10 +180,6 @@ export function archiveTimeline(root: HTMLElement, onPlay: (on: boolean) => void
     heading,
     { autoAlpha: 0, y: -20, duration: 0.045, ease: "power2.in" },
     EXIT_START,
-  ).to(
-    veil,
-    { autoAlpha: 0, duration: 0.045 },
-    EXIT_START + 0.01,
   ).to(
     panel,
     { autoAlpha: 0, duration: 0.015 },

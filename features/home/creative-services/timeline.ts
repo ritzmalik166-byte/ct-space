@@ -29,7 +29,7 @@ const wipeStart = () =>
 
 const HOLD = 3;
 const SWAP = 3;
-const EXIT = 2;
+const EXIT = 4;
 
 /** Background and figure movement during slide transitions. */
 const BG_DRIFT = 4;

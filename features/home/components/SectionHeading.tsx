@@ -104,7 +104,7 @@ export function SectionHeading({
   return (
     <header
       ref={root}
-      className={`mx-auto flex max-w-[740px] flex-col items-center gap-2.5 text-center ${className}`}
+      className={`mx-auto flex max-w-[740px] flex-col items-center text-center ${className}`}
     >
       <h2
         id={id}
@@ -115,7 +115,7 @@ export function SectionHeading({
             key={i}
             className="mr-[0.22em] inline-block pb-[0.1em] align-top last:mr-0"
           >
-            <span className="inline-block overflow-hidden pb-[0.2em] align-top [perspective:600px]">
+            <span className="inline-block overflow-hidden pb-[0.05em] align-top [perspective:600px]">
               <span
                 className={`js-sh-word invisible inline-block font-extrabold ${styles.title}`}
               >
@@ -126,11 +126,11 @@ export function SectionHeading({
         ))}
       </h2>
 
-      <p
-        className={`js-sh-sub invisible max-w-[540px] font-sans text-base font-normal leading-snug tracking-[-0.3px] sm:text-lg ${styles.subtitle}`}
-      >
-        {subtitle}
-      </p>
+<p
+  className={`js-sh-sub invisible -mt-1 max-w-[540px] font-sans text-base font-normal leading-snug tracking-[-0.3px] sm:text-lg ${styles.subtitle}`}
+>
+  {subtitle}
+</p>
     </header>
   );
 }
