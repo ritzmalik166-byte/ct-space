@@ -58,14 +58,14 @@ const REVIEWS = [
   },
 ];
 
-/** Must match the section's `h-[640svh]` class. */
-const SECTION_SVH = 900;
+/** Must match the section's `h-[500svh]` class. */
+const SECTION_SVH = 500;
 /** Progress where the sticky panel locks: the trigger starts when the section enters (its first 100svh). */
 const STUCK_AT = 100 / SECTION_SVH;
 /** Progress where the footer starts rising over the panel (its last 100svh, see globals.css). */
 const EXIT_START = (SECTION_SVH - 100) / SECTION_SVH;
 /** Each review owns an equal slice of the sticky range, so adding reviews never overlaps them. */
-const FIRST_STOP = STUCK_AT + 0.02;
+const FIRST_STOP = STUCK_AT + 0.01;
 const SLOT = (EXIT_START - FIRST_STOP) / REVIEWS.length;
 /** Progress at which each review takes over the stage. */
 const REVIEW_STOPS = REVIEWS.map((_, i) => FIRST_STOP + i * SLOT);
@@ -130,8 +130,8 @@ export function Reviews() {
       });
       trigger.current = tl.scrollTrigger ?? null;
 
-      tl.fromTo(".js-rv-panel", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01 }, STUCK_AT)
-        .fromTo(".js-rv-veil", { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.1 }, STUCK_AT);
+      tl.fromTo(".js-rv-panel", { autoAlpha: 0 }, { autoAlpha: 1, duration: STUCK_AT }, 0)
+        .fromTo(".js-rv-veil", { autoAlpha: 0 }, { autoAlpha: 1, duration: STUCK_AT }, 0);
 
       // Each review rises from below the screen onto the pile; earlier ones stay underneath, tilting back and dimming
       // one level per new arrival until they drop out of sight.
@@ -159,7 +159,6 @@ export function Reviews() {
           },
           at,
         );
-        if (!reduced) tl.fromTo(words, { opacity: 0.12 }, { opacity: 1, duration: INK / words.length, stagger: INK / words.length }, at + INK_AT);
         tl.fromTo(item.querySelectorAll(".js-rv-by"), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.03, stagger: 0.01 }, at + BYLINE_AT)
           .fromTo(`.js-rv-dash-${i}`, { scaleX: 0 }, { scaleX: 1, duration: SWAP, ease: "power2.out" }, at);
 
@@ -177,7 +176,7 @@ export function Reviews() {
             break;
           }
           tl.to(item.querySelector(".js-rv-shade"), { opacity: pose.shade, duration: span }, when);
-          if (depth === 1) tl.to(item.querySelectorAll(".js-rv-content"), { opacity: 0, duration: span * 0.6 }, when);
+          // if (depth === 1) tl.to(item.querySelectorAll(".js-rv-content"), { opacity: 0, duration: span * 0.6 }, when);
           if (!reduced) tl.to(item, { rotate: pose.rotate, y: pose.y, scale: pose.scale, duration: span, ease: "power2.out" }, when);
         }
       });
@@ -206,7 +205,7 @@ export function Reviews() {
       id="reviews"
       ref={root}
       aria-labelledby="reviews-title"
-      className="pointer-events-none relative z-0 h-[900svh]"
+      className="pointer-events-none relative z-0 h-[500svh]"
     >
       <div className="js-rv-panel invisible sticky top-0 h-svh overflow-hidden">
         <div
@@ -228,7 +227,7 @@ export function Reviews() {
                     <blockquote className="js-rv-content font-sans text-[clamp(1.05rem,1.9vw,1.4rem)] font-medium leading-[1.45] tracking-[-0.01em] text-[#111111]">
                       <p>
                         {`“${review.quote}”`.split(" ").map((word, w) => (
-                          <span key={w} className="js-rv-word">
+                          <span key={w} className="js-rv-word opacity-100">
                             {word}{" "}
                           </span>
                         ))}
