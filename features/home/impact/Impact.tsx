@@ -26,12 +26,13 @@ const METRICS: Metric[] = [
   { from: 0, to: 15, decimals: 0, grouping: true, suffix: "+", label: "Global industries" },
 ];
 
-/** Progress where the sticky panel locks: the trigger starts when the section enters (100svh of its 380svh). */
-const STUCK_AT = 100 / 380;
-/** The exit (about 62svh long) ends exactly when the reviews panel appears, so no blank scroll is left between them. */
-const EXIT_START = 318 / 380;
-const TRAIL_START = STUCK_AT + 0.05;
-const TRAIL_DURATION = 0.24;
+const SECTION_SVH = 220;
+/** Progress where the sticky panel locks: the trigger starts when the section enters (100svh of its 220svh). */
+const STUCK_AT = 100 / SECTION_SVH;
+/** Smooth exit handoff directly into the reviews section, eliminating dead black space. */
+const EXIT_START = 196 / SECTION_SVH;
+const TRAIL_START = STUCK_AT + 0.02;
+const TRAIL_DURATION = 0.28;
 const TRAIL = "M 20 160 C 180 30, 360 20, 500 80 S 800 170, 980 36";
 /** The trail's viewBox size. */
 const TRAIL_BOX = { w: 1000, h: 200 };
@@ -149,10 +150,10 @@ export function Impact() {
         tl.fromTo(el.querySelector(".js-im-copy"), { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.05 }, at + 0.06);
       });
 
-      tl.to(".js-im-head", { autoAlpha: 0, y: -40, duration: 0.06, ease: "power2.in" }, EXIT_START)
-        .to(".js-im-sky", { autoAlpha: 0, y: -30, duration: 0.06, ease: "power2.in" }, EXIT_START + 0.01)
-        .to(".js-im-metric", { autoAlpha: 0, y: -24, scale: 0.94, duration: 0.08, stagger: 0.02, ease: "power2.in" }, EXIT_START + 0.02)
-        .to(".js-im-veil", { autoAlpha: 0.4, duration: 0.12 }, EXIT_START + 0.04)
+      tl.to(".js-im-head", { autoAlpha: 0, y: -30, duration: 0.08, ease: "power2.in" }, EXIT_START)
+        .to(".js-im-sky", { autoAlpha: 0, y: -20, duration: 0.08, ease: "power2.in" }, EXIT_START + 0.01)
+        .to(".js-im-metric", { autoAlpha: 0, y: -20, scale: 0.95, duration: 0.08, stagger: 0.01, ease: "power2.in" }, EXIT_START + 0.01)
+        .to(".js-im-veil", { autoAlpha: 0.5, duration: 0.09 }, EXIT_START + 0.02)
         .set({}, {}, 1);
 
       return () => observer?.disconnect();
@@ -165,7 +166,7 @@ export function Impact() {
       id="impact"
       ref={root}
       aria-labelledby="impact-title"
-      className="pointer-events-none relative z-0 h-[380svh]"
+      className="pointer-events-none relative z-0 h-[220svh]"
     >
       <div className="js-im-panel invisible sticky top-0 h-svh overflow-hidden">
         <div
